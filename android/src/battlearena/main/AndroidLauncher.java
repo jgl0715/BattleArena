@@ -1,10 +1,10 @@
 package battlearena.main;
 
 import android.os.Bundle;
+import battlearena.game.BattleArena;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import battlearena.main.BattleArena;
 
 public class AndroidLauncher extends AndroidApplication
 {
