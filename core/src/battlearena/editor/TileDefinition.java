@@ -34,6 +34,21 @@ public class TileDefinition
 		return animFrames;
 	}
 
+	public int getAnimationFrame(int index)
+	{
+		return animFrames.get(index);
+	}
+
+	public void addFrame(int frame)
+	{
+		animFrames.add(frame);
+	}
+
+	public void removeFrame(int frame)
+	{
+		animFrames.remove((Integer) frame);
+	}
+
 	public float getFrameTime()
 	{
 		return frameTime;

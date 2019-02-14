@@ -1,6 +1,7 @@
 package battlearena.editor;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
@@ -27,6 +28,8 @@ public class Tileset
 		this.definitions = new HashMap<String, TileDefinition>();
 	}
 
+
+
 	public String getName()
 	{
 		return name;
@@ -52,14 +55,31 @@ public class Tileset
 		return new TextureRegion(tileSheet, col * tw, row * th, tw, th);
 	}
 
+	public void updateTileDefinitionName(String newName, TileDefinition def)
+	{
+		definitions.remove(def.getName());
+		definitions.put(newName, def);
+		def.setName(newName);
+	}
+
 	public Texture getTileSheet()
 	{
 		return tileSheet;
 	}
 
+	public Iterator<String> getDefinitionNameItr()
+	{
+		return definitions.keySet().iterator();
+	}
+
 	public boolean nameTaken(String name)
 	{
 		return definitions.containsKey(name);
+	}
+
+	public TileDefinition getDefinition(String name)
+	{
+		return definitions.get(name);
 	}
 
 	public void addDefinition(TileDefinition def)

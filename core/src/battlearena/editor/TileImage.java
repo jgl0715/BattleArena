@@ -23,12 +23,21 @@ public class TileImage extends Image
 	{
 		timeSinceFrameSwitch += delta;
 
-		if (def.getAnimFrames().size() > 0 && timeSinceFrameSwitch >= def.getFrameTime())
+		if(def.getAnimFrames().size() > 0 )
 		{
-			currentFrame = (currentFrame + 1) % def.getAnimFrames().size();
-			TextureRegion frame = tileset.getTileRegionForId(currentFrame);
-			setDrawable(new TextureRegionDrawable(frame));
+			if (timeSinceFrameSwitch >= def.getFrameTime())
+			{
+				timeSinceFrameSwitch = 0;
+				currentFrame = (currentFrame + 1) % def.getAnimFrames().size();
+				TextureRegion frame = tileset.getTileRegionForId(def.getAnimationFrame(currentFrame));
+				setDrawable(new TextureRegionDrawable(frame));
+			}
 		}
+		else
+		{
+			setDrawable(null);
+		}
+
 
 	}
 
