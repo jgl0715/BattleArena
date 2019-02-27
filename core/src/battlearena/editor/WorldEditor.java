@@ -184,7 +184,7 @@ public class WorldEditor extends ApplicationAdapter
 
 		Gdx.input.setInputProcessor(uiScene);
 
-		inputToFSA(TRANSITION_EDIT_TILESET, new Tileset("test", "C:\\Users\\joeyl\\Desktop\\TS_ground_over_16.png", 8, 8));
+		inputToFSA(TRANSITION_EDIT_TILESET, new Tileset("test", "C:\\Users\\fores\\Desktop\\Tile_Overworld.png", 8, 8));
 
 	}
 

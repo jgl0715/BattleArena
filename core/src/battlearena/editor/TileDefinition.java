@@ -16,7 +16,7 @@ public class TileDefinition
 		this.name = "Unnamed";
 		this.frameTime = 0.2f;
 		animFrames = new ArrayList<Integer>();
-		mask = new CollisionMaskQuad();
+		mask = new CollisionMask(4);
 	}
 
 	public String getName()

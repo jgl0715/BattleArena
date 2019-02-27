@@ -1,5 +1,6 @@
 package battlearena.editor.states;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 
+import battlearena.editor.CollisionMask;
 import battlearena.editor.TileDefinition;
 import battlearena.editor.TileImage;
 import battlearena.editor.Tileset;
@@ -34,6 +36,10 @@ import battlearena.editor.WorldEditor;
 
 public class StateTilesetEditor extends State
 {
+
+	// GUI for tile pane
+	private Table editTilePane;
+	private TileImage paneTileImage;
 
 	private Table definitionsTable;
 	private Table bottomLeft;
@@ -50,6 +56,7 @@ public class StateTilesetEditor extends State
 	private float originX;
 	private float originY;
 
+	private int editingVert;
 	private boolean renderGrid;
 	private boolean disableMovement;
 	private boolean validName;
@@ -63,7 +70,7 @@ public class StateTilesetEditor extends State
 	@Override
 	public void create()
 	{
-
+		editingVert = -1;
 	}
 
 	@Override
@@ -86,6 +93,15 @@ public class StateTilesetEditor extends State
 	public void selectTileDefinition(TileDefinition def)
 	{
 		definitionSelected = def;
+
+		// Put tile information into edit tile pane.
+		editTilePane.clear();
+
+		// Put tile animation in
+		paneTileImage = new TileImage(def, tileset);
+		editTilePane.add(paneTileImage).width(100).height(100).center().pad(50).row();
+
+
 	}
 
 	public void setTileset(Tileset tileset)
@@ -114,6 +130,7 @@ public class StateTilesetEditor extends State
 		}
 		nameLabel.setText(name);
 		def.setName(name);
+		def.getMask().makeBox(tileset.getTileWidth(), tileset.getTileHeight());
 
 		// This stops input from being interpreted if the user is typing a name for the tile definition.
 		nameLabel.addListener(new FocusListener()
@@ -196,6 +213,8 @@ public class StateTilesetEditor extends State
 
 		tileset.addDefinition(def);
 
+		selectTileDefinition(def);
+
 		return def;
 	}
 
@@ -225,12 +244,18 @@ public class StateTilesetEditor extends State
 		}
 		else
 		{
-			Table tileDefPane = new Table();
 			final Stage uiScene = WorldEditor.I.getUiScene();
 			Skin uiSkin = WorldEditor.I.getUiSkin();
 			defEntries = new HashMap<TileDefinition, Table>();
 
 			WorldEditor.I.getRootComponent().clear();
+
+			editTilePane = new Table();
+			editTilePane.setFillParent(true);
+			editTilePane.left().top();
+			{
+
+			}
 
 			bottomLeft = new Table();
 			bottomLeft.setFillParent(true);
@@ -253,7 +278,7 @@ public class StateTilesetEditor extends State
 				});
 			}
 
-			tileDefPane = new Table();
+			Table tileDefPane = new Table();
 			tileDefPane.setFillParent(true);
 			tileDefPane.right().top();
 			tileDefPane.pad(5);
@@ -298,13 +323,16 @@ public class StateTilesetEditor extends State
 			}
 
 			uiScene.addActor(bottomLeft);
+			uiScene.addActor(editTilePane);
 			uiScene.addActor(tileDefPane);
 
 			setTileset((Tileset) transitionInput);
 
 			// Add blank tile definition if there aren't any
 			if (tileset.getDefinitionCount() < 1)
-				selectTileDefinition(addNewTileDefinition());
+			{
+				addNewTileDefinition();
+			}
 
 			InputMultiplexer muxer = new InputMultiplexer(new InputProcessor()
 			{
@@ -362,8 +390,8 @@ public class StateTilesetEditor extends State
 					OrthographicCamera camera = WorldEditor.I.getCamera();
 					WorldEditor.I.getCamera().zoom += amount / 5.0f;
 
-					if (camera.zoom < 0.3f)
-						camera.zoom = 0.3f;
+					if (camera.zoom < 0.1f)
+						camera.zoom = 0.1f;
 					if (camera.zoom > 2.0f)
 						camera.zoom = 2.0f;
 
@@ -446,7 +474,73 @@ public class StateTilesetEditor extends State
 		{
 		}
 
+		// Check if attempting to move tile definition vertices.
+		CollisionMask mask = definitionSelected.getMask();
+		int verts = mask.getVertexCount();
+
+		if (verts > 0)
+		{
+			int mouseX = Gdx.input.getX();
+			int mouseY = Gdx.graphics.getHeight()-Gdx.input.getY()-1;
+
+			if(editingVert >= 0)
+			{			float scale = tileset.getTileWidth() / 100.0f;
+
+
+				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
+				{
+					Vector2 toLocal = paneTileImage.stageToLocalCoordinates(new Vector2(mouseX, mouseY)).scl(scale);
+
+					if(toLocal.x < 0)
+						toLocal.x = 0;
+					if(toLocal.x > tileset.getTileWidth())
+						toLocal.x = tileset.getTileWidth();
+
+					if(toLocal.y < 0)
+						toLocal.y = 0;
+					if(toLocal.y > tileset.getTileHeight())
+						toLocal.y = tileset.getTileHeight();
+					
+					mask.getVertex(editingVert).set(toLocal);
+				}
+				else
+				{
+					editingVert = -1;
+				}
+			}
+			else
+			{
+				int rad = 5;
+				float scale = 100.0f / tileset.getTileWidth();
+
+				for (int i = 0; i < verts; i++)
+				{
+					Vector2 vert = mask.getVertex(i);
+					Vector2 toStage = paneTileImage.localToStageCoordinates(new Vector2(vert.x * scale, vert.y * scale));
+					float dx = toStage.x - mouseX;
+					float dy = toStage.y - mouseY;
+
+					if(dx*dx+dy*dy <= rad)
+					{							System.out.println("hello");
+
+						if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
+						{
+							editingVert = i;
+						}
+					}
+				}
+			}
+
+
+
+		}
+
 		camera.update();
+	}
+
+	public Vector2[] getMaskVerticesStage()
+	{
+		return null;
 	}
 
 	public int getMouseTileX()
@@ -516,6 +610,7 @@ public class StateTilesetEditor extends State
 	{
 		ShapeRenderer sr = WorldEditor.I.getShapeRenderer();
 
+		// Render the selected definition.
 		sr.setProjectionMatrix(WorldEditor.I.getUiCamera().projection);
 		sr.setTransformMatrix(WorldEditor.I.getUiCamera().view);
 		sr.setColor(Color.WHITE);
@@ -528,6 +623,7 @@ public class StateTilesetEditor extends State
 		}
 		sr.end();
 
+		// Render the box around the selected tile definition
 		if(deleteMode)
 			sr.setColor(Color.RED);
 		else
@@ -540,6 +636,37 @@ public class StateTilesetEditor extends State
 			sr.rect(vec.x, vec.y, entryHovered.getWidth(), entryHovered.getHeight());
 		}
 		sr.end();
+
+		// Render physics body on current tile image.
+
+		// Render the physics body over the tile image.
+		CollisionMask mask = definitionSelected.getMask();
+		if(mask != null)
+		{
+			int verts = mask.getVertexCount();
+			float scale = 100.0f / tileset.getTileWidth();
+
+			if (verts > 0)
+			{
+				sr.begin(ShapeRenderer.ShapeType.Line);
+				sr.setColor(Color.GREEN);
+				float[] vertsAsArray = new float[verts * 2];
+
+				for (int i = 0; i < verts; i++) {
+					Vector2 vert = mask.getVertex(i);
+					Vector2 toStage = paneTileImage.localToStageCoordinates(new Vector2(vert.x * scale, vert.y * scale));
+
+					sr.circle(toStage.x, toStage.y, 5);
+
+					vertsAsArray[2 * i + 0] = toStage.x;
+					vertsAsArray[2 * i + 1] = toStage.y;
+
+				}
+				sr.polygon(vertsAsArray);
+
+				sr.end();
+			}
+		}
 	}
 
 }
