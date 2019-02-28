@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
 import battlearena.editor.WorldEditor;
 
-public class StateCreateWorld extends State
+public class StateCreateWorld extends battlearena.common.states.State
 {
 
 	// World name

@@ -1,4 +1,4 @@
-package battlearena.editor.states;
+package battlearena.common.states;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -8,8 +8,8 @@ public class StateMachine
 
 	// State transitions
 
-	private Set<State> states;
-	private State currentState;
+	private Set<battlearena.common.states.State> states;
+	private battlearena.common.states.State currentState;
 
 	// -- States ---- s:
 	// Main menu
@@ -22,21 +22,21 @@ public class StateMachine
 
 	public StateMachine()
 	{
-		states = new HashSet<State>();
+		states = new HashSet<battlearena.common.states.State>();
 		currentState = null;
 	}
 
-	public State getCurrent()
+	public battlearena.common.states.State getCurrent()
 	{
 		return currentState;
 	}
 	
-	public void registerState(State state)
+	public void registerState(battlearena.common.states.State state)
 	{
 		registerState(state, false);
 	}
 
-	public void registerState(State state, boolean initial)
+	public void registerState(battlearena.common.states.State state, boolean initial)
 	{
 		// Create all registered states.
 		state.create();
@@ -50,7 +50,7 @@ public class StateMachine
 		states.add(state);
 	}
 
-	public void registerTransition(State src, State dst, String transition)
+	public void registerTransition(battlearena.common.states.State src, battlearena.common.states.State dst, String transition)
 	{
 		if (!states.contains(src))
 		{
@@ -75,7 +75,7 @@ public class StateMachine
 		}
 		else
 		{
-			State transitionDst = currentState.getTransitionDest(transition);
+			battlearena.common.states.State transitionDst = currentState.getTransitionDest(transition);
 
 			if (!states.contains(transitionDst))
 				throw new IllegalStateException("Transition destination state has not yet been registered. ");
@@ -109,7 +109,7 @@ public class StateMachine
 
 	public void dispose()
 	{
-		for (State state : states)
+		for (battlearena.common.states.State state : states)
 		{
 			state.dispose();
 		}

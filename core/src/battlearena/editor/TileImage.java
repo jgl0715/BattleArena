@@ -1,22 +1,18 @@
 package battlearena.editor;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class TileImage extends Image
 {
 
-	private TileDefinition def;
-	private Tileset tileset;
+	private battlearena.common.tile.TileDefinition def;
+	private battlearena.common.tile.Tileset tileset;
 	private int currentFrame;
 	private float timeSinceFrameSwitch;
 
-	public TileImage(TileDefinition def, Tileset tileset)
+	public TileImage(battlearena.common.tile.TileDefinition def, battlearena.common.tile.Tileset tileset)
 	{
 		this.def = def;
 		this.tileset = tileset;
@@ -26,6 +22,9 @@ public class TileImage extends Image
 	public void act(float delta)
 	{
 		timeSinceFrameSwitch += delta;
+
+		if(def == null)
+			return;
 
 		if(def.getAnimFrames().size() > 0 )
 		{

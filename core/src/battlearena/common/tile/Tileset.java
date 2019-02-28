@@ -1,4 +1,4 @@
-package battlearena.editor;
+package battlearena.common.tile;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,7 +15,7 @@ public class Tileset
 	private int width;
 	private int height;
 	private Texture tileSheet;
-	private Map<String, TileDefinition> definitions;
+	private Map<String, battlearena.common.tile.TileDefinition> definitions;
 
 	public Tileset(String name, String tilesheetPath, int width, int height)
 	{
@@ -25,14 +25,22 @@ public class Tileset
 
 		this.tileSheet = new Texture(Gdx.files.absolute(tilesheetPath));
 
-		this.definitions = new HashMap<String, TileDefinition>();
+		this.definitions = new HashMap<String, battlearena.common.tile.TileDefinition>();
 	}
 
-
+	public Iterator<String> getDefinitionNameIterator()
+	{
+		return definitions.keySet().iterator();
+	}
 
 	public String getName()
 	{
 		return name;
+	}
+
+	public void setName(String s)
+	{
+		name = s;
 	}
 
 	public int getWidth()
@@ -55,7 +63,7 @@ public class Tileset
 		return new TextureRegion(tileSheet, col * tw, row * th, tw, th);
 	}
 
-	public void updateTileDefinitionName(String newName, TileDefinition def)
+	public void updateTileDefinitionName(String newName, battlearena.common.tile.TileDefinition def)
 	{
 		definitions.remove(def.getName());
 		definitions.put(newName, def);
@@ -77,17 +85,17 @@ public class Tileset
 		return definitions.containsKey(name);
 	}
 
-	public TileDefinition getDefinition(String name)
+	public battlearena.common.tile.TileDefinition getDefinition(String name)
 	{
 		return definitions.get(name);
 	}
 
-	public void addDefinition(TileDefinition def)
+	public void addDefinition(battlearena.common.tile.TileDefinition def)
 	{
 		definitions.put(def.getName(), def);
 	}
 
-	public void removeDefinition(TileDefinition def)
+	public void removeDefinition(battlearena.common.tile.TileDefinition def)
 	{
 		definitions.remove(def.getName());
 	}

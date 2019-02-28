@@ -12,12 +12,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import battlearena.editor.states.State;
+import battlearena.common.gui.HUD;
+import battlearena.common.states.State;
 import battlearena.editor.states.StateCreateTileset;
 import battlearena.editor.states.StateCreateWorld;
 import battlearena.editor.states.StateLoadTileset;
 import battlearena.editor.states.StateLoadWorld;
-import battlearena.editor.states.StateMachine;
+import battlearena.common.states.StateMachine;
 import battlearena.editor.states.StateMainMenu;
 import battlearena.editor.states.StateQuit;
 import battlearena.editor.states.StateTilesetEditor;
@@ -110,6 +111,12 @@ public class WorldEditor extends ApplicationAdapter
 		return uiScene;
 	}
 
+	public void setHUD(HUD hud)
+	{
+		rootComponent.clear();
+		rootComponent.add(hud.getRoot());
+	}
+
 	public Table getRootComponent()
 	{
 		return rootComponent;
@@ -184,7 +191,7 @@ public class WorldEditor extends ApplicationAdapter
 
 		Gdx.input.setInputProcessor(uiScene);
 
-		inputToFSA(TRANSITION_EDIT_TILESET, new Tileset("test", "C:\\Users\\fores\\Desktop\\Tile_Overworld.png", 8, 8));
+		inputToFSA(TRANSITION_EDIT_TILESET, new battlearena.common.tile.Tileset("test", "C:\\Users\\joeyl\\Desktop\\TS_Ground_Over_16.png", 8, 8));
 
 	}
 

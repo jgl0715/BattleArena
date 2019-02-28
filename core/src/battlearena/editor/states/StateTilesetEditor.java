@@ -1,6 +1,5 @@
 package battlearena.editor.states;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,29 +28,25 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 
 import battlearena.editor.CollisionMask;
-import battlearena.editor.TileDefinition;
+import battlearena.common.tile.TileDefinition;
 import battlearena.editor.TileImage;
-import battlearena.editor.Tileset;
+import battlearena.common.tile.Tileset;
+import battlearena.common.file.TilesetExporter;
 import battlearena.editor.WorldEditor;
+import battlearena.editor.view.HUDTilesetEditor;
 
-public class StateTilesetEditor extends State
+public class StateTilesetEditor extends battlearena.common.states.State
 {
+	// This class is the controller between tilesets, and the hudtileseteditor.
 
-	// GUI for tile pane
-	private Table editTilePane;
-	private TileImage paneTileImage;
+	// View information
+	private HUDTilesetEditor hudTilesetEditor;
 
-	private Table definitionsTable;
-	private Table bottomLeft;
+	// Model information
 	private Tileset tileset;
-	private Label tileDefPaneLabel;
-	private TextButton addTileDefButton;
-	private TextButton deleteTileDefButton;
-	private TextButton gridButton;
-	private TextField tilesetNameLabel;
 	private Map<TileDefinition, Table> defEntries;
-	private Table entryHovered;
 	private TileDefinition definitionSelected;
+	private TilesetExporter exporter;
 
 	private float originX;
 	private float originY;
@@ -71,6 +66,10 @@ public class StateTilesetEditor extends State
 	public void create()
 	{
 		editingVert = -1;
+		exporter = new TilesetExporter(null, "");
+
+		hudTilesetEditor = new HUDTilesetEditor(WorldEditor.I.getUiSkin());
+		hudTilesetEditor.create();
 	}
 
 	@Override
@@ -90,16 +89,53 @@ public class StateTilesetEditor extends State
 		selectTileDefinition(tileset.getDefinition(tileset.getDefinitionNameItr().next()));
 	}
 
-	public void selectTileDefinition(TileDefinition def)
+	public void selectTileDefinition(final TileDefinition def)
 	{
 		definitionSelected = def;
 
+		Skin uiSkin = WorldEditor.I.getUiSkin();
+
 		// Put tile information into edit tile pane.
-		editTilePane.clear();
+		hudTilesetEditor.editTilePane.clear();
 
 		// Put tile animation in
-		paneTileImage = new TileImage(def, tileset);
-		editTilePane.add(paneTileImage).width(100).height(100).center().pad(50).row();
+		hudTilesetEditor.paneTileImage = new TileImage(def, tileset);
+		hudTilesetEditor.editTilePane.add(hudTilesetEditor.paneTileImage).width(100).height(100).center().pad(50).row();
+
+
+		Table tableFrameTime = new Table();
+		tableFrameTime.defaults().pad(5);
+		hudTilesetEditor.labelFrameTime = new Label("Frame Time (ms)", uiSkin);
+		hudTilesetEditor.fieldFrameTime = new TextField(Integer.toString((int)(definitionSelected.getFrameTime()*1000)), uiSkin);
+		tableFrameTime.add(hudTilesetEditor.labelFrameTime).left();
+		tableFrameTime.add(hudTilesetEditor.fieldFrameTime).left().width(50);
+
+		hudTilesetEditor.editTilePane.add(tableFrameTime).pad(10).row();
+
+		hudTilesetEditor.fieldFrameTime.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
+		hudTilesetEditor.fieldFrameTime.setTextFieldListener(new TextField.TextFieldListener() {
+
+			@Override
+			public void keyTyped(TextField textField, char c) {
+				System.out.println(c);
+			}
+		});
+
+		hudTilesetEditor.fieldFrameTime.addListener(new FocusListener()
+		{
+			@Override
+			public void keyboardFocusChanged(FocusEvent event, Actor actor, boolean focused)
+			{
+				super.keyboardFocusChanged(event, actor, focused);
+
+				disableMovement = focused;
+
+				// Save name on focus change.
+				if(!focused)
+					def.setFrameTime(Integer.parseInt(hudTilesetEditor.fieldFrameTime.getText())/1000.0f);
+
+			}
+		});
 
 
 	}
@@ -110,6 +146,9 @@ public class StateTilesetEditor extends State
 
 		originX = -tileset.getTilesheetWidth() / 2;
 		originY = -tileset.getTilesheetHeight() / 2;
+
+		exporter.setTileset(tileset);
+		exporter.setDestination("output/" + tileset.getName() + ".ts");
 	}
 
 	public TileDefinition addNewTileDefinition()
@@ -192,7 +231,7 @@ public class StateTilesetEditor extends State
 			public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor)
 			{
 				super.enter(event, x, y, pointer, fromActor);
-				entryHovered = entryTable;
+				hudTilesetEditor.entryHovered = entryTable;
 			}
 
 			@Override
@@ -200,14 +239,14 @@ public class StateTilesetEditor extends State
 			{
 				super.exit(event, x, y, pointer, toActor);
 
-				if (entryHovered == entryTable)
-					entryHovered = null;
+				if (hudTilesetEditor.entryHovered == entryTable)
+					hudTilesetEditor.entryHovered = null;
 			}
 		});
 
 		entryTable.add(image).width(20).height(20).expand().fill();
 		entryTable.add(nameLabel).width(180);
-		definitionsTable.add(entryTable).row();
+		hudTilesetEditor.tableDefinitions.add(entryTable).row();
 
 		defEntries.put(def, entryTable);
 
@@ -245,88 +284,79 @@ public class StateTilesetEditor extends State
 		else
 		{
 			final Stage uiScene = WorldEditor.I.getUiScene();
-			Skin uiSkin = WorldEditor.I.getUiSkin();
 			defEntries = new HashMap<TileDefinition, Table>();
 
-			WorldEditor.I.getRootComponent().clear();
-
-			editTilePane = new Table();
-			editTilePane.setFillParent(true);
-			editTilePane.left().top();
+			hudTilesetEditor.buttonGrid.addListener(new ClickListener()
 			{
+				@Override
+				public void clicked(InputEvent event, float x, float y)
+				{
+					super.clicked(event, x, y);
 
-			}
+					renderGrid = !renderGrid;
+				}
+			});
 
-			bottomLeft = new Table();
-			bottomLeft.setFillParent(true);
-			bottomLeft.bottom().left();
-			bottomLeft.pad(5);
+			hudTilesetEditor.buttonExportTileset.addListener(new ClickListener(){
+				@Override
+				public void clicked(InputEvent event, float x, float y) {
+					super.clicked(event, x, y);
+
+					// Flush the tileset through the exporter.
+					exporter.export();
+				}
+			});
+
+
+			hudTilesetEditor.buttonImportTileset.addListener(new ClickListener(){
+				@Override
+				public void clicked(InputEvent event, float x, float y) {
+					super.clicked(event, x, y);
+				}
+			});
+
+			hudTilesetEditor.fieldTilesetName.addListener(new FocusListener() {
+				@Override
+				public void keyboardFocusChanged(FocusEvent event, Actor actor, boolean focused) {
+					super.keyboardFocusChanged(event, actor, focused);
+					if(focused)
+						disableMovement  =true;
+				}
+			});
+
+			hudTilesetEditor.fieldTilesetName.setTextFieldFilter(new TextField.TextFieldFilter() {
+				@Override
+				public boolean acceptChar(TextField textField, char c) {
+					tileset.setName(hudTilesetEditor.fieldTilesetName.getText()+c);
+					exporter.setDestination("output/" + tileset.getName() + ".ts");
+					return true;
+				}
+			});
+
+			hudTilesetEditor.addTileDefButton.addListener(new ClickListener()
 			{
-				gridButton = new TextButton("Grid", uiSkin);
-
-				bottomLeft.add(gridButton).width(50);
-
-				gridButton.addListener(new ClickListener()
+				@Override
+				public void clicked(InputEvent event, float x, float y)
 				{
-					@Override
-					public void clicked(InputEvent event, float x, float y)
-					{
-						super.clicked(event, x, y);
+					super.clicked(event, x, y);
 
-						renderGrid = !renderGrid;
-					}
-				});
-			}
+					addNewTileDefinition();
+				}
+			});
 
-			Table tileDefPane = new Table();
-			tileDefPane.setFillParent(true);
-			tileDefPane.right().top();
-			tileDefPane.pad(5);
+			hudTilesetEditor.deleteTileDefButton.addListener(new ClickListener()
 			{
-				Table nameRow = new Table();
-				Table buttonsRow = new Table();
-				definitionsTable = new Table();
-
-				tileDefPaneLabel = new Label("Tile Definitions", uiSkin);
-				addTileDefButton = new TextButton("+", uiSkin);
-				deleteTileDefButton = new TextButton("-", uiSkin);
-
-				nameRow.add(tileDefPaneLabel).width(100);
-				nameRow.add(addTileDefButton).width(50);
-				nameRow.add(deleteTileDefButton).width(50).row();
-
-				tileDefPane.add(nameRow).row();
-				tileDefPane.add(definitionsTable).row();
-
-				addTileDefButton.addListener(new ClickListener()
+				@Override
+				public void clicked(InputEvent event, float x, float y)
 				{
-					@Override
-					public void clicked(InputEvent event, float x, float y)
-					{
-						super.clicked(event, x, y);
+					super.clicked(event, x, y);
 
-						addNewTileDefinition();
-					}
-				});
-
-				deleteTileDefButton.addListener(new ClickListener()
-				{
-					@Override
-					public void clicked(InputEvent event, float x, float y)
-					{
-						super.clicked(event, x, y);
-
-						deleteMode = !deleteMode;
-					}
-				});
-
-			}
-
-			uiScene.addActor(bottomLeft);
-			uiScene.addActor(editTilePane);
-			uiScene.addActor(tileDefPane);
+					deleteMode = !deleteMode;
+				}
+			});
 
 			setTileset((Tileset) transitionInput);
+			hudTilesetEditor.fieldTilesetName.setText(tileset.getName());
 
 			// Add blank tile definition if there aren't any
 			if (tileset.getDefinitionCount() < 1)
@@ -433,7 +463,7 @@ public class StateTilesetEditor extends State
 	@Override
 	public void hide()
 	{
-		bottomLeft.remove();
+		hudTilesetEditor.tableBottomLeft.remove();
 	}
 
 	@Override
@@ -484,12 +514,13 @@ public class StateTilesetEditor extends State
 			int mouseY = Gdx.graphics.getHeight()-Gdx.input.getY()-1;
 
 			if(editingVert >= 0)
-			{			float scale = tileset.getTileWidth() / 100.0f;
+			{
+				float scale = tileset.getTileWidth() / 100.0f;
 
 
 				if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
 				{
-					Vector2 toLocal = paneTileImage.stageToLocalCoordinates(new Vector2(mouseX, mouseY)).scl(scale);
+					Vector2 toLocal = hudTilesetEditor.paneTileImage.stageToLocalCoordinates(new Vector2(mouseX, mouseY)).scl(scale);
 
 					if(toLocal.x < 0)
 						toLocal.x = 0;
@@ -516,7 +547,7 @@ public class StateTilesetEditor extends State
 				for (int i = 0; i < verts; i++)
 				{
 					Vector2 vert = mask.getVertex(i);
-					Vector2 toStage = paneTileImage.localToStageCoordinates(new Vector2(vert.x * scale, vert.y * scale));
+					Vector2 toStage = hudTilesetEditor.paneTileImage.localToStageCoordinates(new Vector2(vert.x * scale, vert.y * scale));
 					float dx = toStage.x - mouseX;
 					float dy = toStage.y - mouseY;
 
@@ -629,11 +660,11 @@ public class StateTilesetEditor extends State
 		else
 			sr.setColor(Color.BLUE);
 		sr.begin(ShapeType.Line);
-		if (entryHovered != null)
+		if (hudTilesetEditor.entryHovered != null)
 		{
-			Vector2 vec = entryHovered.localToStageCoordinates(new Vector2(0, 0));
+			Vector2 vec = hudTilesetEditor.entryHovered.localToStageCoordinates(new Vector2(0, 0));
 
-			sr.rect(vec.x, vec.y, entryHovered.getWidth(), entryHovered.getHeight());
+			sr.rect(vec.x, vec.y, hudTilesetEditor.entryHovered.getWidth(), hudTilesetEditor.entryHovered.getHeight());
 		}
 		sr.end();
 
@@ -654,14 +685,14 @@ public class StateTilesetEditor extends State
 
 				for (int i = 0; i < verts; i++) {
 					Vector2 vert = mask.getVertex(i);
-					Vector2 toStage = paneTileImage.localToStageCoordinates(new Vector2(vert.x * scale, vert.y * scale));
+					Vector2 toStage = hudTilesetEditor.paneTileImage.localToStageCoordinates(new Vector2(vert.x * scale, vert.y * scale));
 
 					sr.circle(toStage.x, toStage.y, 5);
 
 					vertsAsArray[2 * i + 0] = toStage.x;
 					vertsAsArray[2 * i + 1] = toStage.y;
-
 				}
+
 				sr.polygon(vertsAsArray);
 
 				sr.end();

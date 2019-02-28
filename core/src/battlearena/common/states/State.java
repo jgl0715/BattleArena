@@ -1,4 +1,4 @@
-package battlearena.editor.states;
+package battlearena.common.states;
 
 import java.util.HashMap;
 import java.util.Map;

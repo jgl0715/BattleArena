@@ -12,10 +12,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-import battlearena.editor.Tileset;
+import battlearena.common.tile.Tileset;
 import battlearena.editor.WorldEditor;
 
-public class StateCreateTileset extends State
+public class StateCreateTileset extends battlearena.common.states.State
 {
 
 	private Label nameLabel;

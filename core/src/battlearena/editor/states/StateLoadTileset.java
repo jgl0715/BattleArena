@@ -1,6 +1,6 @@
 package battlearena.editor.states;
 
-public class StateLoadTileset extends State
+public class StateLoadTileset extends battlearena.common.states.State
 {
 
 	public StateLoadTileset()

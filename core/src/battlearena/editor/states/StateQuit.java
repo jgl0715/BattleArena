@@ -2,7 +2,7 @@ package battlearena.editor.states;
 
 import com.badlogic.gdx.Gdx;
 
-public class StateQuit extends State
+public class StateQuit extends battlearena.common.states.State
 {
 
 	public StateQuit()

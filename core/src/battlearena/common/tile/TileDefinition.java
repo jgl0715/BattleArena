@@ -1,7 +1,9 @@
-package battlearena.editor;
+package battlearena.common.tile;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import battlearena.editor.CollisionMask;
 
 public class TileDefinition
 {

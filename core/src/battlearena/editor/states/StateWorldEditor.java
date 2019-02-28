@@ -1,6 +1,6 @@
 package battlearena.editor.states;
 
-public class StateWorldEditor extends State
+public class StateWorldEditor extends battlearena.common.states.State
 {
 
 	public StateWorldEditor()

@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import battlearena.editor.WorldEditor;
 
-public class StateMainMenu extends State
+public class StateMainMenu extends battlearena.common.states.State
 {
 
 	private TextButton createWorld;
