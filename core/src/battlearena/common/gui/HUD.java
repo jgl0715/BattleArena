@@ -45,6 +45,11 @@ public abstract class HUD
         return skin;
     }
 
+    public Stage getUI()
+    {
+        return ui;
+    }
+
     public void resize(int width, int height)
     {
         viewport.update(width, height);

@@ -95,49 +95,11 @@ public class StateTilesetEditor extends battlearena.common.states.State
 
 		Skin uiSkin = WorldEditor.I.getUiSkin();
 
-		// Put tile information into edit tile pane.
-		hudTilesetEditor.editTilePane.clear();
+		// Update GUI with new selected definition.
+		hudTilesetEditor.showTile(tileset, def);
 
-		// Put tile animation in
-		hudTilesetEditor.paneTileImage = new TileImage(def, tileset);
-		hudTilesetEditor.editTilePane.add(hudTilesetEditor.paneTileImage).width(100).height(100).center().pad(50).row();
-
-
-		Table tableFrameTime = new Table();
-		tableFrameTime.defaults().pad(5);
-		hudTilesetEditor.labelFrameTime = new Label("Frame Time (ms)", uiSkin);
-		hudTilesetEditor.fieldFrameTime = new TextField(Integer.toString((int)(definitionSelected.getFrameTime()*1000)), uiSkin);
-		tableFrameTime.add(hudTilesetEditor.labelFrameTime).left();
-		tableFrameTime.add(hudTilesetEditor.fieldFrameTime).left().width(50);
-
-		hudTilesetEditor.editTilePane.add(tableFrameTime).pad(10).row();
-
+		// Setup UI handling.
 		hudTilesetEditor.fieldFrameTime.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
-		hudTilesetEditor.fieldFrameTime.setTextFieldListener(new TextField.TextFieldListener() {
-
-			@Override
-			public void keyTyped(TextField textField, char c) {
-				System.out.println(c);
-			}
-		});
-
-		hudTilesetEditor.fieldFrameTime.addListener(new FocusListener()
-		{
-			@Override
-			public void keyboardFocusChanged(FocusEvent event, Actor actor, boolean focused)
-			{
-				super.keyboardFocusChanged(event, actor, focused);
-
-				disableMovement = focused;
-
-				// Save name on focus change.
-				if(!focused)
-					def.setFrameTime(Integer.parseInt(hudTilesetEditor.fieldFrameTime.getText())/1000.0f);
-
-			}
-		});
-
-
 	}
 
 	public void setTileset(Tileset tileset)
@@ -285,6 +247,8 @@ public class StateTilesetEditor extends battlearena.common.states.State
 		{
 			final Stage uiScene = WorldEditor.I.getUiScene();
 			defEntries = new HashMap<TileDefinition, Table>();
+
+			WorldEditor.I.getRootComponent().clear();
 
 			hudTilesetEditor.buttonGrid.addListener(new ClickListener()
 			{
@@ -443,6 +407,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 				@Override
 				public boolean keyTyped(char character)
 				{
+
 					return false;
 				}
 
@@ -451,7 +416,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 				{
 					return false;
 				}
-			}, WorldEditor.I.getUiScene());
+			}, hudTilesetEditor.getUI());
 
 			Gdx.input.setInputProcessor(muxer);
 
@@ -633,6 +598,9 @@ public class StateTilesetEditor extends battlearena.common.states.State
 		}
 
 		sr.end();
+
+
+		hudTilesetEditor.render();
 
 	}
 

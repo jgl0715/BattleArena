@@ -7,6 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
 import battlearena.common.gui.HUD;
+import battlearena.common.tile.TileDefinition;
+import battlearena.common.tile.Tileset;
 import battlearena.editor.TileImage;
 
 public class HUDTilesetEditor extends HUD
@@ -94,8 +96,26 @@ public class HUDTilesetEditor extends HUD
         ui.addActor(tileDefPane);
     }
 
+    public void showTile(Tileset tileset, TileDefinition def)
+    {
+        editTilePane.clear();
+
+        paneTileImage = new TileImage(def, tileset);
+        editTilePane.add(paneTileImage).width(100).height(100).center().pad(50).row();
+
+        Table tableFrameTime = new Table();
+        tableFrameTime.defaults().pad(5);
+        labelFrameTime = new Label("Frame Time (ms)", skin);
+        fieldFrameTime = new TextField(Integer.toString((int)(def.getFrameTime()*1000)), skin);
+        tableFrameTime.add(labelFrameTime).left();
+        tableFrameTime.add(fieldFrameTime).left().width(50);
+
+        editTilePane.add(tableFrameTime).pad(10).row();
+    }
+
     public void render()
     {
+        ui.act();
         ui.draw();
     }
 }
