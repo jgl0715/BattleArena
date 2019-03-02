@@ -100,17 +100,20 @@ public class HUDTilesetEditor extends HUD
     {
         editTilePane.clear();
 
-        paneTileImage = new TileImage(def, tileset);
-        editTilePane.add(paneTileImage).width(100).height(100).center().pad(50).row();
+        if(def != null)
+        {
+            paneTileImage = new TileImage(def, tileset);
+            editTilePane.add(paneTileImage).width(100).height(100).center().pad(50).row();
 
-        Table tableFrameTime = new Table();
-        tableFrameTime.defaults().pad(5);
-        labelFrameTime = new Label("Frame Time (ms)", skin);
-        fieldFrameTime = new TextField(Integer.toString((int)(def.getFrameTime()*1000)), skin);
-        tableFrameTime.add(labelFrameTime).left();
-        tableFrameTime.add(fieldFrameTime).left().width(50);
+            Table tableFrameTime = new Table();
+            tableFrameTime.defaults().pad(5);
+            labelFrameTime = new Label("Frame Time (ms)", skin);
+            fieldFrameTime = new TextField(Integer.toString((int)(def.getFrameTime()*1000)), skin);
+            tableFrameTime.add(labelFrameTime).left();
+            tableFrameTime.add(fieldFrameTime).left().width(50);
 
-        editTilePane.add(tableFrameTime).pad(10).row();
+            editTilePane.add(tableFrameTime).pad(10).row();
+        }
     }
 
     public void render()
