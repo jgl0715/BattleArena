@@ -3,9 +3,7 @@ package battlearena.common.tile;
 import java.util.ArrayList;
 import java.util.List;
 
-import battlearena.editor.CollisionMask;
-
-public class TileDefinition
+public class Tile
 {
 
 	private String name;
@@ -13,7 +11,7 @@ public class TileDefinition
 	private float frameTime;
 	private CollisionMask mask;
 
-	public TileDefinition()
+	public Tile()
 	{
 		this.name = "Unnamed";
 		this.frameTime = 0.2f;

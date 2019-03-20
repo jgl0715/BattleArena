@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import battlearena.editor.CollisionMask;
-import battlearena.common.tile.TileDefinition;
+import battlearena.common.tile.CollisionMask;
+import battlearena.common.tile.Tile;
 import battlearena.common.tile.Tileset;
 
 public class TilesetExporter
@@ -92,7 +92,7 @@ public class TilesetExporter
             while(definitionNames.hasNext())
             {
                 String defName = definitionNames.next();
-                TileDefinition def = toExport.getDefinition(defName);
+                Tile def = toExport.getDefinition(defName);
                 CollisionMask mask = def.getMask();
                 List<Integer> animFrames = def.getAnimFrames();
 

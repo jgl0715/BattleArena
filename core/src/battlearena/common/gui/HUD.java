@@ -45,6 +45,10 @@ public abstract class HUD
         return skin;
     }
 
+    public OrthographicCamera getCamera() {
+        return camera;
+    }
+
     public Stage getUI()
     {
         return ui;

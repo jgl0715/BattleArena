@@ -4,19 +4,26 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
+import battlearena.common.tile.Tile;
+
 public class TileImage extends Image
 {
 
-	private battlearena.common.tile.TileDefinition def;
+	private Tile def;
 	private battlearena.common.tile.Tileset tileset;
 	private int currentFrame;
 	private float timeSinceFrameSwitch;
 
-	public TileImage(battlearena.common.tile.TileDefinition def, battlearena.common.tile.Tileset tileset)
-	{
+	public TileImage(Tile def, battlearena.common.tile.Tileset tileset) {
 		this.def = def;
 		this.tileset = tileset;
 		this.currentFrame = 0;
+
+		if (def.getAnimFrames().size() > 0)
+		{
+			TextureRegion frame = tileset.getTileRegionForId(def.getAnimationFrame(0));
+			setDrawable(new TextureRegionDrawable(frame));
+		}
 	}
 	
 	public void act(float delta)

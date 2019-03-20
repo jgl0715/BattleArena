@@ -1,13 +1,14 @@
 package battlearena.editor.view;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
 import battlearena.common.gui.HUD;
-import battlearena.common.tile.TileDefinition;
+import battlearena.common.tile.Tile;
 import battlearena.common.tile.Tileset;
 import battlearena.editor.TileImage;
 
@@ -28,6 +29,11 @@ public class HUDTilesetEditor extends HUD
 
     // Right menu for tile definitions
     public TextField fieldTilesetName;
+    public Label labelWidth;
+    public Label labelHeight;
+    public TextField fieldWidth;
+    public TextField fieldHeight;
+    private ScrollPane scrollPaneDefinitions;
     public Table tableDefinitions;
     public TextField tilesetNameLabel;
     public Label tileDefPaneLabel;
@@ -61,9 +67,7 @@ public class HUDTilesetEditor extends HUD
             tableBottomLeft.add(buttonGrid).width(50);
             tableBottomLeft.add(buttonExportTileset).width(50);
             tableBottomLeft.add(buttonImportTileset).width(50);
-
         }
-
 
         Table tileDefPane = new Table();
         tileDefPane.setFillParent(true);
@@ -71,14 +75,26 @@ public class HUDTilesetEditor extends HUD
         tileDefPane.pad(5);
         {
             Table tableNameRow = new Table();
+            Table tableWidthHeightRow = new Table();
             Table tableHeaderRow = new Table();
             Table buttonsRow = new Table();
             tableDefinitions = new Table();
+            scrollPaneDefinitions = new ScrollPane(tableDefinitions, skin);
 
             fieldTilesetName = new TextField("", skin);
             tileDefPaneLabel = new Label("Tile Definitions", skin);
             addTileDefButton = new TextButton("+", skin);
             deleteTileDefButton = new TextButton("-", skin);
+
+            labelWidth = new Label("Width", skin);
+            labelHeight = new Label("Height", skin);
+            fieldWidth = new TextField("", skin);
+            fieldHeight = new TextField("", skin);
+
+            tableWidthHeightRow.add(labelWidth).width(50);
+            tableWidthHeightRow.add(fieldWidth).width(50).padRight(5);
+            tableWidthHeightRow.add(labelHeight).width(50);
+            tableWidthHeightRow.add(fieldHeight).width(45);
 
             tableNameRow.add(fieldTilesetName).width(200);
 
@@ -87,8 +103,11 @@ public class HUDTilesetEditor extends HUD
             tableHeaderRow.add(deleteTileDefButton).width(50).row();
 
             tileDefPane.add(tableNameRow).row();
+            tileDefPane.add(tableWidthHeightRow).row();
             tileDefPane.add(tableHeaderRow).row();
-            tileDefPane.add(tableDefinitions).row();
+            tileDefPane.add(scrollPaneDefinitions).row();
+
+            scrollPaneDefinitions.setFadeScrollBars(false);
         }
 
         ui.addActor(tableBottomLeft);
@@ -96,7 +115,7 @@ public class HUDTilesetEditor extends HUD
         ui.addActor(tileDefPane);
     }
 
-    public void showTile(Tileset tileset, TileDefinition def)
+    public void showTile(Tileset tileset, Tile def)
     {
         editTilePane.clear();
 

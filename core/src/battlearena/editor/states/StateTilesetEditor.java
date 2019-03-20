@@ -19,16 +19,14 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 
-import battlearena.editor.CollisionMask;
-import battlearena.common.tile.TileDefinition;
+import battlearena.common.tile.CollisionMask;
+import battlearena.common.tile.Tile;
 import battlearena.editor.TileImage;
 import battlearena.common.tile.Tileset;
 import battlearena.common.file.TilesetExporter;
@@ -44,8 +42,8 @@ public class StateTilesetEditor extends battlearena.common.states.State
 
 	// Model information
 	private Tileset tileset;
-	private Map<TileDefinition, Table> defEntries;
-	private TileDefinition definitionSelected;
+	private Map<Tile, Table> defEntries;
+	private Tile definitionSelected;
 	private TilesetExporter exporter;
 
 	private float originX;
@@ -89,7 +87,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 		selectTileDefinition(tileset.getDefinition(tileset.getDefinitionNameItr().next()));
 	}
 
-	public void selectTileDefinition(final TileDefinition def)
+	public void selectTileDefinition(final Tile def)
 	{
 		definitionSelected = def;
 
@@ -124,9 +122,9 @@ public class StateTilesetEditor extends battlearena.common.states.State
 		exporter.setDestination("output/" + tileset.getName() + ".ts");
 	}
 
-	public TileDefinition addNewTileDefinition()
+	public Tile addNewTileDefinition()
 	{
-		final TileDefinition def = new TileDefinition();
+		final Tile def = new Tile();
 		Skin uiSkin = WorldEditor.I.getUiSkin();
 
 		final Table entryTable = new Table();
@@ -169,7 +167,6 @@ public class StateTilesetEditor extends battlearena.common.states.State
 			public void keyTyped(TextField textField, char c)
 			{
 				String fullText = nameLabel.getText();
-				System.out.println(tileset.getDefinition(fullText));
 				if(tileset.nameTaken(fullText) && tileset.getDefinition(fullText) != def)
 				{
 					validName = false;
@@ -230,7 +227,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 		return def;
 	}
 
-	public void removeTileDefinition(TileDefinition def)
+	public void removeTileDefinition(Tile def)
 	{
 		Table entry = defEntries.get(def);
 
@@ -256,10 +253,32 @@ public class StateTilesetEditor extends battlearena.common.states.State
 		}
 		else
 		{
+			setTileset((Tileset) transitionInput);
+
 			final Stage uiScene = WorldEditor.I.getUiScene();
-			defEntries = new HashMap<TileDefinition, Table>();
+			defEntries = new HashMap<Tile, Table>();
 
 			WorldEditor.I.getRootComponent().clear();
+
+			hudTilesetEditor.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+			hudTilesetEditor.fieldWidth.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
+			hudTilesetEditor.fieldHeight.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
+			hudTilesetEditor.fieldWidth.setText(Integer.toString(tileset.getWidth()));
+			hudTilesetEditor.fieldHeight.setText(Integer.toString(tileset.getHeight()));
+
+			hudTilesetEditor.fieldWidth.setTextFieldListener(new TextField.TextFieldListener() {
+				@Override
+				public void keyTyped(TextField textField, char c) {
+					tileset.setWidth(Integer.parseInt(textField.getText()));
+				}
+			});
+			hudTilesetEditor.fieldHeight.setTextFieldListener(new TextField.TextFieldListener() {
+				@Override
+				public void keyTyped(TextField textField, char c) {
+					tileset.setHeight(Integer.parseInt(textField.getText()));
+				}
+			});
 
 			hudTilesetEditor.buttonGrid.addListener(new ClickListener()
 			{
@@ -294,8 +313,8 @@ public class StateTilesetEditor extends battlearena.common.states.State
 				@Override
 				public void keyboardFocusChanged(FocusEvent event, Actor actor, boolean focused) {
 					super.keyboardFocusChanged(event, actor, focused);
-					if(focused)
-						disableMovement  =true;
+
+					disableMovement = focused;
 				}
 			});
 
@@ -330,7 +349,6 @@ public class StateTilesetEditor extends battlearena.common.states.State
 				}
 			});
 
-			setTileset((Tileset) transitionInput);
 			hudTilesetEditor.fieldTilesetName.setText(tileset.getName());
 
 			// Add blank tile definition if there aren't any
@@ -363,7 +381,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 
 					if(definitionSelected != null)
 					{
-						TileDefinition def = tileset.getDefinition(definitionSelected.getName());
+						Tile def = tileset.getDefinition(definitionSelected.getName());
 
 						if(mtx >= 0 && mty >= 0 && mtx < tileset.getWidth() && mty < tileset.getHeight())
 						{
@@ -383,7 +401,6 @@ public class StateTilesetEditor extends battlearena.common.states.State
 
 					if(validName)
 					{
-						System.out.println("test");
 						hudTilesetEditor.getUI().setKeyboardFocus(null);
 					}
 
@@ -471,15 +488,15 @@ public class StateTilesetEditor extends battlearena.common.states.State
 		{
 		}
 
-		if (camera.position.x>= Gdx.graphics.getWidth() / 2 * camera.zoom)
-			camera.position.x = Gdx.graphics.getWidth() / 2 * camera.zoom;
-		if (camera.position.x<= -Gdx.graphics.getWidth() / 2 * camera.zoom)
-			camera.position.x = -Gdx.graphics.getWidth() / 2 * camera.zoom;
+		if (camera.position.x >= WorldEditor.I.VIRTUAL_WIDTH / 2 * camera.zoom)
+			camera.position.x = WorldEditor.I.VIRTUAL_WIDTH / 2 * camera.zoom;
+		if (camera.position.x <= -WorldEditor.I.VIRTUAL_WIDTH / 2 * camera.zoom)
+			camera.position.x = -WorldEditor.I.VIRTUAL_WIDTH / 2 * camera.zoom;
 
-		if (camera.position.y>= Gdx.graphics.getHeight() / 2 * camera.zoom)
-			camera.position.y = Gdx.graphics.getHeight() / 2 * camera.zoom;
-		if (camera.position.y<= -Gdx.graphics.getHeight() / 2 * camera.zoom)
-			camera.position.y = -Gdx.graphics.getHeight() / 2 * camera.zoom;
+		if (camera.position.y >= WorldEditor.I.VIRTUAL_HEIGHT / 2 * camera.zoom)
+			camera.position.y = WorldEditor.I.VIRTUAL_HEIGHT / 2 * camera.zoom;
+		if (camera.position.y <= -WorldEditor.I.VIRTUAL_HEIGHT / 2 * camera.zoom)
+			camera.position.y = -WorldEditor.I.VIRTUAL_HEIGHT / 2 * camera.zoom;
 
 
 		// Check if attempting to move tile definition vertices.
@@ -487,21 +504,23 @@ public class StateTilesetEditor extends battlearena.common.states.State
 		if(definitionSelected != null)
 		{
 			CollisionMask mask = definitionSelected.getMask();
+
 			int verts = mask.getVertexCount();
 
 			if (verts > 0)
 			{
 				int mouseX = Gdx.input.getX();
-				int mouseY = Gdx.graphics.getHeight()-Gdx.input.getY()-1;
+				int mouseY = Gdx.input.getY();
+
+				Vector3 worldCoords = hudTilesetEditor.getCamera().unproject(new Vector3(mouseX, mouseY, 0));
 
 				if(editingVert >= 0)
 				{
 					float scale = tileset.getTileWidth() / 100.0f;
 
-
 					if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
 					{
-						Vector2 toLocal = hudTilesetEditor.paneTileImage.stageToLocalCoordinates(new Vector2(mouseX, mouseY)).scl(scale);
+						Vector2 toLocal = hudTilesetEditor.paneTileImage.stageToLocalCoordinates(new Vector2(worldCoords.x, worldCoords.y)).scl(scale);
 
 						if(toLocal.x < 0)
 							toLocal.x = 0;
@@ -529,12 +548,11 @@ public class StateTilesetEditor extends battlearena.common.states.State
 					{
 						Vector2 vert = mask.getVertex(i);
 						Vector2 toStage = hudTilesetEditor.paneTileImage.localToStageCoordinates(new Vector2(vert.x * scale, vert.y * scale));
-						float dx = toStage.x - mouseX;
-						float dy = toStage.y - mouseY;
+						float dx = toStage.x - worldCoords.x;
+						float dy = toStage.y - worldCoords.y;
 
-						if(dx*dx+dy*dy <= rad)
-						{							System.out.println("hello");
-
+						if(dx*dx+dy*dy <= rad*rad)
+						{
 							if(Gdx.input.isButtonPressed(Input.Buttons.LEFT))
 							{
 								editingVert = i;
@@ -547,11 +565,6 @@ public class StateTilesetEditor extends battlearena.common.states.State
 		}
 
 		camera.update();
-	}
-
-	public Vector2[] getMaskVerticesStage()
-	{
-		return null;
 	}
 
 	public int getMouseTileX()
@@ -640,7 +653,9 @@ public class StateTilesetEditor extends battlearena.common.states.State
 		// Render the box around the selected tile definition
 		if(deleteMode)
 			sr.setColor(Color.RED);
-		elsegffg
+		else
+			sr.setColor(Color.BLUE);
+
 		sr.begin(ShapeType.Line);
 		if (hudTilesetEditor.entryHovered != null)
 		{
@@ -662,21 +677,27 @@ public class StateTilesetEditor extends battlearena.common.states.State
 				if (verts > 0)
 				{
 					sr.begin(ShapeRenderer.ShapeType.Line);
-					sr.setColor(Color.GREEN);
-					float[] vertsAsArray = new float[verts * 2];
+
+					if(mask.isConvex())
+						sr.setColor(Color.RED);
+					else
+						sr.setColor(Color.GREEN);
 
 					for (int i = 0; i < verts; i++)
 					{
 						Vector2 vert = mask.getVertex(i);
+						Vector2 nextVert = mask.getVertex((i + 1) % mask.getVertexCount());
 						Vector2 toStage = hudTilesetEditor.paneTileImage.localToStageCoordinates(new Vector2(vert.x * scale, vert.y * scale));
+						Vector2 nextVertToStage = hudTilesetEditor.paneTileImage.localToStageCoordinates(new Vector2(nextVert.x * scale, nextVert.y * scale));
+
+						Vector2 dir = nextVert.cpy().sub(vert).nor().scl(5);
+						Vector2 start = toStage.cpy().add(dir);
+						Vector2 end = nextVertToStage.cpy().sub(dir);
 
 						sr.circle(toStage.x, toStage.y, 5);
 
-						vertsAsArray[2 * i + 0] = toStage.x;
-						vertsAsArray[2 * i + 1] = toStage.y;
+						sr.line(start.x, start.y, end.x, end.y);
 					}
-
-					sr.polygon(vertsAsArray);
 
 					sr.end();
 				}
