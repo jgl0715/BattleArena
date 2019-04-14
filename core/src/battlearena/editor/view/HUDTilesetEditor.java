@@ -44,10 +44,6 @@ public class HUDTilesetEditor extends HUD
     public HUDTilesetEditor(Skin skin)
     {
         super(skin);
-    }
-
-    @Override
-    public void create() {
 
         editTilePane = new Table();
         editTilePane.setFillParent(true);
@@ -135,9 +131,4 @@ public class HUDTilesetEditor extends HUD
         }
     }
 
-    public void render()
-    {
-        ui.act();
-        ui.draw();
-    }
 }

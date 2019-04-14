@@ -59,6 +59,12 @@ public abstract class HUD
         viewport.update(width, height);
     }
 
+    public void render()
+    {
+        ui.act(Gdx.graphics.getDeltaTime());
+        ui.draw();
+    }
+
     public abstract void create();
 
 

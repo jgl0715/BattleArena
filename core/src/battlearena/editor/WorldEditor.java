@@ -191,7 +191,7 @@ public class WorldEditor extends ApplicationAdapter
 
 		Gdx.input.setInputProcessor(uiScene);
 
-		inputToFSA(TRANSITION_EDIT_TILESET, new battlearena.common.tile.Tileset("test", "C:\\Users\\fores\\Desktop\\Tile_Overworld.png", 8, 8));
+		//inputToFSA(TRANSITION_EDIT_TILESET, new battlearena.common.tile.Tileset("test", "C:\\Users\\fores\\Desktop\\Tile_Overworld.png", 8, 8));
 
 	}
 

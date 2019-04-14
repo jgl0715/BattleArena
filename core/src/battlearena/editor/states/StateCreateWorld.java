@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
 import battlearena.editor.WorldEditor;
+import battlearena.editor.view.HUDCreateWorld;
 
 public class StateCreateWorld extends battlearena.common.states.State
 {
@@ -13,14 +14,9 @@ public class StateCreateWorld extends battlearena.common.states.State
 	// World name
 	// World width and height
 	// World tileset
-	
-	private Label nameLabel;
-	private TextField nameField;
-	private Label widthLabel;
-	private TextField widthField;
-	private Label heightLabel;
-	private TextField heightField;
-	
+
+	private HUDCreateWorld hudCreateWorld;
+
 	public StateCreateWorld()
 	{
 		super("Create World");
@@ -29,7 +25,8 @@ public class StateCreateWorld extends battlearena.common.states.State
 	@Override
 	public void create()
 	{
-
+		hudCreateWorld = new HUDCreateWorld(WorldEditor.I.getUiSkin());
+		hudCreateWorld.create();
 	}
 
 	@Override
@@ -41,20 +38,13 @@ public class StateCreateWorld extends battlearena.common.states.State
 	@Override
 	public void resized(int width, int height)
 	{
-
+		hudCreateWorld.resize(width, height);
 	}
 
 	@Override
 	public void show(Object transitionInput)
 	{
-		Table root = WorldEditor.I.getRootComponent();
-		Skin uiSkin = WorldEditor.I.getUiSkin();
-		root.clear();
-		root.defaults().pad(5);
-		root.center();
-		{
-			
-		}
+
 	}
 
 	@Override
@@ -66,7 +56,7 @@ public class StateCreateWorld extends battlearena.common.states.State
 	@Override
 	public void update(float delta)
 	{
-
+		
 	}
 
 	@Override
@@ -80,6 +70,8 @@ public class StateCreateWorld extends battlearena.common.states.State
 	public void postUiRender()
 	{
 		// TODO Auto-generated method stub
+
+		hudCreateWorld.render();
 		
 	}
 

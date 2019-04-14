@@ -67,7 +67,6 @@ public class StateTilesetEditor extends battlearena.common.states.State
 		exporter = new TilesetExporter(null, "");
 
 		hudTilesetEditor = new HUDTilesetEditor(WorldEditor.I.getUiSkin());
-		hudTilesetEditor.create();
 	}
 
 	@Override
@@ -323,6 +322,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 				public boolean acceptChar(TextField textField, char c) {
 					tileset.setName(hudTilesetEditor.fieldTilesetName.getText()+c);
 					exporter.setDestination("output/" + tileset.getName() + ".ts");
+					System.out.println("output/" + tileset.getName() + ".ts");
 					return true;
 				}
 			});
