@@ -33,7 +33,7 @@ public class TilesetImporter
             int width = inputStream.readInt();
             int height = inputStream.readInt();
             int tileCount = inputStream.readInt();
-            Pixmap pixelData = new Pixmap()
+            Pixmap pixelData = new Pixmap();
 
 
         } catch(IOException e)
