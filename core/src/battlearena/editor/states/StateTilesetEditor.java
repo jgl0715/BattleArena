@@ -1,6 +1,7 @@
 package battlearena.editor.states;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +20,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -121,28 +123,13 @@ public class StateTilesetEditor extends battlearena.common.states.State
 		exporter.setDestination("output/" + tileset.getName() + ".ts");
 	}
 
-	public Tile addNewTileDefinition()
+	public void addTileDefinition(final Tile tile, boolean viewOnly)
 	{
-		final Tile def = new Tile();
-		Skin uiSkin = WorldEditor.I.getUiSkin();
-
-		final Table entryTable = new Table();
-		TileImage image = new TileImage(def, tileset);
-		final TextField nameLabel = new TextField(def.getName(), uiSkin);
-
-		int unnamedIndex = 1;
-		String name = "Unnamed_" + unnamedIndex;
-		while(tileset.nameTaken(name))
-		{
-			unnamedIndex++;
-			name = "Unnamed_" + unnamedIndex;
-		}
-		nameLabel.setText(name);
-		def.setName(name);
-		def.getMask().makeBox(tileset.getTileWidth(), tileset.getTileHeight());
+		final Table entryTable = hudTilesetEditor.addTile(tileset, tile);
+		final TextField nameField = (TextField) entryTable.getCells().get(1).getActor();
 
 		// This stops input from being interpreted if the user is typing a name for the tile definition.
-		nameLabel.addListener(new FocusListener()
+		nameField.addListener(new FocusListener()
 		{
 			@Override
 			public void keyboardFocusChanged(FocusEvent event, Actor actor, boolean focused)
@@ -153,27 +140,27 @@ public class StateTilesetEditor extends battlearena.common.states.State
 
 				// Save name on focus change.
 				if(!focused)
-					tileset.updateTileName(nameLabel.getText(), def);
+					tileset.updateTileName(nameField.getText(), tile);
 
 			}
 		});
 
 		validName = true;
 
-		nameLabel.setTextFieldListener(new TextField.TextFieldListener()
+		nameField.setTextFieldListener(new TextField.TextFieldListener()
 		{
 			@Override
 			public void keyTyped(TextField textField, char c)
 			{
-				String fullText = nameLabel.getText();
-				if(tileset.nameTaken(fullText) && tileset.getTile(fullText) != def)
+				String fullText = nameField.getText();
+				if(tileset.nameTaken(fullText) && tileset.getTile(fullText) != tile)
 				{
 					validName = false;
-					nameLabel.setColor(Color.RED);
+					nameField.setColor(Color.RED);
 				}else
 				{
 					validName = true;
-					nameLabel.setColor(Color.WHITE);
+					nameField.setColor(Color.WHITE);
 				}
 			}
 		});
@@ -187,11 +174,11 @@ public class StateTilesetEditor extends battlearena.common.states.State
 
 				if(deleteMode)
 				{
-					removeTileDefinition(def);
+					removeTileDefinition(tile);
 					deleteMode = false;
 				}else
 				{
-					selectTileDefinition(def);
+					selectTileDefinition(tile);
 				}
 
 			}
@@ -213,15 +200,33 @@ public class StateTilesetEditor extends battlearena.common.states.State
 			}
 		});
 
-		entryTable.add(image).width(20).height(20).expand().fill();
-		entryTable.add(nameLabel).width(180);
-		hudTilesetEditor.tableDefinitions.add(entryTable).row();
+		defEntries.put(tile, entryTable);
 
-		defEntries.put(def, entryTable);
+		if(!viewOnly)
+		{
+			tileset.addTile(tile);
+		}
 
-		tileset.addTile(def);
+		selectTileDefinition(tile);
+	}
 
-		selectTileDefinition(def);
+
+	public Tile addNewTileDefinition()
+	{
+		final Tile def = new Tile();
+
+		int unnamedIndex = 1;
+		String name = "Unnamed_" + unnamedIndex;
+		while(tileset.nameTaken(name))
+		{
+			unnamedIndex++;
+			name = "Unnamed_" + unnamedIndex;
+		}
+
+		def.setName(name);
+		def.getMask().makeBox(tileset.getTileWidth(), tileset.getTileHeight());
+
+		addTileDefinition(def, false);
 
 		return def;
 	}
@@ -252,9 +257,18 @@ public class StateTilesetEditor extends battlearena.common.states.State
 		}
 		else
 		{
-			setTileset((Tileset) transitionInput);
+			Tileset inputSet = (Tileset) transitionInput;
+			setTileset(inputSet);
 
 			defEntries = new HashMap<Tile, Table>();
+
+			// Add all existing tiles to the definitions view pane.
+			Iterator<String> tileNameItr =inputSet.getTileNameIterator();
+			while(tileNameItr.hasNext())
+			{
+				String nextTile = tileNameItr.next();
+				addTileDefinition(inputSet.getTile(nextTile), true);
+			}
 
 			hudTilesetEditor.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 

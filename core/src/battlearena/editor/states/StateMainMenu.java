@@ -6,6 +6,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+import javax.swing.JFileChooser;
+
+import battlearena.common.file.TilesetImporter;
+import battlearena.common.tile.Tileset;
 import battlearena.editor.WorldEditor;
 import battlearena.editor.view.HUDMainMenu;
 
@@ -43,6 +47,7 @@ public class StateMainMenu extends battlearena.common.states.State
 			{
 				super.clicked(event, x, y);
 
+
 				WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_LOAD_WORLD);
 			}
 		});
@@ -65,7 +70,19 @@ public class StateMainMenu extends battlearena.common.states.State
 			{
 				super.clicked(event, x, y);
 
-				WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_LOAD_TILESET);
+				JFileChooser chooser = new JFileChooser();
+				int res = chooser.showOpenDialog(null);
+				Tileset result = null;
+				if (res == JFileChooser.APPROVE_OPTION)
+				{
+					TilesetImporter importer = new TilesetImporter(chooser.getSelectedFile().getAbsolutePath());
+					result = importer.imp();
+				}
+
+				if(result != null)
+				{
+					WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_EDIT_TILESET, result);
+				}
 			}
 		});
 

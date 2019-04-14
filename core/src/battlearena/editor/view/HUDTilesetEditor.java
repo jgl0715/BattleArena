@@ -1,11 +1,15 @@
 package battlearena.editor.view;
 
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
+
+import java.awt.event.FocusEvent;
 
 import battlearena.common.gui.HUD;
 import battlearena.common.tile.Tile;
@@ -109,6 +113,21 @@ public class HUDTilesetEditor extends HUD
         ui.addActor(tableBottomLeft);
         ui.addActor(editTilePane);
         ui.addActor(tileDefPane);
+    }
+
+    public Table addTile(Tileset set, Tile tile)
+    {
+        final Table entryTable = new Table();
+        TileImage image = new TileImage(tile, set);
+        final TextField nameField = new TextField(tile.getName(), skin);
+
+        nameField.setText(tile.getName());
+
+        entryTable.add(image).width(20).height(20).expand().fill();
+        entryTable.add(nameField).width(180);
+        tableDefinitions.add(entryTable).row();
+
+        return entryTable;
     }
 
     public void showTile(Tileset tileset, Tile def)
