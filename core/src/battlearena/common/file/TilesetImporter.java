@@ -19,7 +19,16 @@ public class TilesetImporter
 
     private FileHandle importFile;
 
+    public TilesetImporter()
+    {
+    }
+
     public TilesetImporter(String src)
+    {
+        importFile = Gdx.files.absolute(src);
+    }
+
+    public void setImportLocation(String src)
     {
         importFile = Gdx.files.absolute(src);
     }

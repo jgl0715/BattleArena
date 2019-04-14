@@ -39,7 +39,6 @@ public class HUDTilesetEditor extends HUD
     public TextField fieldHeight;
     private ScrollPane scrollPaneDefinitions;
     public Table tableDefinitions;
-    public TextField tilesetNameLabel;
     public Label tileDefPaneLabel;
     public TextButton addTileDefButton;
     public TextButton deleteTileDefButton;

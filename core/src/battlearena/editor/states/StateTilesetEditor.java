@@ -96,8 +96,6 @@ public class StateTilesetEditor extends battlearena.common.states.State
 		hudTilesetEditor.showTile(tileset, def);
 
 		// Setup UI handling.
-		hudTilesetEditor.fieldFrameTime.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
-
 		hudTilesetEditor.fieldFrameTime.setTextFieldListener(new TextField.TextFieldListener()
 		{
 			@Override
@@ -262,15 +260,9 @@ public class StateTilesetEditor extends battlearena.common.states.State
 
 			defEntries = new HashMap<Tile, Table>();
 
-			// Add all existing tiles to the definitions view pane.
-			Iterator<String> tileNameItr =inputSet.getTileNameIterator();
-			while(tileNameItr.hasNext())
-			{
-				String nextTile = tileNameItr.next();
-				addTileDefinition(inputSet.getTile(nextTile), true);
-			}
-
 			hudTilesetEditor.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+			hudTilesetEditor.fieldFrameTime.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
 
 			hudTilesetEditor.fieldWidth.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
 			hudTilesetEditor.fieldHeight.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
@@ -364,6 +356,15 @@ public class StateTilesetEditor extends battlearena.common.states.State
 			if (tileset.getTileCount() < 1)
 			{
 				addNewTileDefinition();
+			}else
+			{
+				// Add all existing tiles to the definitions view pane.
+				Iterator<String> tileNameItr =inputSet.getTileNameIterator();
+				while(tileNameItr.hasNext())
+				{
+					String nextTile = tileNameItr.next();
+					addTileDefinition(inputSet.getTile(nextTile), true);
+				}
 			}
 
 			InputMultiplexer muxer = new InputMultiplexer(new InputProcessor()
@@ -593,7 +594,8 @@ public class StateTilesetEditor extends battlearena.common.states.State
 	}
 
 	@Override
-	public void render() {
+	public void render()
+	{
 		SpriteBatch batch = WorldEditor.I.getBatch();
 		ShapeRenderer sr = WorldEditor.I.getShapeRenderer();
 

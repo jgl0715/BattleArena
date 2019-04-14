@@ -47,8 +47,6 @@ public class StateMainMenu extends battlearena.common.states.State
 			{
 				super.clicked(event, x, y);
 
-
-				WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_LOAD_WORLD);
 			}
 		});
 
