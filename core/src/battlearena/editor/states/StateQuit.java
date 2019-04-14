@@ -47,15 +47,10 @@ public class StateQuit extends battlearena.common.states.State
 	}
 
 	@Override
-	public void preUiRender()
+	public void render()
 	{
 		
 	}
 
-	@Override
-	public void postUiRender()
-	{
-		
-	}
 
 }

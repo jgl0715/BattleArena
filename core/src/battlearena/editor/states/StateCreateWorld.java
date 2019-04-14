@@ -26,7 +26,6 @@ public class StateCreateWorld extends battlearena.common.states.State
 	public void create()
 	{
 		hudCreateWorld = new HUDCreateWorld(WorldEditor.I.getUiSkin());
-		hudCreateWorld.create();
 	}
 
 	@Override
@@ -44,7 +43,7 @@ public class StateCreateWorld extends battlearena.common.states.State
 	@Override
 	public void show(Object transitionInput)
 	{
-
+		hudCreateWorld.setAsInput();
 	}
 
 	@Override
@@ -60,19 +59,9 @@ public class StateCreateWorld extends battlearena.common.states.State
 	}
 
 	@Override
-	public void preUiRender()
+	public void render()
 	{
-		// TODO Auto-generated method stub
-		
-	}
 
-	@Override
-	public void postUiRender()
-	{
-		// TODO Auto-generated method stub
-
-		hudCreateWorld.render();
-		
 	}
 
 }

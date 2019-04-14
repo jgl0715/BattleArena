@@ -43,7 +43,7 @@ public class TilesetExporter
         exportLocation = Gdx.files.local(d);
     }
 
-    public void export()
+    public void exp()
     {
         if(!exportLocation.parent().exists())
             exportLocation.parent().mkdirs();
@@ -61,7 +61,7 @@ public class TilesetExporter
             outputStream.writeInt(toExport.getTilesheetHeight());
             outputStream.writeInt(toExport.getWidth());
             outputStream.writeInt(toExport.getHeight());
-            outputStream.writeInt(toExport.getDefinitionCount());
+            outputStream.writeInt(toExport.getTileCount());
 
             // Tilesheet image exported as raw bitmap into destination file
             // Get the pixmap for the tilesheet to individual pixels can be read.
@@ -88,15 +88,15 @@ public class TilesetExporter
             }
 
             // Output file definitions.
-            Iterator<String> definitionNames = toExport.getDefinitionNameIterator();
-            while(definitionNames.hasNext())
+            Iterator<String> tileNames = toExport.getTileNameIterator();
+            while(tileNames.hasNext())
             {
-                String defName = definitionNames.next();
-                Tile def = toExport.getDefinition(defName);
-                CollisionMask mask = def.getMask();
-                List<Integer> animFrames = def.getAnimFrames();
+                String tileName = tileNames.next();
+                Tile tile = toExport.getTile(tileName);
+                CollisionMask mask = tile.getMask();
+                List<Integer> animFrames = tile.getAnimFrames();
 
-                outputStream.writeUTF(def.getName());
+                outputStream.writeUTF(tile.getName());
                 outputStream.writeByte(mask.getVertexCount());
 
                 // Output vertex (x,y) information.
@@ -108,7 +108,7 @@ public class TilesetExporter
                 }
 
                 // Output frame time for tile animation.
-                outputStream.writeFloat(def.getFrameTime());
+                outputStream.writeFloat(tile.getFrameTime());
 
                 // Output animation frame indices for tile animation.
                 // This limits tile animations to 255 frames (reasonable)

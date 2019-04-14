@@ -33,6 +33,8 @@ public abstract class HUD
         this.skin = skin;
 
         ui = new Stage(viewport);
+
+        ui.addActor(root);
     }
 
     public Table getRoot()
@@ -59,13 +61,14 @@ public abstract class HUD
         viewport.update(width, height);
     }
 
-    public void render()
+    public void setAsInput()
     {
+        Gdx.input.setInputProcessor(ui);
+    }
+
+    public void render() {
         ui.act(Gdx.graphics.getDeltaTime());
         ui.draw();
     }
-
-    public abstract void create();
-
 
 }

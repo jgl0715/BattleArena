@@ -16,8 +16,6 @@ import battlearena.common.gui.HUD;
 import battlearena.common.states.State;
 import battlearena.editor.states.StateCreateTileset;
 import battlearena.editor.states.StateCreateWorld;
-import battlearena.editor.states.StateLoadTileset;
-import battlearena.editor.states.StateLoadWorld;
 import battlearena.common.states.StateMachine;
 import battlearena.editor.states.StateMainMenu;
 import battlearena.editor.states.StateQuit;
@@ -43,9 +41,7 @@ public class WorldEditor extends ApplicationAdapter
 
 	public static final State STATE_MAIN_MENU = new StateMainMenu();
 	public static final State STATE_CREATE_WORLD = new StateCreateWorld();
-	public static final State STATE_LOAD_WORLD = new StateLoadWorld();
 	public static final State STATE_CREATE_TILESET = new StateCreateTileset();
-	public static final State STATE_LOAD_TILESET = new StateLoadTileset();
 	public static final State STATE_WORLD_EDITOR = new StateWorldEditor();
 	public static final State STATE_TILESET_EDITOR = new StateTilesetEditor();
 	public static final State STATE_QUIT = new StateQuit();
@@ -59,8 +55,6 @@ public class WorldEditor extends ApplicationAdapter
 	private OrthographicCamera uiCamera;
 	private Viewport uiViewport;
 	private Skin uiSkin;
-	private Stage uiScene;
-	private Table rootComponent;
 
 	static
 	{
@@ -106,22 +100,6 @@ public class WorldEditor extends ApplicationAdapter
 		return uiBatch;
 	}
 
-	public Stage getUiScene()
-	{
-		return uiScene;
-	}
-
-	public void setHUD(HUD hud)
-	{
-		rootComponent.clear();
-		rootComponent.add(hud.getRoot());
-	}
-
-	public Table getRootComponent()
-	{
-		return rootComponent;
-	}
-
 	public SpriteBatch getBatch()
 	{
 		return batch;
@@ -154,11 +132,7 @@ public class WorldEditor extends ApplicationAdapter
 		uiBatch = new SpriteBatch();
 		uiCamera = new OrthographicCamera(WorldEditor.VIRTUAL_WIDTH, WorldEditor.VIRTUAL_HEIGHT);
 		uiViewport = new StretchViewport(WorldEditor.VIRTUAL_WIDTH, WorldEditor.VIRTUAL_HEIGHT, uiCamera);
-		uiScene = new Stage(uiViewport);
 		uiSkin = new Skin(Gdx.files.internal("skins/ui_editor/skin.json"));
-		rootComponent = new Table(uiSkin);
-		rootComponent.setFillParent(true);
-		uiScene.addActor(rootComponent);
 		uiViewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 		batch = new SpriteBatch();
@@ -170,17 +144,13 @@ public class WorldEditor extends ApplicationAdapter
 		// Register states
 		fsa.registerState(STATE_MAIN_MENU, true);
 		fsa.registerState(STATE_CREATE_WORLD);
-		fsa.registerState(STATE_LOAD_WORLD);
 		fsa.registerState(STATE_CREATE_TILESET);
-		fsa.registerState(STATE_LOAD_TILESET);
 		fsa.registerState(STATE_TILESET_EDITOR);
 		fsa.registerState(STATE_WORLD_EDITOR);
 		fsa.registerState(STATE_QUIT);
 
 		// Register transitions
 		fsa.registerTransition(STATE_MAIN_MENU, STATE_CREATE_WORLD, TRANSITION_CREATE_WORLD);
-		fsa.registerTransition(STATE_MAIN_MENU, STATE_LOAD_TILESET, TRANSITION_LOAD_TILESET);
-		fsa.registerTransition(STATE_MAIN_MENU, STATE_LOAD_WORLD, TRANSITION_LOAD_WORLD);
 		fsa.registerTransition(STATE_MAIN_MENU, STATE_CREATE_WORLD, TRANSITION_CREATE_WORLD);
 		fsa.registerTransition(STATE_MAIN_MENU, STATE_CREATE_TILESET, TRANSITION_CREATE_TILESET);
 		fsa.registerTransition(STATE_MAIN_MENU, STATE_QUIT, TRANSITION_QUIT);
@@ -188,8 +158,6 @@ public class WorldEditor extends ApplicationAdapter
 		fsa.registerTransition(STATE_CREATE_WORLD, STATE_MAIN_MENU, TRANSITION_MAIN_MENU);
 		fsa.registerTransition(STATE_CREATE_TILESET, STATE_MAIN_MENU, TRANSITION_MAIN_MENU);
 		fsa.registerTransition(STATE_CREATE_TILESET, STATE_TILESET_EDITOR, TRANSITION_EDIT_TILESET);
-
-		Gdx.input.setInputProcessor(uiScene);
 
 		//inputToFSA(TRANSITION_EDIT_TILESET, new battlearena.common.tile.Tileset("test", "C:\\Users\\fores\\Desktop\\Tile_Overworld.png", 8, 8));
 
@@ -213,7 +181,6 @@ public class WorldEditor extends ApplicationAdapter
 
 	public void update(float delta)
 	{
-		uiScene.act(delta);
 		fsa.updateCurrent(Gdx.graphics.getDeltaTime());
 	}
 
@@ -235,10 +202,7 @@ public class WorldEditor extends ApplicationAdapter
 		shapeRenderer.setProjectionMatrix(camera.projection);
 		shapeRenderer.setTransformMatrix(camera.view);
 
-		fsa.preUiRenderCurrent();
-		uiScene.draw();
-		fsa.postUiRenderCurrent();
-
+		fsa.renderCurrent();
 	}
 
 }

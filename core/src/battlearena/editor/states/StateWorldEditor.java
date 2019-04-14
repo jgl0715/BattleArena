@@ -1,7 +1,12 @@
 package battlearena.editor.states;
 
+import battlearena.editor.WorldEditor;
+import battlearena.editor.view.HUDWorldEditor;
+
 public class StateWorldEditor extends battlearena.common.states.State
 {
+
+	private HUDWorldEditor hudWorldEditor;
 
 	public StateWorldEditor()
 	{
@@ -11,7 +16,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 	@Override
 	public void create()
 	{
-		
+		hudWorldEditor = new HUDWorldEditor(WorldEditor.I.getUiSkin());
 	}
 
 	@Override
@@ -29,7 +34,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 	@Override
 	public void show(Object transitionInput)
 	{
-		
+		hudWorldEditor.setAsInput();
 	}
 
 	@Override
@@ -45,15 +50,10 @@ public class StateWorldEditor extends battlearena.common.states.State
 	}
 
 	@Override
-	public void preUiRender()
+	public void render()
 	{
 		
 	}
 
-	@Override
-	public void postUiRender()
-	{
-		
-	}
 
 }

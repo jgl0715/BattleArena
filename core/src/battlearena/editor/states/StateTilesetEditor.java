@@ -83,7 +83,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 
 	public void selectFirstTileDefinition()
 	{
-		selectTileDefinition(tileset.getDefinition(tileset.getDefinitionNameItr().next()));
+		selectTileDefinition(tileset.getTile(tileset.getTileNameIterator().next()));
 	}
 
 	public void selectTileDefinition(final Tile def)
@@ -153,7 +153,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 
 				// Save name on focus change.
 				if(!focused)
-					tileset.updateTileDefinitionName(nameLabel.getText(), def);
+					tileset.updateTileName(nameLabel.getText(), def);
 
 			}
 		});
@@ -166,7 +166,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 			public void keyTyped(TextField textField, char c)
 			{
 				String fullText = nameLabel.getText();
-				if(tileset.nameTaken(fullText) && tileset.getDefinition(fullText) != def)
+				if(tileset.nameTaken(fullText) && tileset.getTile(fullText) != def)
 				{
 					validName = false;
 					nameLabel.setColor(Color.RED);
@@ -219,7 +219,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 
 		defEntries.put(def, entryTable);
 
-		tileset.addDefinition(def);
+		tileset.addTile(def);
 
 		selectTileDefinition(def);
 
@@ -232,11 +232,11 @@ public class StateTilesetEditor extends battlearena.common.states.State
 
 		entry.remove();
 
-		tileset.removeDefinition(def);
+		tileset.removeTile(def);
 
 		if(definitionSelected == def)
 		{
-			if(tileset.getDefinitionCount() > 0)
+			if(tileset.getTileCount() > 0)
 				selectFirstTileDefinition();
 			else
 				selectTileDefinition(null);
@@ -254,10 +254,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 		{
 			setTileset((Tileset) transitionInput);
 
-			final Stage uiScene = WorldEditor.I.getUiScene();
 			defEntries = new HashMap<Tile, Table>();
-
-			WorldEditor.I.getRootComponent().clear();
 
 			hudTilesetEditor.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -296,7 +293,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 					super.clicked(event, x, y);
 
 					// Flush the tileset through the exporter.
-					exporter.export();
+					exporter.exp();
 				}
 			});
 
@@ -317,13 +314,11 @@ public class StateTilesetEditor extends battlearena.common.states.State
 				}
 			});
 
-			hudTilesetEditor.fieldTilesetName.setTextFieldFilter(new TextField.TextFieldFilter() {
+			hudTilesetEditor.fieldTilesetName.setTextFieldListener(new TextField.TextFieldListener(){
 				@Override
-				public boolean acceptChar(TextField textField, char c) {
-					tileset.setName(hudTilesetEditor.fieldTilesetName.getText()+c);
+				public void keyTyped(TextField textField, char c) {
+					tileset.setName(hudTilesetEditor.fieldTilesetName.getText());
 					exporter.setDestination("output/" + tileset.getName() + ".ts");
-					System.out.println("output/" + tileset.getName() + ".ts");
-					return true;
 				}
 			});
 
@@ -352,7 +347,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 			hudTilesetEditor.fieldTilesetName.setText(tileset.getName());
 
 			// Add blank tile definition if there aren't any
-			if (tileset.getDefinitionCount() < 1)
+			if (tileset.getTileCount() < 1)
 			{
 				addNewTileDefinition();
 			}
@@ -381,7 +376,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 
 					if(definitionSelected != null)
 					{
-						Tile def = tileset.getDefinition(definitionSelected.getName());
+						Tile def = tileset.getTile(definitionSelected.getName());
 
 						if(mtx >= 0 && mty >= 0 && mtx < tileset.getWidth() && mty < tileset.getHeight())
 						{
@@ -584,8 +579,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 	}
 
 	@Override
-	public void preUiRender()
-	{
+	public void render() {
 		SpriteBatch batch = WorldEditor.I.getBatch();
 		ShapeRenderer sr = WorldEditor.I.getShapeRenderer();
 
@@ -596,113 +590,116 @@ public class StateTilesetEditor extends battlearena.common.states.State
 		batch.end();
 
 		sr.begin(ShapeType.Line);
-		sr.setColor(Color.WHITE);
-		if (renderGrid)
 		{
-			for (int row = 0; row <= tileset.getHeight(); row++)
-				sr.line(originX, originY + row * tileset.getTileHeight(), originX + tileset.getTilesheetWidth(), originY + row * tileset.getTileHeight());
-			for (int col = 0; col <= tileset.getWidth(); col++)
-				sr.line(originX + col * tileset.getTileWidth(), originY, originX + col * tileset.getTileWidth(), originY + tileset.getTilesheetHeight());
-
-		}
-
-		// Outline the current tiles that are selected for the animation.
-		if(definitionSelected != null)
-		{
-			List<Integer> animFrames = definitionSelected.getAnimFrames();
-			sr.setColor(Color.BLUE);
-			for (int animFrame : animFrames) {
-				int tx = (int) (animFrame % tileset.getWidth());
-				int ty = (int) (animFrame / tileset.getHeight());
-				sr.rect(originX + tx * tileset.getTileWidth(), originY + tileset.getTilesheetHeight() - (1 + ty) * tileset.getTileHeight(), tileset.getTileWidth(), tileset.getTileHeight());
-
-			}
-		}
-
-		if (mtx >= 0 && mtx < tileset.getWidth() && mty >= 0 && mty < tileset.getHeight())
-		{
-			sr.setColor(Color.GREEN);
-			sr.rect(originX + mtx * tileset.getTileWidth(), originY + tileset.getTilesheetHeight() - (1+mty) * tileset.getTileHeight(), tileset.getTileWidth(), tileset.getTileHeight());
-		}
-
-		sr.end();
-
-
-		hudTilesetEditor.render();
-
-	}
-
-	@Override
-	public void postUiRender()
-	{
-		ShapeRenderer sr = WorldEditor.I.getShapeRenderer();
-
-		// Render the selected definition.
-		sr.setProjectionMatrix(WorldEditor.I.getUiCamera().projection);
-		sr.setTransformMatrix(WorldEditor.I.getUiCamera().view);
-		sr.setColor(Color.WHITE);
-		sr.begin(ShapeType.Line);
-		if (definitionSelected != null)
-		{
-			Table selectedEntry = defEntries.get(definitionSelected);
-			Vector2 vec = selectedEntry.localToStageCoordinates(new Vector2(0, 0));
-			sr.rect(vec.x, vec.y, selectedEntry.getWidth(), selectedEntry.getHeight());
-		}
-		sr.end();
-
-		// Render the box around the selected tile definition
-		if(deleteMode)
-			sr.setColor(Color.RED);
-		else
-			sr.setColor(Color.BLUE);
-
-		sr.begin(ShapeType.Line);
-		if (hudTilesetEditor.entryHovered != null)
-		{
-			Vector2 vec = hudTilesetEditor.entryHovered.localToStageCoordinates(new Vector2(0, 0));
-
-			sr.rect(vec.x, vec.y, hudTilesetEditor.entryHovered.getWidth(), hudTilesetEditor.entryHovered.getHeight());
-		}
-		sr.end();
-
-		// Render the physics body over the tile image.
-		if(definitionSelected != null)
-		{
-			CollisionMask mask = definitionSelected.getMask();
-			if(mask != null)
+			// Grid rendering
 			{
-				int verts = mask.getVertexCount();
-				float scale = 100.0f / tileset.getTileWidth();
+				sr.setColor(Color.WHITE);
+				if (renderGrid) {
+					for (int row = 0; row <= tileset.getHeight(); row++)
+						sr.line(originX, originY + row * tileset.getTileHeight(), originX + tileset.getTilesheetWidth(), originY + row * tileset.getTileHeight());
+					for (int col = 0; col <= tileset.getWidth(); col++)
+						sr.line(originX + col * tileset.getTileWidth(), originY, originX + col * tileset.getTileWidth(), originY + tileset.getTilesheetHeight());
 
-				if (verts > 0)
-				{
-					sr.begin(ShapeRenderer.ShapeType.Line);
+				}
+			}
 
-					if(mask.isConvex())
-						sr.setColor(Color.RED);
-					else
-						sr.setColor(Color.GREEN);
+			// Outline the current tiles that are selected for the animation.
+			{
+				if (definitionSelected != null) {
+					List<Integer> animFrames = definitionSelected.getAnimFrames();
+					sr.setColor(Color.BLUE);
+					for (int animFrame : animFrames) {
+						int tx = (int) (animFrame % tileset.getWidth());
+						int ty = (int) (animFrame / tileset.getHeight());
+						sr.rect(originX + tx * tileset.getTileWidth(), originY + tileset.getTilesheetHeight() - (1 + ty) * tileset.getTileHeight(), tileset.getTileWidth(), tileset.getTileHeight());
 
-					for (int i = 0; i < verts; i++)
-					{
-						Vector2 vert = mask.getVertex(i);
-						Vector2 nextVert = mask.getVertex((i + 1) % mask.getVertexCount());
-						Vector2 toStage = hudTilesetEditor.paneTileImage.localToStageCoordinates(new Vector2(vert.x * scale, vert.y * scale));
-						Vector2 nextVertToStage = hudTilesetEditor.paneTileImage.localToStageCoordinates(new Vector2(nextVert.x * scale, nextVert.y * scale));
-
-						Vector2 dir = nextVert.cpy().sub(vert).nor().scl(5);
-						Vector2 start = toStage.cpy().add(dir);
-						Vector2 end = nextVertToStage.cpy().sub(dir);
-
-						sr.circle(toStage.x, toStage.y, 5);
-
-						sr.line(start.x, start.y, end.x, end.y);
 					}
+				}
+			}
 
-					sr.end();
+
+			// Render tile outline for tile under mouse.
+			{
+				if (mtx >= 0 && mtx < tileset.getWidth() && mty >= 0 && mty < tileset.getHeight()) {
+					sr.setColor(Color.GREEN);
+					sr.rect(originX + mtx * tileset.getTileWidth(), originY + tileset.getTilesheetHeight() - (1 + mty) * tileset.getTileHeight(), tileset.getTileWidth(), tileset.getTileHeight());
 				}
 			}
 		}
+		sr.end();
+
+		hudTilesetEditor.render();
+
+		// Render the selected definition.
+		sr.setProjectionMatrix(hudTilesetEditor.getCamera().projection);
+		sr.setTransformMatrix(hudTilesetEditor.getCamera().view);
+
+		sr.begin(ShapeType.Line);
+		{
+			// Render box around selected tile to edit.
+			{
+				sr.setColor(Color.WHITE);
+				if (definitionSelected != null)
+				{
+					Table selectedEntry = defEntries.get(definitionSelected);
+					Vector2 vec = selectedEntry.localToStageCoordinates(new Vector2(0, 0));
+					sr.rect(vec.x, vec.y, selectedEntry.getWidth(), selectedEntry.getHeight());
+				}
+			}
+
+			// Render box around the hovered tile. Red if deleting and blue if not.
+			{
+				if(deleteMode)
+					sr.setColor(Color.RED);
+				else
+					sr.setColor(Color.BLUE);
+
+				if (hudTilesetEditor.entryHovered != null)
+				{
+					Vector2 vec = hudTilesetEditor.entryHovered.localToStageCoordinates(new Vector2(0, 0));
+
+					sr.rect(vec.x, vec.y, hudTilesetEditor.entryHovered.getWidth(), hudTilesetEditor.entryHovered.getHeight());
+				}
+			}
+
+			// Render the physics body over the tile image.
+			if(definitionSelected != null)
+			{
+				CollisionMask mask = definitionSelected.getMask();
+				if(mask != null)
+				{
+					int verts = mask.getVertexCount();
+					float scale = 100.0f / tileset.getTileWidth();
+
+					if (verts > 0)
+					{
+						if(mask.isConvex())
+							sr.setColor(Color.RED);
+						else
+							sr.setColor(Color.GREEN);
+
+						for (int i = 0; i < verts; i++)
+						{
+							Vector2 vert = mask.getVertex(i);
+							Vector2 nextVert = mask.getVertex((i + 1) % mask.getVertexCount());
+							Vector2 toStage = hudTilesetEditor.paneTileImage.localToStageCoordinates(new Vector2(vert.x * scale, vert.y * scale));
+							Vector2 nextVertToStage = hudTilesetEditor.paneTileImage.localToStageCoordinates(new Vector2(nextVert.x * scale, nextVert.y * scale));
+
+							Vector2 dir = nextVert.cpy().sub(vert).nor().scl(5);
+							Vector2 start = toStage.cpy().add(dir);
+							Vector2 end = nextVertToStage.cpy().sub(dir);
+
+							sr.circle(toStage.x, toStage.y, 5);
+
+							sr.line(start.x, start.y, end.x, end.y);
+						}
+					}
+				}
+			}
+		}
+		sr.end();
+
+
 
 	}
 

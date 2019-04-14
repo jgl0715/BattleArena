@@ -14,21 +14,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import battlearena.common.tile.Tileset;
 import battlearena.editor.WorldEditor;
+import battlearena.editor.view.HUDCreateTileset;
 
 public class StateCreateTileset extends battlearena.common.states.State
 {
 
-	private Label nameLabel;
-	private TextField nameField;
-	private Label widthLabel;
-	private TextField widthField;
-	private Label heightLabel;
-	private TextField heightField;
-	private Label tilesheetLabel;
-	private TextField tilesheetField;
-	private TextButton chooseFileButton;
-	private TextButton confirmButton;
-	private TextButton cancelButton;
+	private HUDCreateTileset hudCreateTileset;
 
 	public StateCreateTileset()
 	{
@@ -38,7 +29,56 @@ public class StateCreateTileset extends battlearena.common.states.State
 	@Override
 	public void create()
 	{
+		hudCreateTileset = new HUDCreateTileset(WorldEditor.I.getUiSkin());
 
+		hudCreateTileset.chooseFileButton.addListener(new ClickListener()
+		{
+			@Override
+			public void clicked(InputEvent event, float x, float y)
+			{
+				super.clicked(event, x, y);
+
+				JFileChooser chooser = new JFileChooser();
+				int res = chooser.showOpenDialog(null);
+				if (res == JFileChooser.APPROVE_OPTION)
+				{
+					hudCreateTileset.tilesheetField.setText(chooser.getSelectedFile().getAbsolutePath());
+				}
+			}
+		});
+
+		hudCreateTileset.confirmButton.addListener(new ClickListener()
+		{
+
+			@Override
+			public void clicked(InputEvent event, float x, float y)
+			{
+				super.clicked(event, x, y);
+
+				if (confirmInput())
+				{
+					// Make new tileset
+					String name = hudCreateTileset.nameField.getText();
+					String path = hudCreateTileset.tilesheetField.getText();
+					int width = Integer.parseInt(hudCreateTileset.widthField.getText());
+					int height = Integer.parseInt(hudCreateTileset.widthField.getText());
+					Tileset newTileset = new Tileset(name, path, width, height);
+
+					WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_EDIT_TILESET, newTileset);
+				}
+			}
+		});
+
+		hudCreateTileset.cancelButton.addListener(new ClickListener()
+		{
+			@Override
+			public void clicked(InputEvent event, float x, float y)
+			{
+				super.clicked(event, x, y);
+
+				WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_MAIN_MENU);
+			}
+		});
 	}
 
 	@Override
@@ -56,114 +96,12 @@ public class StateCreateTileset extends battlearena.common.states.State
 	@Override
 	public void show(Object transitionInput)
 	{
-		Table root = WorldEditor.I.getRootComponent();
-		Table nameRow = new Table();
-		Table sizeRow = new Table();
-		Table tilesheetRow = new Table();
-		Table buttonsRow = new Table();
-
-		Table tilesheetColumn = new Table();
-		Skin uiSkin = WorldEditor.I.getUiSkin();
-		root.clear();
-		root.defaults().pad(5).left();
-
-		nameRow.defaults().pad(0).left();
-		sizeRow.defaults().pad(0).left();
-		tilesheetRow.defaults().padRight(0).left();
-		buttonsRow.defaults().pad(0).left();
-
-		root.center();
-		{
-			nameLabel = new Label("Name", uiSkin);
-			widthLabel = new Label("Width", uiSkin);
-			heightLabel = new Label("Height", uiSkin);
-			tilesheetLabel = new Label("Tilesheet", uiSkin);
-
-			nameField = new TextField("", uiSkin);
-			widthField = new TextField("", uiSkin);
-			heightField = new TextField("", uiSkin);
-			tilesheetField = new TextField("", uiSkin);
-			chooseFileButton = new TextButton("...", uiSkin);
-
-			confirmButton = new TextButton("Confirm", uiSkin);
-			cancelButton = new TextButton("Cancel", uiSkin);
-
-			nameRow.add(nameLabel).width(150).padRight(5);
-			nameRow.add(nameField).width(150);
-
-			sizeRow.add(widthLabel).width(100);
-			sizeRow.add(widthField).width(50).padRight(5);
-			sizeRow.add(heightLabel).width(100);
-			sizeRow.add(heightField).width(50);
-
-			tilesheetRow.add(tilesheetLabel).width(150).padRight(5);
-			tilesheetColumn.add(tilesheetField).width(120);
-			tilesheetColumn.add(chooseFileButton).width(30);
-			tilesheetRow.add(tilesheetColumn);
-
-			buttonsRow.add(confirmButton).width(152.5f);
-			buttonsRow.add(cancelButton).width(152.5f).row();
-
-			root.add(nameRow).row();
-			root.add(sizeRow).row();
-			root.add(tilesheetRow).row();
-			root.add(buttonsRow).row();
-
-			chooseFileButton.addListener(new ClickListener()
-			{
-				@Override
-				public void clicked(InputEvent event, float x, float y)
-				{
-					super.clicked(event, x, y);
-
-					JFileChooser chooser = new JFileChooser();
-					int res = chooser.showOpenDialog(null);
-					if (res == JFileChooser.APPROVE_OPTION)
-					{
-						tilesheetField.setText(chooser.getSelectedFile().getAbsolutePath());
-					}
-				}
-			});
-
-			confirmButton.addListener(new ClickListener()
-			{
-
-				@Override
-				public void clicked(InputEvent event, float x, float y)
-				{
-					super.clicked(event, x, y);
-
-					if (confirmInput())
-					{
-						// Make new tileset
-						String name = nameField.getText();
-						String path = tilesheetField.getText();
-						int width = Integer.parseInt(widthField.getText());
-						int height = Integer.parseInt(widthField.getText());
-						Tileset newTileset = new Tileset(name, path, width, height);
-						
-						WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_EDIT_TILESET, newTileset);
-					}
-				}
-			});
-
-			cancelButton.addListener(new ClickListener()
-			{
-				@Override
-				public void clicked(InputEvent event, float x, float y)
-				{
-					super.clicked(event, x, y);
-
-					WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_MAIN_MENU);
-				}
-			});
-		}
-
+		hudCreateTileset.setAsInput();
 	}
 
 	public boolean confirmInput()
 	{
-		String path = tilesheetField.getText();
+		String path = hudCreateTileset.tilesheetField.getText();
 		FileHandle file = Gdx.files.absolute(path);
 		String ext = file.extension();
 		String[] supportedExtensions =
@@ -177,8 +115,8 @@ public class StateCreateTileset extends battlearena.common.states.State
 
 		try
 		{
-			Integer.parseInt(widthField.getText());
-			Integer.parseInt(heightField.getText());
+			Integer.parseInt(hudCreateTileset.widthField.getText());
+			Integer.parseInt(hudCreateTileset.heightField.getText());
 		} catch (NumberFormatException e)
 		{
 			return false;
@@ -204,15 +142,9 @@ public class StateCreateTileset extends battlearena.common.states.State
 	}
 
 	@Override
-	public void preUiRender()
+	public void render()
 	{
-		
-	}
-
-	@Override
-	public void postUiRender()
-	{
-		
+		hudCreateTileset.render();
 	}
 
 }

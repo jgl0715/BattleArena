@@ -7,15 +7,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import battlearena.editor.WorldEditor;
+import battlearena.editor.view.HUDMainMenu;
 
 public class StateMainMenu extends battlearena.common.states.State
 {
 
-	private TextButton createWorld;
-	private TextButton loadWorld;
-	private TextButton createTileset;
-	private TextButton loadTileset;
-	private TextButton quit;
+	private HUDMainMenu hudMainMenu;
 
 	public StateMainMenu()
 	{
@@ -25,6 +22,63 @@ public class StateMainMenu extends battlearena.common.states.State
 	@Override
 	public void create()
 	{
+
+		hudMainMenu = new HUDMainMenu(WorldEditor.I.getUiSkin());
+
+		hudMainMenu.createWorld.addListener(new ClickListener()
+		{
+			@Override
+			public void clicked(InputEvent event, float x, float y)
+			{
+				super.clicked(event, x, y);
+
+				WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_CREATE_WORLD);
+			}
+		});
+
+		hudMainMenu.loadWorld.addListener(new ClickListener()
+		{
+			@Override
+			public void clicked(InputEvent event, float x, float y)
+			{
+				super.clicked(event, x, y);
+
+				WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_LOAD_WORLD);
+			}
+		});
+
+		hudMainMenu.createTileset.addListener(new ClickListener()
+		{
+			@Override
+			public void clicked(InputEvent event, float x, float y)
+			{
+				super.clicked(event, x, y);
+
+				WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_CREATE_TILESET);
+			}
+		});
+
+		hudMainMenu.loadTileset.addListener(new ClickListener()
+		{
+			@Override
+			public void clicked(InputEvent event, float x, float y)
+			{
+				super.clicked(event, x, y);
+
+				WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_LOAD_TILESET);
+			}
+		});
+
+		hudMainMenu.quit.addListener(new ClickListener()
+		{
+			@Override
+			public void clicked(InputEvent event, float x, float y)
+			{
+				super.clicked(event, x, y);
+
+				WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_QUIT);
+			}
+		});
 
 	}
 
@@ -42,79 +96,7 @@ public class StateMainMenu extends battlearena.common.states.State
 	@Override
 	public void show(Object transitionInput)
 	{
-		Table root = WorldEditor.I.getRootComponent();
-		Skin uiSkin = WorldEditor.I.getUiSkin();
-		root.clear();
-		root.defaults().pad(5);
-		root.center();
-		{
-			createWorld = new TextButton("Create World", uiSkin);
-			loadWorld = new TextButton("Load World", uiSkin);
-			createTileset = new TextButton("Create Tileset", uiSkin);
-			loadTileset = new TextButton("Load Tileset", uiSkin);
-			quit = new TextButton("Quit", uiSkin);
-
-			createWorld.addListener(new ClickListener()
-			{
-				@Override
-				public void clicked(InputEvent event, float x, float y)
-				{
-					super.clicked(event, x, y);
-
-					WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_CREATE_WORLD);
-				}
-			});
-
-			loadWorld.addListener(new ClickListener()
-			{
-				@Override
-				public void clicked(InputEvent event, float x, float y)
-				{
-					super.clicked(event, x, y);
-					
-					WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_LOAD_WORLD);
-				}
-			});
-
-			createTileset.addListener(new ClickListener()
-			{
-				@Override
-				public void clicked(InputEvent event, float x, float y)
-				{
-					super.clicked(event, x, y);
-					
-					WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_CREATE_TILESET);
-				}
-			});
-
-			loadTileset.addListener(new ClickListener()
-			{
-				@Override
-				public void clicked(InputEvent event, float x, float y)
-				{
-					super.clicked(event, x, y);
-					
-					WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_LOAD_TILESET);
-				}
-			});
-
-			quit.addListener(new ClickListener()
-			{
-				@Override
-				public void clicked(InputEvent event, float x, float y)
-				{
-					super.clicked(event, x, y);
-					
-					WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_QUIT);
-				}
-			});
-
-			root.add(createWorld).width(300).row();
-			root.add(loadWorld).width(300).row();
-			root.add(createTileset).width(300).row();
-			root.add(loadTileset).width(300).row();
-			root.add(quit).width(300).row();
-		}
+		hudMainMenu.setAsInput();
 	}
 
 	@Override
@@ -129,15 +111,9 @@ public class StateMainMenu extends battlearena.common.states.State
 	}
 
 	@Override
-	public void preUiRender()
+	public void render()
 	{
-		
-	}
-
-	@Override
-	public void postUiRender()
-	{
-		
+		hudMainMenu.render();
 	}
 
 }

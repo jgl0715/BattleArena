@@ -97,14 +97,9 @@ public class StateMachine
 		currentState.resized(width, height);
 	}
 
-	public void preUiRenderCurrent()
+	public void renderCurrent()
 	{
-		currentState.preUiRender();
-	}
-	
-	public void postUiRenderCurrent()
-	{
-		currentState.postUiRender();
+		currentState.render();
 	}
 
 	public void dispose()

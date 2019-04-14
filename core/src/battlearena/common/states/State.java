@@ -45,9 +45,6 @@ public abstract class State
 	public abstract void show(Object transitionInput);
 	public abstract void hide();
 	public abstract void update(float delta);
-	public abstract void preUiRender();
-	public abstract void postUiRender();
-
-	
+	public abstract void render();
 
 }

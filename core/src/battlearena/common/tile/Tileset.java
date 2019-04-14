@@ -15,7 +15,17 @@ public class Tileset
 	private int width;
 	private int height;
 	private Texture tileSheet;
-	private Map<String, Tile> definitions;
+	private Map<String, Tile> tiles;
+
+	public Tileset(String name, int width, int height, Texture tileSheet)
+	{
+		this.name = name;
+		this.width = width;
+		this.height = height;
+		this.tileSheet = tileSheet;
+
+		this.tiles = new HashMap<String, Tile>();
+	}
 
 	public Tileset(String name, String tilesheetPath, int width, int height)
 	{
@@ -25,12 +35,12 @@ public class Tileset
 
 		this.tileSheet = new Texture(Gdx.files.absolute(tilesheetPath));
 
-		this.definitions = new HashMap<String, Tile>();
+		this.tiles = new HashMap<String, Tile>();
 	}
 
-	public Iterator<String> getDefinitionNameIterator()
+	public Iterator<String> getTileNameIterator()
 	{
-		return definitions.keySet().iterator();
+		return tiles.keySet().iterator();
 	}
 
 	public String getName()
@@ -71,11 +81,11 @@ public class Tileset
 		return new TextureRegion(tileSheet, col * tw, row * th, tw, th);
 	}
 
-	public void updateTileDefinitionName(String newName, Tile def)
+	public void updateTileName(String newName, Tile tile)
 	{
-		definitions.remove(def.getName());
-		definitions.put(newName, def);
-		def.setName(newName);
+		tiles.remove(tile.getName());
+		tiles.put(newName, tile);
+		tile.setName(newName);
 	}
 
 	public Texture getTileSheet()
@@ -85,32 +95,32 @@ public class Tileset
 
 	public Iterator<String> getDefinitionNameItr()
 	{
-		return definitions.keySet().iterator();
+		return tiles.keySet().iterator();
 	}
 
 	public boolean nameTaken(String name)
 	{
-		return definitions.containsKey(name);
+		return tiles.containsKey(name);
 	}
 
-	public Tile getDefinition(String name)
+	public Tile getTile(String name)
 	{
-		return definitions.get(name);
+		return tiles.get(name);
 	}
 
-	public void addDefinition(Tile def)
+	public void addTile(Tile tile)
 	{
-		definitions.put(def.getName(), def);
+		tiles.put(tile.getName(), tile);
 	}
 
-	public void removeDefinition(Tile def)
+	public void removeTile(Tile tile)
 	{
-		definitions.remove(def.getName());
+		tiles.remove(tile.getName());
 	}
 
-	public int getDefinitionCount()
+	public int getTileCount()
 	{
-		return definitions.size();
+		return tiles.size();
 	}
 
 	public int getTilesheetWidth()
