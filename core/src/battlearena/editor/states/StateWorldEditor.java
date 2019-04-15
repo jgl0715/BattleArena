@@ -260,7 +260,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 
 				System.out.println("trying to place tile");
 
-				if(hudWorldEditor.tileHovered == null && selectedLayer != null && selectedTile != null)
+				if(hudWorldEditor.tileHovered == null && hudWorldEditor.layerHovered == null && selectedLayer != null && selectedTile != null)
 				{
 					String layer = selectedLayer.getName();
 					System.out.println("placing tile");
@@ -349,8 +349,8 @@ public class StateWorldEditor extends battlearena.common.states.State
 			{
 				System.out.println("test1");
 				// Add two pre-made layers.
-				addNewLayer("Foreground");
 				addNewLayer("Background");
+				addNewLayer("Foreground");
 			}else
 			{
 				// Load existing layers
