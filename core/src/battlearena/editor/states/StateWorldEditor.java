@@ -39,7 +39,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 	private HUDWorldEditor hudWorldEditor;
 	private Map<TileLayer, Table> layerTables;
 	private Map<Tile, Table> tileTables;
-	private TileLayer editLayer;
+	private TileLayer selectedLayer;
 	private Tile selectedTile;
 
 	private boolean disableMovement;
@@ -144,6 +144,8 @@ public class StateWorldEditor extends battlearena.common.states.State
 			{
 				super.clicked(event, x, y);
 
+				System.out.println("i been clicked");
+
 				if(deleteMode)
 				{
 					removeLayer(newLayer);
@@ -186,7 +188,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 
 	public void selectLayer(TileLayer layer)
 	{
-		editLayer = layer;
+		selectedLayer = layer;
 	}
 
 	public int getMouseTileX()
@@ -251,7 +253,24 @@ public class StateWorldEditor extends battlearena.common.states.State
 			@Override
 			public boolean touchDown(int screenX, int screenY, int pointer, int button)
 			{
-				return false;
+
+				int mtx = getMouseTileX();
+				int mty = getMouseTileY();
+				Tile t = selectedTile;
+
+				System.out.println("trying to place tile");
+
+				if(hudWorldEditor.tileHovered == null && selectedLayer != null && selectedTile != null)
+				{
+					String layer = selectedLayer.getName();
+					System.out.println("placing tile");
+					editingWorld.placeTile(layer, t, mtx, mty);
+				}else
+				{
+					return false;
+				}
+
+				return true;
 			}
 
 			@Override
@@ -328,6 +347,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 			// e.x. user deletes all layers, saves world, and then loads again.
 			if(editingWorld.getLayerCount() < 1)
 			{
+				System.out.println("test1");
 				// Add two pre-made layers.
 				addNewLayer("Foreground");
 				addNewLayer("Background");
@@ -395,6 +415,8 @@ public class StateWorldEditor extends battlearena.common.states.State
 		ShapeRenderer worldSR = WorldEditor.I.getShapeRenderer();
 		ShapeRenderer sr = WorldEditor.I.getShapeRenderer();
 
+		editingWorld.render();
+
 		sr.begin(ShapeRenderer.ShapeType.Line);
 		{
 			int worldWidth = editingWorld.getWidth();
@@ -445,9 +467,9 @@ public class StateWorldEditor extends battlearena.common.states.State
 				// Render box around selected layer to edit.
 				{
 					sr.setColor(Color.WHITE);
-					if (editLayer != null)
+					if (selectedLayer != null)
 					{
-						Table selectedEntry = layerTables.get(editLayer);
+						Table selectedEntry = layerTables.get(selectedLayer);
 						Vector2 vec = selectedEntry.localToStageCoordinates(new Vector2(0, 0));
 						sr.rect(vec.x, vec.y, selectedEntry.getWidth(), selectedEntry.getHeight());
 					}

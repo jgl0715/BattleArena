@@ -21,6 +21,14 @@ public class TileLayer
         this.width = width;
         this.height = height;
         this.cells = new Cell[width * height];
+
+        for(int x = 0; x < width; x++)
+        {
+            for(int y = 0; y < height; y++)
+            {
+                cells[x + y * width] = new Cell();
+            }
+        }
     }
 
     public String getName() {
@@ -42,7 +50,7 @@ public class TileLayer
 
     public void placeTile(Tile tile, int x, int y)
     {
-        getCell(x, y).t
+        getCell(x, y).setTile(tile);
     }
 
     public void render(SpriteBatch batch, float delta, Tileset set)
@@ -54,7 +62,10 @@ public class TileLayer
                 Cell cell = getCell(x, y);
                 TextureRegion texture = cell.getFrame(delta, set);
 
-                batch.draw(texture, x * set.getTilesheetWidth(), y * set.getTilesheetHeight());
+                if(texture != null)
+                {
+                    batch.draw(texture, x * set.getTileWidth(), (height-y-1) * set.getTileHeight());
+                }
             }
         }
     }

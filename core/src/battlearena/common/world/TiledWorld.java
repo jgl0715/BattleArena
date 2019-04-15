@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import battlearena.common.tile.Tile;
 import battlearena.common.tile.Tileset;
 import battlearena.editor.WorldEditor;
 
@@ -68,6 +69,13 @@ public class TiledWorld extends World
     public TileLayer getLayer(String name)
     {
         return layers.get(name);
+    }
+
+    public void placeTile(String layerName, Tile t, int x, int y)
+    {
+        TileLayer layer = layers.get(layerName);
+
+        layer.placeTile(t, x, y);
     }
 
     public boolean layerExists(String name)

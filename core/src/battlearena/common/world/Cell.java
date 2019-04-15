@@ -43,6 +43,10 @@ public class Cell
 
     public TextureRegion getFrame(float delta, Tileset set)
     {
+
+        if(tile == null || tile.getAnimFrames().size() < 1)
+            return null;
+
         int animFrameIndex = ((int)(delta / tile.getFrameTime())) % tile.getAnimFrames().size();
         int animFrame = tile.getAnimationFrame(animFrameIndex);
 
