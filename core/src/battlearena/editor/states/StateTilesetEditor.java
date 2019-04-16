@@ -66,7 +66,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 	public void create()
 	{
 		editingVert = -1;
-		exporter = new TilesetExporter(null, "");
+		exporter = new TilesetExporter(null, (String) null);
 
 		hudTilesetEditor = new HUDTilesetEditor(WorldEditor.I.getUiSkin());
 	}
@@ -88,12 +88,12 @@ public class StateTilesetEditor extends battlearena.common.states.State
 		selectTileDefinition(tileset.getTile(tileset.getTileNameIterator().next()));
 	}
 
-	public void selectTileDefinition(final Tile def)
+	public void selectTileDefinition(final Tile tile)
 	{
-		definitionSelected = def;
+		definitionSelected = tile;
 
 		// Update GUI with new selected definition.
-		hudTilesetEditor.showTile(tileset, def);
+		hudTilesetEditor.showTile(tile, tileset);
 
 		// Setup UI handling.
 		hudTilesetEditor.fieldFrameTime.setTextFieldListener(new TextField.TextFieldListener()
@@ -453,6 +453,20 @@ public class StateTilesetEditor extends battlearena.common.states.State
 				@Override
 				public boolean keyDown(int keycode)
 				{
+
+					if(keycode == Input.Keys.S && (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)))
+					{
+						// Save world
+						exporter.exp();
+					}
+
+					if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
+					{
+						// Transition back to main menu AND at least attempt to export the world.
+						exporter.exp();
+						WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_MAIN_MENU);
+					}
+
 					return false;
 				}
 			}, hudTilesetEditor.getUI());

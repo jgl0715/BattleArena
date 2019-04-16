@@ -6,6 +6,7 @@ import java.util.List;
 public class Tile
 {
 
+	private int id;
 	private String name;
 	private List<Integer> animFrames;
 	private float frameTime;
@@ -13,6 +14,7 @@ public class Tile
 
 	public Tile()
 	{
+		this.id = -1;
 		this.name = "Unnamed";
 		this.frameTime = 0.2f;
 		animFrames = new ArrayList<Integer>();
@@ -22,6 +24,16 @@ public class Tile
 	public String getName()
 	{
 		return name;
+	}
+
+	public int getId()
+	{
+		return id;
+	}
+
+	public void setId(int id)
+	{
+		this.id = id;
 	}
 
 	public void setName(String name)

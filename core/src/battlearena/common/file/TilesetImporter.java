@@ -17,7 +17,7 @@ import battlearena.common.tile.Tileset;
 public class TilesetImporter
 {
 
-    private FileHandle importFile;
+    private DataInputStream inputStream;
 
     public TilesetImporter()
     {
@@ -25,20 +25,25 @@ public class TilesetImporter
 
     public TilesetImporter(String src)
     {
-        importFile = Gdx.files.absolute(src);
+        inputStream = new DataInputStream(Gdx.files.absolute(src).read());
+    }
+
+    public TilesetImporter(DataInputStream inputStream)
+    {
+        this.inputStream = inputStream;
     }
 
     public void setImportLocation(String src)
     {
-        importFile = Gdx.files.absolute(src);
+        inputStream = new DataInputStream(Gdx.files.absolute(src).read());
     }
 
     public Tileset imp()
     {
-        DataInputStream inputStream = new DataInputStream(importFile.read());
         Tileset result = null;
 
-        try {
+        try
+        {
 
             String name = inputStream.readUTF();
             int tilesheetWidth = inputStream.readInt();
@@ -70,11 +75,13 @@ public class TilesetImporter
             {
                 Tile tile = new Tile();
                 String tileName = inputStream.readUTF();
+                int tileId = inputStream.readInt();
                 int vertexCount = inputStream.read();
                 CollisionMask mask = new CollisionMask(vertexCount);
                 int animFrameCount;
 
                 tile.setName(tileName);
+                tile.setId(tileId);
 
                 for(int j = 0; j < vertexCount; j++)
                 {
@@ -94,7 +101,7 @@ public class TilesetImporter
                     tile.addFrame(frameId);
                 }
 
-                result.addTile(tile);
+                result.addTileHasId(tile);
 
             }
 

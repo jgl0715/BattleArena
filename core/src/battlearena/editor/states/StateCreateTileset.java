@@ -90,7 +90,7 @@ public class StateCreateTileset extends battlearena.common.states.State
 	@Override
 	public void resized(int width, int height)
 	{
-
+		hudCreateTileset.resize(width, height);
 	}
 
 	@Override

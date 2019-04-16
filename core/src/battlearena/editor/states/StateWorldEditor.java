@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -24,6 +25,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JFileChooser;
+
+import battlearena.common.file.TiledWorldExporter;
+import battlearena.common.file.TilesetImporter;
 import battlearena.common.tile.CollisionMask;
 import battlearena.common.tile.Tile;
 import battlearena.common.tile.Tileset;
@@ -36,6 +41,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 {
 
 	private TiledWorld editingWorld;
+	private TiledWorldExporter exporter;
 	private HUDWorldEditor hudWorldEditor;
 	private Map<TileLayer, Table> layerTables;
 	private Map<Tile, Table> tileTables;
@@ -65,6 +71,8 @@ public class StateWorldEditor extends battlearena.common.states.State
 			unnamedIndex++;
 			name = "Unnamed_" + unnamedIndex;
 		}
+
+		System.out.println("test");
 
 		return addNewLayer(name);
 	}
@@ -124,18 +132,48 @@ public class StateWorldEditor extends battlearena.common.states.State
 		selectedTile = tile;
 	}
 
-
-	public TileLayer addNewLayer(String layerName)
+	/**
+	 * Adds a new layer to the view.
+	 *
+	 * @param newLayer
+	 */
+	public void addNewLayer(final TileLayer newLayer, boolean viewOnly)
 	{
-		final TileLayer newLayer = new TileLayer(layerName, editingWorld.getWidth(), editingWorld.getHeight());
-
-		// Background gets rendered before foreground so add background first.
-		editingWorld.addLayer(newLayer);
+		if(!viewOnly)
+		{
+			editingWorld.addLayer(newLayer);
+		}
 
 		// Add the new layer to the view.
 		final Table tableLayer = hudWorldEditor.addLayer(newLayer);
 
 		layerTables.put(newLayer, tableLayer);
+
+		tableLayer.addListener(new FocusListener()
+		{
+			@Override
+			public void keyboardFocusChanged(FocusEvent event, Actor actor, boolean focused)
+			{
+				super.keyboardFocusChanged(event, actor, focused);
+
+				disableMovement = focused;
+			}
+		});
+
+		tableLayer.addListener(new InputListener(){
+			@Override
+			public boolean keyDown(InputEvent event, int keycode)
+			{
+
+				// Unfocus on pressing enter
+				if(keycode == Input.Keys.ENTER)
+				{
+					hudWorldEditor.getUI().setKeyboardFocus(null);
+				}
+
+				return true;
+			}
+		});
 
 		tableLayer.addListener(new ClickListener()
 		{
@@ -143,8 +181,6 @@ public class StateWorldEditor extends battlearena.common.states.State
 			public void clicked(InputEvent event, float x, float y)
 			{
 				super.clicked(event, x, y);
-
-				System.out.println("i been clicked");
 
 				if(deleteMode)
 				{
@@ -172,9 +208,23 @@ public class StateWorldEditor extends battlearena.common.states.State
 					hudWorldEditor.layerHovered = null;
 			}
 		});
+	}
+
+
+	/**
+	 * Convenience method for adding a new layer.
+	 * @param layerName
+	 * @return
+	 */
+	public TileLayer addNewLayer(String layerName)
+	{
+		final TileLayer newLayer = new TileLayer(layerName, editingWorld.getWidth(), editingWorld.getHeight());
+
+		addNewLayer(newLayer, false);
 
 		return newLayer;
 	}
+
 
 	public void removeLayer(TileLayer layer)
 	{
@@ -184,11 +234,26 @@ public class StateWorldEditor extends battlearena.common.states.State
 		// Remove layer from view and world (model).
 		hudWorldEditor.removeLayer(tableLayer);
 		editingWorld.removeLayer(layer.getName());
+		layerTables.remove(layer);
+
+		if(layerTables.size() > 0)
+		{
+			selectFirstLayer();
+		}
+		else
+		{
+			selectLayer(null);
+		}
 	}
 
 	public void selectLayer(TileLayer layer)
 	{
 		selectedLayer = layer;
+	}
+
+	public void selectFirstLayer()
+	{
+		selectedLayer = layerTables.keySet().iterator().next();
 	}
 
 	public int getMouseTileX()
@@ -207,6 +272,29 @@ public class StateWorldEditor extends battlearena.common.states.State
 		float originY = 0;
 		OrthographicCamera camera = WorldEditor.I.getCamera();
 		return editingWorld.getHeight() - (int) Math.floor((camera.unproject(new Vector3(x, y, 0)).y - originY) / editingWorld.getTileset().getTileHeight()) - 1;
+	}
+
+	public void updateTileset()
+	{
+
+		JFileChooser chooser = new JFileChooser();
+		int res = chooser.showOpenDialog(null);
+		Tileset result = null;
+		if (res == JFileChooser.APPROVE_OPTION)
+		{
+			TilesetImporter importer = new TilesetImporter(chooser.getSelectedFile().getAbsolutePath());
+			result = importer.imp();
+		}
+
+		if(result != null)
+		{
+			editingWorld.changeTileset(result);
+			System.out.println("Tileset sucessfully changed!");
+		}
+		else
+		{
+			System.err.println("Error loading tileset, tileset could not be changed.");
+		}
 	}
 
 	@Override
@@ -238,6 +326,8 @@ public class StateWorldEditor extends battlearena.common.states.State
 		muxer = new InputMultiplexer(new InputProcessor()
 		{
 
+			int touchingButton;
+
 			@Override
 			public boolean touchUp(int screenX, int screenY, int pointer, int button)
 			{
@@ -247,30 +337,54 @@ public class StateWorldEditor extends battlearena.common.states.State
 			@Override
 			public boolean touchDragged(int screenX, int screenY, int pointer)
 			{
-				return false;
+				return editTile(touchingButton);
 			}
 
 			@Override
 			public boolean touchDown(int screenX, int screenY, int pointer, int button)
 			{
+				hudWorldEditor.getUI().setKeyboardFocus(null);
 
-				int mtx = getMouseTileX();
-				int mty = getMouseTileY();
-				Tile t = selectedTile;
+				touchingButton = button;
 
-				System.out.println("trying to place tile");
+				return editTile(button);
+			}
 
-				if(hudWorldEditor.tileHovered == null && hudWorldEditor.layerHovered == null && selectedLayer != null && selectedTile != null)
+			public boolean editTile(int button)
+			{
+				if(button == Input.Buttons.LEFT)
 				{
-					String layer = selectedLayer.getName();
-					System.out.println("placing tile");
-					editingWorld.placeTile(layer, t, mtx, mty);
-				}else
+					return tileManip(getMouseTileX(), getMouseTileY(), false);
+				}else if(button == Input.Buttons.RIGHT)
 				{
-					return false;
+					return tileManip(getMouseTileX(), getMouseTileY(), true);
+				}
+				return false;
+			}
+
+			public boolean tileManip(int mtx, int mty, boolean remove)
+			{
+
+				if(mtx >= 0 && mty >= 0 && mtx < editingWorld.getWidth() && mty < editingWorld.getHeight())
+				{
+					if(hudWorldEditor.tileHovered == null && !hudWorldEditor.addLayerButton.isOver() && !hudWorldEditor.deleteLayerButton.isOver() && hudWorldEditor.layerHovered == null && selectedLayer != null && selectedTile != null)
+					{
+						String layer = selectedLayer.getName();
+
+						if(remove)
+						{
+							editingWorld.removeTile(layer, mtx, mty);
+						}
+						else
+						{
+							editingWorld.placeTile(layer, selectedTile, mtx, mty);
+						}
+						return true;
+
+					}
 				}
 
-				return true;
+				return false;
 			}
 
 			@Override
@@ -309,8 +423,59 @@ public class StateWorldEditor extends battlearena.common.states.State
 			@Override
 			public boolean keyDown(int keycode)
 			{
+
+				// Global command handling
+
+				if(hudWorldEditor.getUI().getKeyboardFocus() == null)
+				{
+
+					if(keycode == Input.Keys.F1)
+					{
+						// Decrease world width by one
+						editingWorld.changeWidth(-1);
+					}
+
+					if(keycode == Input.Keys.F2)
+					{
+						// Increase world width by one
+						editingWorld.changeWidth(1);
+					}
+
+					if(keycode == Input.Keys.F3)
+					{
+						// Decrease world height by one
+						editingWorld.changeHeight(-1);
+					}
+
+					if(keycode == Input.Keys.F4)
+					{
+						// Increase world height by one
+						editingWorld.changeHeight(1);
+					}
+
+					if(keycode == Input.Keys.T)
+					{
+						// Change/update tileset
+						updateTileset();
+					}
+
+					if(keycode == Input.Keys.S && (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)))
+					{
+						// Save world
+						exporter.exp();
+					}
+
+					if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
+					{
+						// Transition back to main menu AND at least attempt to export the world.
+						exporter.exp();
+						WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_MAIN_MENU);
+					}
+				}
+
 				return false;
 			}
+
 		}, hudWorldEditor.getUI());
 
 
@@ -325,7 +490,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 	@Override
 	public void resized(int width, int height)
 	{
-		
+		hudWorldEditor.resize(width, height);
 	}
 
 	@Override
@@ -340,6 +505,12 @@ public class StateWorldEditor extends battlearena.common.states.State
 		else
 		{
 			editingWorld = (TiledWorld) transitionInput;
+			exporter = new TiledWorldExporter(editingWorld, "/worlds/" + editingWorld.getName() + ".world");
+
+			hudWorldEditor.tableTiles.clear();
+			hudWorldEditor.tableLayers.clear();
+			layerTables.clear();
+			tileTables.clear();
 
 			hudWorldEditor.fieldWorldName.setText(editingWorld.getName());
 
@@ -354,9 +525,18 @@ public class StateWorldEditor extends battlearena.common.states.State
 			}else
 			{
 				// Load existing layers
+				Iterator<TileLayer> layerItr = editingWorld.layerIterator();
+				while(layerItr.hasNext())
+				{
+					TileLayer layer = layerItr.next();
+					addNewLayer(layer, true);
+				}
 			}
 
+			selectFirstLayer();
+
 			setTileset(editingWorld.getTileset());
+
 
 			Gdx.input.setInputProcessor(muxer);
 		}
@@ -405,6 +585,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 //			camera.position.y = WorldEditor.I.VIRTUAL_HEIGHT / 2 * camera.zoom;
 //		if (camera.position.y <= -WorldEditor.I.VIRTUAL_HEIGHT / 2 * camera.zoom)
 //			camera.position.y = -WorldEditor.I.VIRTUAL_HEIGHT / 2 * camera.zoom;
+
 
 		camera.update();
 	}

@@ -27,8 +27,8 @@ public class HUDWorldEditor extends HUD
 
     // Left pane
     private ScrollPane scrollPaneTiles;
-    public Table tableDefinitions;
-    public Label tileDefPaneLabel;
+    public Table tableTiles;
+    public Label tileTilePaneLabel;
     public Table tileHovered;
 
     public HUDWorldEditor(Skin skin)
@@ -41,12 +41,12 @@ public class HUDWorldEditor extends HUD
         tableLeftPane.pad(5);
         {
             Table tableHeaderRow = new Table();
-            tableDefinitions = new Table();
-            scrollPaneTiles = new ScrollPane(tableDefinitions, skin);
+            tableTiles = new Table();
+            scrollPaneTiles = new ScrollPane(tableTiles, skin);
 
-            tileDefPaneLabel = new Label("Tile Definitions", skin);
+            tileTilePaneLabel = new Label("Tile Definitions", skin);
 
-            tableHeaderRow.add(tileDefPaneLabel).width(200).row();
+            tableHeaderRow.add(tileTilePaneLabel).width(200).row();
 
             tableLeftPane.add(tableHeaderRow).row();
             tableLeftPane.add(scrollPaneTiles).row();
@@ -98,7 +98,7 @@ public class HUDWorldEditor extends HUD
 
         entryTable.add(image).width(20).height(20).expand().fill();
         entryTable.add(nameLabel).width(180);
-        tableDefinitions.add(entryTable).row();
+        tableTiles.add(entryTable).pad(3).row();
 
         return entryTable;
     }

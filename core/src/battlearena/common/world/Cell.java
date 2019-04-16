@@ -13,17 +13,18 @@ public class Cell
 
     private Body bod;
     private Tile tile;
+    private int meta;
 
     public Cell()
     {
-
+        this.meta = 0;
     }
 
     public Cell(Body bod, Tile tile)
     {
         this.bod = bod;
         this.tile = tile;
-
+        this.meta = 0;
     }
 
     public Body getBody()
@@ -36,9 +37,19 @@ public class Cell
         return tile;
     }
 
+    public int getMeta()
+    {
+        return meta;
+    }
+
     public void setTile(Tile tile)
     {
         this.tile = tile;
+    }
+
+    public void setMeta(int meta)
+    {
+        this.meta = meta;
     }
 
     public TextureRegion getFrame(float delta, Tileset set)

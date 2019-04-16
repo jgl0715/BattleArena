@@ -31,6 +31,53 @@ public class TileLayer
         }
     }
 
+    public void changeWidth(int amount)
+    {
+        int oldWidth = width;
+        width += amount;
+
+        Cell[] newCells = new Cell[width * height];
+        for(int i = 0; i < oldWidth && i < width; i++)
+        {
+            for(int j = 0; j < height; j++)
+            {
+                newCells[i+j*width] = cells[i+j*oldWidth];
+            }
+        }
+
+        for(int i = 0; i < newCells.length; i++)
+        {
+            if(newCells[i] == null)
+                newCells[i] = new Cell();
+        }
+
+        cells = newCells;
+    }
+
+    public void changeHeight(int amount)
+    {
+        int oldHeight = height;
+        height += amount;
+
+        Cell[] newCells = new Cell[width * height];
+
+        for(int i = 0; i < width; i++)
+        {
+            for(int j = 0; j < oldHeight && j < height; j++)
+            {
+                newCells[i+j*width] = cells[i+j*width];
+            }
+        }
+
+        for(int i = 0; i < newCells.length; i++)
+        {
+            if(newCells[i] == null)
+                newCells[i] = new Cell();
+        }
+
+        cells = newCells;
+    }
+
     public String getName() {
         return name;
     }

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +35,39 @@ public class TiledWorld extends World
 
         this.layers = new HashMap<String, TileLayer>();
         this.layersOrdered = new ArrayList<TileLayer>();
+    }
+
+    public void changeWidth(int amount)
+    {
+        if(amount < 0 && -amount >= width)
+            return;
+
+        width += amount;
+
+        for(TileLayer layer : layersOrdered)
+            layer.changeWidth(amount);
+    }
+
+
+    public void changeHeight(int amount)
+    {
+        if(amount < 0 && -amount >= height)
+            return;
+
+        height += amount;
+
+        for(TileLayer layer : layersOrdered)
+            layer.changeHeight(amount);
+    }
+
+    public Iterator<TileLayer> layerIterator()
+    {
+        return layersOrdered.iterator();
+    }
+
+    public void changeTileset(Tileset set)
+    {
+        this.tileset = set;
     }
 
     public int getPixelWidth()
@@ -71,6 +105,13 @@ public class TiledWorld extends World
         return layers.get(name);
     }
 
+    public void removeTile(String layerName, int x, int y)
+    {
+        TileLayer layer = layers.get(layerName);
+
+        layer.placeTile(null, x, y);
+    }
+
     public void placeTile(String layerName, Tile t, int x, int y)
     {
         TileLayer layer = layers.get(layerName);
@@ -92,8 +133,13 @@ public class TiledWorld extends World
 
     public void removeLayer(String layerName)
     {
-        layers.remove(layerName);
-        layersOrdered.remove(layerName);
+        TileLayer layer = layers.get(layerName);
+
+        if(layer != null)
+        {
+            layers.remove(layerName);
+            layersOrdered.remove(layer);
+        }
     }
 
     @Override

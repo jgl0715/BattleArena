@@ -1,5 +1,7 @@
 package battlearena.common.states;
 
+import com.badlogic.gdx.Gdx;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -83,6 +85,7 @@ public class StateMachine
 			// Hide the current state and show the next state.
 			currentState.hide();
 			currentState = transitionDst;
+			currentState.resized(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 			currentState.show(transitionInput);
 		}
 	}
