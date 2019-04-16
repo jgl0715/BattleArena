@@ -19,7 +19,7 @@ public class TilesetExporter
 {
 
     private Tileset toExport;
-    private FileHandle exportLocation;
+    private DataOutputStream outputStream;
 
     /**
      * Manages the exportation of tilesets
@@ -30,7 +30,25 @@ public class TilesetExporter
     public TilesetExporter(Tileset toExport, String dst)
     {
         this.toExport = toExport;
-        this.exportLocation = Gdx.files.local(dst);
+
+        if(dst != null)
+            this.outputStream = new DataOutputStream(getLoc(dst).write(false));
+    }
+
+    public TilesetExporter(Tileset toExport, DataOutputStream os)
+    {
+        this.toExport = toExport;
+        this.outputStream = os;
+    }
+
+    private FileHandle getLoc(String loc)
+    {
+        FileHandle exportLocation = Gdx.files.local(loc);
+
+        if(!exportLocation.parent().exists())
+            exportLocation.parent().mkdirs();
+
+        return exportLocation;
     }
 
     public void setTileset(Tileset set)
@@ -40,15 +58,11 @@ public class TilesetExporter
 
     public void setDestination(String d)
     {
-        exportLocation = Gdx.files.local(d);
+        this.outputStream = new DataOutputStream(getLoc(d).write(false));
     }
 
     public void exp()
     {
-        if(!exportLocation.parent().exists())
-            exportLocation.parent().mkdirs();
-
-        DataOutputStream outputStream = new DataOutputStream(exportLocation.write(false));
         TextureData tilesheetData = toExport.getTileSheet().getTextureData();
         int rgba = 0, r = 0, g = 0, b = 0, a = 0;
         Pixmap tilesheetPixmap;
@@ -97,6 +111,7 @@ public class TilesetExporter
                 List<Integer> animFrames = tile.getAnimFrames();
 
                 outputStream.writeUTF(tile.getName());
+                outputStream.writeInt(tile.getId());
                 outputStream.writeByte(mask.getVertexCount());
 
                 // Output vertex (x,y) information.

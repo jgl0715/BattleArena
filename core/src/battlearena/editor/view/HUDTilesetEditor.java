@@ -39,7 +39,6 @@ public class HUDTilesetEditor extends HUD
     public TextField fieldHeight;
     private ScrollPane scrollPaneDefinitions;
     public Table tableDefinitions;
-    public TextField tilesetNameLabel;
     public Label tileDefPaneLabel;
     public TextButton addTileDefButton;
     public TextButton deleteTileDefButton;
@@ -110,6 +109,10 @@ public class HUDTilesetEditor extends HUD
             scrollPaneDefinitions.setFadeScrollBars(false);
         }
 
+        paneTileImage = new TileImage();
+        labelFrameTime = new Label("Frame Time (ms)", skin);
+        fieldFrameTime = new TextField("", skin);
+
         ui.addActor(tableBottomLeft);
         ui.addActor(editTilePane);
         ui.addActor(tileDefPane);
@@ -130,19 +133,18 @@ public class HUDTilesetEditor extends HUD
         return entryTable;
     }
 
-    public void showTile(Tileset tileset, Tile def)
+    public void showTile(Tile tile, Tileset tileset)
     {
         editTilePane.clear();
 
-        if(def != null)
+        if(tile != null)
         {
-            paneTileImage = new TileImage(def, tileset);
+            paneTileImage.setTile(tile, tileset);
             editTilePane.add(paneTileImage).width(100).height(100).center().pad(50).row();
 
             Table tableFrameTime = new Table();
             tableFrameTime.defaults().pad(5);
-            labelFrameTime = new Label("Frame Time (ms)", skin);
-            fieldFrameTime = new TextField(Integer.toString((int)(def.getFrameTime()*1000)), skin);
+            fieldFrameTime.setText(Integer.toString((int)(tile.getFrameTime()*1000)));
             tableFrameTime.add(labelFrameTime).left();
             tableFrameTime.add(fieldFrameTime).left().width(50);
 

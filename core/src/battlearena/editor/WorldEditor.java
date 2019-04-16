@@ -12,8 +12,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import battlearena.common.file.TilesetImporter;
 import battlearena.common.gui.HUD;
 import battlearena.common.states.State;
+import battlearena.common.world.TiledWorld;
 import battlearena.editor.states.StateCreateTileset;
 import battlearena.editor.states.StateCreateWorld;
 import battlearena.common.states.StateMachine;
@@ -31,9 +33,7 @@ public class WorldEditor extends ApplicationAdapter
 	public static final String TRANSITION_EDIT_WORLD = "T_Edit_World";
 	public static final String TRANSITION_EDIT_TILESET = "T_Edit_Tileset";
 	public static final String TRANSITION_CREATE_WORLD = "T_Create_World";
-	public static final String TRANSITION_LOAD_WORLD = "T_Load_World";
 	public static final String TRANSITION_CREATE_TILESET = "T_Create_Tileset";
-	public static final String TRANSITION_LOAD_TILESET = "T_Load_Tileset";
 	public static final String TRANSITION_QUIT = "T_Quit";
 
 	public static final int VIRTUAL_WIDTH = 16 * 60;
@@ -155,11 +155,16 @@ public class WorldEditor extends ApplicationAdapter
 		fsa.registerTransition(STATE_MAIN_MENU, STATE_CREATE_TILESET, TRANSITION_CREATE_TILESET);
 		fsa.registerTransition(STATE_MAIN_MENU, STATE_QUIT, TRANSITION_QUIT);
 		fsa.registerTransition(STATE_MAIN_MENU, STATE_TILESET_EDITOR, TRANSITION_EDIT_TILESET);
+		fsa.registerTransition(STATE_MAIN_MENU, STATE_WORLD_EDITOR, TRANSITION_EDIT_WORLD);
 		fsa.registerTransition(STATE_CREATE_WORLD, STATE_MAIN_MENU, TRANSITION_MAIN_MENU);
+		fsa.registerTransition(STATE_CREATE_WORLD, STATE_WORLD_EDITOR, TRANSITION_EDIT_WORLD);
 		fsa.registerTransition(STATE_CREATE_TILESET, STATE_MAIN_MENU, TRANSITION_MAIN_MENU);
 		fsa.registerTransition(STATE_CREATE_TILESET, STATE_TILESET_EDITOR, TRANSITION_EDIT_TILESET);
+		fsa.registerTransition(STATE_WORLD_EDITOR, STATE_MAIN_MENU, TRANSITION_MAIN_MENU);
+		fsa.registerTransition(STATE_WORLD_EDITOR, STATE_TILESET_EDITOR, TRANSITION_EDIT_TILESET);
+		fsa.registerTransition(STATE_TILESET_EDITOR, STATE_MAIN_MENU, TRANSITION_MAIN_MENU);
 
-		//inputToFSA(TRANSITION_EDIT_TILESET, new battlearena.common.tile.Tileset("test", "C:\\Users\\fores\\Desktop\\Tile_Overworld.png", 8, 8));
+		inputToFSA(TRANSITION_EDIT_WORLD, new TiledWorld("test", new TilesetImporter("C:\\Development\\BattleArena\\android\\assets\\tilesets\\Main.ts").imp(),50, 50));
 
 	}
 

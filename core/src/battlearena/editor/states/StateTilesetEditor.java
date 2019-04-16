@@ -66,7 +66,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 	public void create()
 	{
 		editingVert = -1;
-		exporter = new TilesetExporter(null, "");
+		exporter = new TilesetExporter(null, (String) null);
 
 		hudTilesetEditor = new HUDTilesetEditor(WorldEditor.I.getUiSkin());
 	}
@@ -88,16 +88,14 @@ public class StateTilesetEditor extends battlearena.common.states.State
 		selectTileDefinition(tileset.getTile(tileset.getTileNameIterator().next()));
 	}
 
-	public void selectTileDefinition(final Tile def)
+	public void selectTileDefinition(final Tile tile)
 	{
-		definitionSelected = def;
+		definitionSelected = tile;
 
 		// Update GUI with new selected definition.
-		hudTilesetEditor.showTile(tileset, def);
+		hudTilesetEditor.showTile(tile, tileset);
 
 		// Setup UI handling.
-		hudTilesetEditor.fieldFrameTime.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
-
 		hudTilesetEditor.fieldFrameTime.setTextFieldListener(new TextField.TextFieldListener()
 		{
 			@Override
@@ -120,7 +118,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 		originY = -tileset.getTilesheetHeight() / 2;
 
 		exporter.setTileset(tileset);
-		exporter.setDestination("output/" + tileset.getName() + ".ts");
+		exporter.setDestination("tilesets/" + tileset.getName() + ".ts");
 	}
 
 	public void addTileDefinition(final Tile tile, boolean viewOnly)
@@ -260,17 +258,13 @@ public class StateTilesetEditor extends battlearena.common.states.State
 			Tileset inputSet = (Tileset) transitionInput;
 			setTileset(inputSet);
 
+			hudTilesetEditor.tableDefinitions.clear();
+
 			defEntries = new HashMap<Tile, Table>();
 
-			// Add all existing tiles to the definitions view pane.
-			Iterator<String> tileNameItr =inputSet.getTileNameIterator();
-			while(tileNameItr.hasNext())
-			{
-				String nextTile = tileNameItr.next();
-				addTileDefinition(inputSet.getTile(nextTile), true);
-			}
-
 			hudTilesetEditor.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+			hudTilesetEditor.fieldFrameTime.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
 
 			hudTilesetEditor.fieldWidth.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
 			hudTilesetEditor.fieldHeight.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
@@ -332,7 +326,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 				@Override
 				public void keyTyped(TextField textField, char c) {
 					tileset.setName(hudTilesetEditor.fieldTilesetName.getText());
-					exporter.setDestination("output/" + tileset.getName() + ".ts");
+					exporter.setDestination("tilesets/" + tileset.getName() + ".ts");
 				}
 			});
 
@@ -364,6 +358,15 @@ public class StateTilesetEditor extends battlearena.common.states.State
 			if (tileset.getTileCount() < 1)
 			{
 				addNewTileDefinition();
+			}else
+			{
+				// Add all existing tiles to the definitions view pane.
+				Iterator<String> tileNameItr =inputSet.getTileNameIterator();
+				while(tileNameItr.hasNext())
+				{
+					String nextTile = tileNameItr.next();
+					addTileDefinition(inputSet.getTile(nextTile), true);
+				}
 			}
 
 			InputMultiplexer muxer = new InputMultiplexer(new InputProcessor()
@@ -452,6 +455,20 @@ public class StateTilesetEditor extends battlearena.common.states.State
 				@Override
 				public boolean keyDown(int keycode)
 				{
+
+					if(keycode == Input.Keys.S && (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)))
+					{
+						// Save world
+						exporter.exp();
+					}
+
+					if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
+					{
+						// Transition back to main menu AND at least attempt to export the world.
+						exporter.exp();
+						WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_MAIN_MENU);
+					}
+
 					return false;
 				}
 			}, hudTilesetEditor.getUI());
@@ -593,7 +610,8 @@ public class StateTilesetEditor extends battlearena.common.states.State
 	}
 
 	@Override
-	public void render() {
+	public void render()
+	{
 		SpriteBatch batch = WorldEditor.I.getBatch();
 		ShapeRenderer sr = WorldEditor.I.getShapeRenderer();
 

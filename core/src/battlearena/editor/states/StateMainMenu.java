@@ -1,5 +1,6 @@
 package battlearena.editor.states;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -8,8 +9,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import javax.swing.JFileChooser;
 
+import battlearena.common.file.TiledWorldImporter;
 import battlearena.common.file.TilesetImporter;
 import battlearena.common.tile.Tileset;
+import battlearena.common.world.TiledWorld;
 import battlearena.editor.WorldEditor;
 import battlearena.editor.view.HUDMainMenu;
 
@@ -47,8 +50,19 @@ public class StateMainMenu extends battlearena.common.states.State
 			{
 				super.clicked(event, x, y);
 
+				JFileChooser chooser = new JFileChooser();
+				int res = chooser.showOpenDialog(null);
+				TiledWorld result = null;
+				if (res == JFileChooser.APPROVE_OPTION)
+				{
+					TiledWorldImporter importer = new TiledWorldImporter(chooser.getSelectedFile().getAbsolutePath());
+					result = importer.imp();
+				}
 
-				WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_LOAD_WORLD);
+				if(result != null)
+				{
+					WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_EDIT_WORLD, result);
+				}
 			}
 		});
 
@@ -108,6 +122,7 @@ public class StateMainMenu extends battlearena.common.states.State
 	@Override
 	public void resized(int width, int height)
 	{
+		hudMainMenu.resize(width, height);
 	}
 
 	@Override
