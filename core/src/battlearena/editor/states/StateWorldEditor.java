@@ -29,6 +29,7 @@ import java.util.Set;
 
 import javax.swing.JFileChooser;
 
+import battlearena.common.CollisionGroup;
 import battlearena.common.file.TiledWorldExporter;
 import battlearena.common.file.TilesetImporter;
 import battlearena.common.tile.CollisionMask;
@@ -39,6 +40,7 @@ import battlearena.common.world.TileLayer;
 import battlearena.common.world.TiledWorld;
 import battlearena.editor.WorldEditor;
 import battlearena.editor.view.HUDWorldEditor;
+import box2dLight.PointLight;
 
 public class StateWorldEditor extends battlearena.common.states.State
 {
@@ -259,6 +261,24 @@ public class StateWorldEditor extends battlearena.common.states.State
 		selectedLayer = layerTables.keySet().iterator().next();
 	}
 
+	public int getMouseWorldX()
+	{
+		int x = Gdx.input.getX();
+		int y = Gdx.input.getY();
+		float originX = 0;
+		OrthographicCamera camera = WorldEditor.I.getCamera();
+		return (int)(camera.unproject(new Vector3(x, y, 0)).x - originX);
+	}
+
+	public int getMouseWorldY()
+	{
+		int x = Gdx.input.getX();
+		int y = Gdx.input.getY();
+		float originY = 0;
+		OrthographicCamera camera = WorldEditor.I.getCamera();
+		return (int)((camera.unproject(new Vector3(x, y, 0)).y - originY));
+	}
+
 	public int getMouseTileX()
 	{
 		int x = Gdx.input.getX();
@@ -302,6 +322,8 @@ public class StateWorldEditor extends battlearena.common.states.State
 	@Override
 	public void create()
 	{
+		renderGrid = true;
+
 		hudWorldEditor = new HUDWorldEditor(WorldEditor.I.getUiSkin());
 
 		hudWorldEditor.addLayerButton.addListener(new ClickListener(){
@@ -473,6 +495,19 @@ public class StateWorldEditor extends battlearena.common.states.State
 						editingWorld.changeHeight(1);
 					}
 
+					if(keycode == Input.Keys.L)
+					{
+						// Create point light in world.
+
+						PointLight light = editingWorld.createPointLight(Color.BLUE, 10, getMouseWorldX(), getMouseWorldY(), CollisionGroup.LIGHTS_PIT);
+
+						System.out.println(getMouseWorldX() + " " + getMouseWorldY());
+
+						System.out.println("test");
+
+
+					}
+
 					if(keycode == Input.Keys.T)
 					{
 						if((Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)))
@@ -633,6 +668,8 @@ public class StateWorldEditor extends battlearena.common.states.State
 		{
 		}
 
+		editingWorld.update(delta);
+
 		// This can be made more efficient (only calculate when mouse changes tiles)
 		if(floodFill)
 		{
@@ -659,7 +696,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 		ShapeRenderer worldSR = WorldEditor.I.getShapeRenderer();
 		ShapeRenderer sr = WorldEditor.I.getShapeRenderer();
 
-		editingWorld.render();
+		editingWorld.render(WorldEditor.I.getBatch(), WorldEditor.I.getCamera());
 
 		sr.begin(ShapeRenderer.ShapeType.Line);
 		{

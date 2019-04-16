@@ -2,6 +2,9 @@ package battlearena.common.world;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import battlearena.common.CollisionGroup;
+import battlearena.common.tile.CollisionMask;
 import battlearena.common.tile.Tile;
 import battlearena.common.tile.Tileset;
 import battlearena.editor.WorldEditor;
@@ -162,8 +167,16 @@ public class TiledWorld extends World
     public void removeTile(String layerName, int x, int y)
     {
         TileLayer layer = layers.get(layerName);
+        Cell cell = layer.getCell(x, y);
+        Body prevBody = cell.getBody();
+        Tile prev = layer.placeTile(null, x, y);
 
-        layer.placeTile(null, x, y);
+        // Remove previous tile body
+        if(prev != null)
+        {
+            getPhysicsWorld().destroyBody(prevBody);
+        }
+
     }
 
     public void placeTile(String layerName, Tile t, Location loc)
@@ -174,9 +187,33 @@ public class TiledWorld extends World
     public void placeTile(String layerName, Tile t, int x, int y)
     {
         TileLayer layer = layers.get(layerName);
+        Cell cell = layer.getCell(x, y);
+        Body prevBody = cell.getBody();
+        Tile prev = layer.placeTile(t, x, y);
 
-        layer.placeTile(t, x, y);
-    }
+        // Remove previous tile body
+        if(prev != null)
+        {
+            getPhysicsWorld().destroyBody(prevBody);
+        }
+
+        if(t != null)
+        {
+            Vector2[] verts = new Vector2[4];
+            float tileOriginX = tileset.getTileWidth();
+            float tileOriginY = tileset.getTileHeight();
+            CollisionMask mask = t.getMask();
+
+            Vector2 origin = new Vector2(tileOriginX, tileOriginY);
+
+            verts[0] = (new Vector2(origin).sub(t.getMask().getVertex(0))).scl(1.0f / World.PIXELS_PER_METER);
+            verts[1] = (new Vector2(origin).sub(t.getMask().getVertex(1))).scl(1.0f / World.PIXELS_PER_METER);
+            verts[2] = (new Vector2(origin).sub(t.getMask().getVertex(2))).scl(1.0f / World.PIXELS_PER_METER);
+            verts[3] = (new Vector2(origin).sub(t.getMask().getVertex(3))).scl(1.0f / World.PIXELS_PER_METER);
+
+            cell.setBody(createQuad(BodyDef.BodyType.StaticBody, x*tileset.getTileWidth(), (height-y-1)*tileset.getTileHeight(), verts, CollisionGroup.TILES));
+        }
+     }
 
     public Tile getTile(String layer, int x, int y)
     {
@@ -220,10 +257,8 @@ public class TiledWorld extends World
     }
 
     @Override
-    public void render()
+    public void render(SpriteBatch spriteBatch, OrthographicCamera cam)
     {
-        OrthographicCamera camera = WorldEditor.I.getCamera();
-        SpriteBatch spriteBatch = WorldEditor.I.getBatch();
 
         // Render tile layers in correct order.
         spriteBatch.begin();
@@ -237,6 +272,6 @@ public class TiledWorld extends World
         spriteBatch.end();
 
         // Render entities and lights on top of tiles.
-        super.render();
+        super.render(spriteBatch, cam);
     }
 }

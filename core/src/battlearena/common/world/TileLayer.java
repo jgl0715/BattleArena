@@ -107,9 +107,13 @@ public class TileLayer
         return cells[x + y * width];
     }
 
-    public void placeTile(Tile tile, int x, int y)
+    public Tile placeTile(Tile tile, int x, int y)
     {
+        Cell c = getCell(x, y);
+        Tile before = c.getTile();
         getCell(x, y).setTile(tile);
+
+        return before;
     }
 
     public void render(SpriteBatch batch, float delta, Tileset set)

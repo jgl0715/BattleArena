@@ -47,6 +47,11 @@ public class Cell
         this.tile = tile;
     }
 
+    public void setBody(Body bod)
+    {
+        this.bod = bod;
+    }
+
     public void setMeta(int meta)
     {
         this.meta = meta;

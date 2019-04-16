@@ -258,6 +258,8 @@ public class StateTilesetEditor extends battlearena.common.states.State
 			Tileset inputSet = (Tileset) transitionInput;
 			setTileset(inputSet);
 
+			hudTilesetEditor.tableDefinitions.clear();
+
 			defEntries = new HashMap<Tile, Table>();
 
 			hudTilesetEditor.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
