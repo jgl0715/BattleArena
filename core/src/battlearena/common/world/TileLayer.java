@@ -14,6 +14,7 @@ public class TileLayer
     private int width;
     private int height;
     private Cell[] cells;
+    private boolean visible;
 
     public TileLayer(String name, int width, int height)
     {
@@ -21,6 +22,7 @@ public class TileLayer
         this.width = width;
         this.height = height;
         this.cells = new Cell[width * height];
+        this.visible = true;
 
         for(int x = 0; x < width; x++)
         {
@@ -29,6 +31,16 @@ public class TileLayer
                 cells[x + y * width] = new Cell();
             }
         }
+    }
+
+    public boolean isVisible()
+    {
+        return visible;
+    }
+
+    public void setVisible(boolean visible)
+    {
+        this.visible = visible;
     }
 
     public void changeWidth(int amount)
@@ -102,16 +114,19 @@ public class TileLayer
 
     public void render(SpriteBatch batch, float delta, Tileset set)
     {
-        for(int x = 0; x < width; x++)
+        if(visible)
         {
-            for(int y = 0; y < height; y++)
+            for(int x = 0; x < width; x++)
             {
-                Cell cell = getCell(x, y);
-                TextureRegion texture = cell.getFrame(delta, set);
-
-                if(texture != null)
+                for(int y = 0; y < height; y++)
                 {
-                    batch.draw(texture, x * set.getTileWidth(), (height-y-1) * set.getTileHeight());
+                    Cell cell = getCell(x, y);
+                    TextureRegion texture = cell.getFrame(delta, set);
+
+                    if(texture != null)
+                    {
+                        batch.draw(texture, x * set.getTileWidth(), (height-y-1) * set.getTileHeight());
+                    }
                 }
             }
         }

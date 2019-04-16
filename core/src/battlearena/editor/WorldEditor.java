@@ -161,9 +161,10 @@ public class WorldEditor extends ApplicationAdapter
 		fsa.registerTransition(STATE_CREATE_TILESET, STATE_MAIN_MENU, TRANSITION_MAIN_MENU);
 		fsa.registerTransition(STATE_CREATE_TILESET, STATE_TILESET_EDITOR, TRANSITION_EDIT_TILESET);
 		fsa.registerTransition(STATE_WORLD_EDITOR, STATE_MAIN_MENU, TRANSITION_MAIN_MENU);
+		fsa.registerTransition(STATE_WORLD_EDITOR, STATE_TILESET_EDITOR, TRANSITION_EDIT_TILESET);
 		fsa.registerTransition(STATE_TILESET_EDITOR, STATE_MAIN_MENU, TRANSITION_MAIN_MENU);
 
-	//	inputToFSA(TRANSITION_EDIT_WORLD, new TiledWorld("test", new TilesetImporter("C:\\Development\\BattleArena\\android\\assets\\output\\MainTileset.ts").imp(),50, 50));
+		//inputToFSA(TRANSITION_EDIT_WORLD, new TiledWorld("test", new TilesetImporter("C:\\Development\\BattleArena\\android\\assets\\output\\MainTileset.ts").imp(),50, 50));
 
 	}
 

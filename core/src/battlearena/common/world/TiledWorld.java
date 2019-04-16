@@ -5,9 +5,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import battlearena.common.tile.Tile;
 import battlearena.common.tile.Tileset;
@@ -60,6 +62,53 @@ public class TiledWorld extends World
             layer.changeHeight(amount);
     }
 
+    public boolean isLocInBounds(int tx, int ty)
+    {
+        return tx >= 0 && ty >= 0 && tx < width && ty < height;
+    }
+
+    public boolean isLocInBounds(Location loc)
+    {
+        return loc.getTileX() >= 0 && loc.getTileY() >= 0 && loc.getTileX() < width && loc.getTileY() < height;
+    }
+
+    public Set<Location> floodSearch(String layer, int tx, int ty)
+    {
+        Set<Location> results = new HashSet<Location>();
+        Set<Location> visited = new HashSet<Location>();
+
+        if(isLocInBounds(tx, ty))
+            floodSearch(layer, getTile(layer, tx, ty), results, visited, tx, ty);
+
+        return results;
+    }
+
+    private void floodSearch(String layer, Tile floodTile, Set<Location> results, Set<Location> visited, int tx, int ty)
+    {
+        Location loc = new Location(tx, ty);
+
+        // Don't repeat visit locations.
+        if(visited.contains(loc) || !isLocInBounds(loc))
+            return;
+
+        Tile currentTile = getTile(layer, loc);
+
+        if(currentTile != floodTile)
+            return;
+
+        visited.add(loc);
+
+        if(currentTile == floodTile)
+        {
+            results.add(loc);
+        }
+
+        floodSearch(layer, floodTile, results, visited, tx - 1, ty);
+        floodSearch(layer, floodTile, results, visited, tx + 1, ty);
+        floodSearch(layer, floodTile, results, visited, tx, ty + 1);
+        floodSearch(layer, floodTile, results, visited, tx, ty - 1);
+    }
+
     public Iterator<TileLayer> layerIterator()
     {
         return layersOrdered.iterator();
@@ -105,6 +154,11 @@ public class TiledWorld extends World
         return layers.get(name);
     }
 
+    public void removeTile(String layerName, Location loc)
+    {
+        removeTile(layerName, loc.getTileX(), loc.getTileY());
+    }
+
     public void removeTile(String layerName, int x, int y)
     {
         TileLayer layer = layers.get(layerName);
@@ -112,11 +166,26 @@ public class TiledWorld extends World
         layer.placeTile(null, x, y);
     }
 
+    public void placeTile(String layerName, Tile t, Location loc)
+    {
+        placeTile(layerName, t, loc.getTileX(), loc.getTileY());
+    }
+
     public void placeTile(String layerName, Tile t, int x, int y)
     {
         TileLayer layer = layers.get(layerName);
 
         layer.placeTile(t, x, y);
+    }
+
+    public Tile getTile(String layer, int x, int y)
+    {
+        return layers.get(layer).getCell(x, y).getTile();
+    }
+
+    public Tile getTile(String layer, Location loc)
+    {
+        return getTile(layer, loc.getTileX(), loc.getTileY());
     }
 
     public boolean layerExists(String name)

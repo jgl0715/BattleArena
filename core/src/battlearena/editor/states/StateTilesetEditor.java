@@ -118,7 +118,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 		originY = -tileset.getTilesheetHeight() / 2;
 
 		exporter.setTileset(tileset);
-		exporter.setDestination("output/" + tileset.getName() + ".ts");
+		exporter.setDestination("tilesets/" + tileset.getName() + ".ts");
 	}
 
 	public void addTileDefinition(final Tile tile, boolean viewOnly)
@@ -324,7 +324,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 				@Override
 				public void keyTyped(TextField textField, char c) {
 					tileset.setName(hudTilesetEditor.fieldTilesetName.getText());
-					exporter.setDestination("output/" + tileset.getName() + ".ts");
+					exporter.setDestination("tilesets/" + tileset.getName() + ".ts");
 				}
 			});
 

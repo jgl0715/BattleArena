@@ -21,9 +21,11 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JFileChooser;
 
@@ -32,6 +34,7 @@ import battlearena.common.file.TilesetImporter;
 import battlearena.common.tile.CollisionMask;
 import battlearena.common.tile.Tile;
 import battlearena.common.tile.Tileset;
+import battlearena.common.world.Location;
 import battlearena.common.world.TileLayer;
 import battlearena.common.world.TiledWorld;
 import battlearena.editor.WorldEditor;
@@ -51,6 +54,8 @@ public class StateWorldEditor extends battlearena.common.states.State
 	private boolean disableMovement;
 	private boolean renderGrid;
 	private boolean deleteMode;
+	private boolean floodFill;
+	private Set<Location> floodFillResult;
 
 	private InputMultiplexer muxer;
 
@@ -276,7 +281,6 @@ public class StateWorldEditor extends battlearena.common.states.State
 
 	public void updateTileset()
 	{
-
 		JFileChooser chooser = new JFileChooser();
 		int res = chooser.showOpenDialog(null);
 		Tileset result = null;
@@ -371,14 +375,24 @@ public class StateWorldEditor extends battlearena.common.states.State
 					{
 						String layer = selectedLayer.getName();
 
-						if(remove)
-						{
-							editingWorld.removeTile(layer, mtx, mty);
-						}
+						Set<Location> manipLocations = new HashSet<Location>();
+
+						if(floodFill)
+							manipLocations.addAll(floodFillResult);
 						else
+							manipLocations.add(new Location(mtx, mty));
+
+						Iterator<Location> locItr = manipLocations.iterator();
+						while(locItr.hasNext())
 						{
-							editingWorld.placeTile(layer, selectedTile, mtx, mty);
+							Location loc = locItr.next();
+
+							if(remove)
+								editingWorld.removeTile(layer, loc);
+							else
+								editingWorld.placeTile(layer, selectedTile, loc);
 						}
+
 						return true;
 
 					}
@@ -410,6 +424,14 @@ public class StateWorldEditor extends battlearena.common.states.State
 			@Override
 			public boolean keyUp(int keycode)
 			{
+
+
+				if(keycode == Input.Keys.F)
+				{
+					// Enable flood filling
+					floodFill = false;
+				}
+
 				return false;
 			}
 
@@ -455,8 +477,45 @@ public class StateWorldEditor extends battlearena.common.states.State
 
 					if(keycode == Input.Keys.T)
 					{
-						// Change/update tileset
-						updateTileset();
+						if((Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)))
+						{
+							// Modify tileset in editor
+							exporter.exp();
+
+							WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_EDIT_TILESET, editingWorld.getTileset());
+						}
+						else
+						{
+							// Change/update tileset
+							updateTileset();
+						}
+					}
+
+					if(keycode == Input.Keys.F)
+					{
+						// Enable flood filling
+						floodFill = true;
+					}
+
+					if(keycode == Input.Keys.V)
+					{
+						// Toggle layer visibility
+						selectedLayer.setVisible(!selectedLayer.isVisible());
+
+						if(selectedLayer.isVisible())
+						{
+							layerTables.get(selectedLayer).setColor(Color.BLACK);
+						}
+						else
+						{
+							layerTables.get(selectedLayer).setColor(Color.RED);
+						}
+					}
+
+					if(keycode == Input.Keys.G)
+					{
+						// Enable/Disable grid
+						renderGrid = !renderGrid;
 					}
 
 					if(keycode == Input.Keys.S && (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)))
@@ -576,6 +635,12 @@ public class StateWorldEditor extends battlearena.common.states.State
 		{
 		}
 
+		// This can be made more efficient (only calculate when mouse changes tiles)
+		if(floodFill)
+		{
+			floodFillResult = editingWorld.floodSearch(selectedLayer.getName(), getMouseTileX(), getMouseTileY());
+		}
+
 //		if (camera.position.x >= WorldEditor.I.VIRTUAL_WIDTH / 2 * camera.zoom)
 //			camera.position.x = WorldEditor.I.VIRTUAL_WIDTH / 2 * camera.zoom;
 //		if (camera.position.x <= -WorldEditor.I.VIRTUAL_WIDTH / 2 * camera.zoom)
@@ -611,8 +676,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 			{
 				sr.setColor(Color.WHITE);
 
-				// change to renderGrid==true
-				if (true)
+				if (renderGrid)
 				{
 					for (int row = 0; row <= worldHeight; row++)
 						sr.line(originX, originY + row * tileHeight, originX + editingWorld.getPixelWidth(), originY + row * tileHeight);
@@ -626,11 +690,32 @@ public class StateWorldEditor extends battlearena.common.states.State
 			int mtx = getMouseTileX();
 			int mty = getMouseTileY();
 			{
-				if (mtx >= 0 && mtx < worldWidth && mty >= 0 && mty < worldHeight)
+				sr.setColor(Color.GREEN);
+
+				if(floodFill)
 				{
-					sr.setColor(Color.GREEN);
-					sr.rect(originX + mtx * tileWidth, originY + editingWorld.getPixelHeight() - (1 + mty) * tileHeight, tileWidth, tileHeight);
+					// Render result of flood filling.
+					Iterator<Location> locItr = floodFillResult.iterator();
+
+					while(locItr.hasNext())
+					{
+						Location loc = locItr.next();
+
+						if (mtx >= 0 && mtx < worldWidth && mty >= 0 && mty < worldHeight)
+						{
+							sr.rect(originX + loc.getTileX() * tileWidth, originY + editingWorld.getPixelHeight() - (1 + loc.getTileY()) * tileHeight, tileWidth, tileHeight);
+						}
+					}
 				}
+				else
+				{
+					// Render single tile.
+					if (mtx >= 0 && mtx < worldWidth && mty >= 0 && mty < worldHeight)
+					{
+						sr.rect(originX + mtx * tileWidth, originY + editingWorld.getPixelHeight() - (1 + mty) * tileHeight, tileWidth, tileHeight);
+					}
+				}
+
 			}
 		}
 		sr.end();
