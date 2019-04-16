@@ -215,7 +215,6 @@ public class StateWorldEditor extends battlearena.common.states.State
 		});
 	}
 
-
 	/**
 	 * Convenience method for adding a new layer.
 	 * @param layerName
@@ -229,7 +228,6 @@ public class StateWorldEditor extends battlearena.common.states.State
 
 		return newLayer;
 	}
-
 
 	public void removeLayer(TileLayer layer)
 	{
