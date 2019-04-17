@@ -27,8 +27,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 
+import battlearena.common.file.TiledWorldImporter;
+import battlearena.common.file.TilesetImporter;
 import battlearena.common.tile.CollisionMask;
 import battlearena.common.tile.Tile;
+import battlearena.common.world.TiledWorld;
 import battlearena.editor.TileImage;
 import battlearena.common.tile.Tileset;
 import battlearena.common.file.TilesetExporter;
@@ -456,18 +459,37 @@ public class StateTilesetEditor extends battlearena.common.states.State
 				public boolean keyDown(int keycode)
 				{
 
-					if(keycode == Input.Keys.S && (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)))
+					if(hudTilesetEditor.getUI().getKeyboardFocus() == null)
 					{
-						// Save world
-						exporter.exp();
+						if(keycode == Keys.T)
+						{
+							if((Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)))
+							{
+								TiledWorldImporter importer = new TiledWorldImporter(WorldEditor.I.getLastLoadedWorldPath());
+								TiledWorld world = importer.imp();
+
+								if(world != null)
+								{
+									exporter.exp();
+									WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_EDIT_WORLD, importer.imp());
+								}
+							}
+						}
+
+						if(keycode == Input.Keys.S && (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)))
+						{
+							// Save world
+							exporter.exp();
+						}
+
+						if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
+						{
+							// Transition back to main menu AND at least attempt to export the world.
+							exporter.exp();
+							WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_MAIN_MENU);
+						}
 					}
 
-					if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
-					{
-						// Transition back to main menu AND at least attempt to export the world.
-						exporter.exp();
-						WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_MAIN_MENU);
-					}
 
 					return false;
 				}

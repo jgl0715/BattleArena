@@ -599,6 +599,8 @@ public class StateWorldEditor extends battlearena.common.states.State
 			editingWorld = (TiledWorld) transitionInput;
 			exporter = new TiledWorldExporter(editingWorld, "/worlds/" + editingWorld.getName() + ".world");
 
+			WorldEditor.I.setLastLoadedWorldPath(exporter.getAbsoluteLocation());
+
 			hudWorldEditor.tableTiles.clear();
 			hudWorldEditor.tableLayers.clear();
 			layerTables.clear();

@@ -38,6 +38,11 @@ public class TiledWorldExporter
         this.d = null;
     }
 
+    public String getAbsoluteLocation()
+    {
+        return Gdx.files.local(d).file().getAbsolutePath();
+    }
+
     private FileHandle getLoc(String loc)
     {
         FileHandle exportLocation = Gdx.files.local(loc);

@@ -83,17 +83,18 @@ public class TiledWorld extends World
         Set<Location> visited = new HashSet<Location>();
 
         if(isLocInBounds(tx, ty))
-            floodSearch(layer, getTile(layer, tx, ty), results, visited, tx, ty);
+            floodSearch(layer, 0, getTile(layer, tx, ty), results, visited, tx, ty);
 
         return results;
     }
 
-    private void floodSearch(String layer, Tile floodTile, Set<Location> results, Set<Location> visited, int tx, int ty)
+    private void floodSearch(String layer, int depth, Tile floodTile, Set<Location> results, Set<Location> visited, int tx, int ty)
     {
         Location loc = new Location(tx, ty);
 
         // Don't repeat visit locations.
-        if(visited.contains(loc) || !isLocInBounds(loc))
+        // TODO: fix basic stack overflow error
+        if(visited.contains(loc) || !isLocInBounds(loc) || depth > 200)
             return;
 
         Tile currentTile = getTile(layer, loc);
@@ -108,10 +109,10 @@ public class TiledWorld extends World
             results.add(loc);
         }
 
-        floodSearch(layer, floodTile, results, visited, tx - 1, ty);
-        floodSearch(layer, floodTile, results, visited, tx + 1, ty);
-        floodSearch(layer, floodTile, results, visited, tx, ty + 1);
-        floodSearch(layer, floodTile, results, visited, tx, ty - 1);
+        floodSearch(layer, depth + 1, floodTile, results, visited, tx - 1, ty);
+        floodSearch(layer, depth + 1, floodTile, results, visited, tx + 1, ty);
+        floodSearch(layer, depth + 1, floodTile, results, visited, tx, ty + 1);
+        floodSearch(layer, depth + 1, floodTile, results, visited, tx, ty - 1);
     }
 
     public Iterator<TileLayer> layerIterator()
@@ -172,7 +173,7 @@ public class TiledWorld extends World
         Tile prev = layer.placeTile(null, x, y);
 
         // Remove previous tile body
-        if(prev != null)
+        if(prevBody != null)
         {
             getPhysicsWorld().destroyBody(prevBody);
         }
@@ -192,7 +193,7 @@ public class TiledWorld extends World
         Tile prev = layer.placeTile(t, x, y);
 
         // Remove previous tile body
-        if(prev != null)
+        if(prevBody != null)
         {
             getPhysicsWorld().destroyBody(prevBody);
         }
