@@ -27,47 +27,6 @@ public class Controller {
         viewport = new FitViewport(800, 480, cam);
         stage = new Stage(viewport, BattleArena.batch);
 
-        stage.addListener(new InputListener(){
-
-            @Override
-            public boolean keyDown(InputEvent event, int keycode) {
-                switch(keycode){
-                    case Input.Keys.UP:
-                        upPressed = true;
-                        break;
-                    case Input.Keys.DOWN:
-                        downPressed = true;
-                        break;
-                    case Input.Keys.LEFT:
-                        leftPressed = true;
-                        break;
-                    case Input.Keys.RIGHT:
-                        rightPressed = true;
-                        break;
-                }
-                return true;
-            }
-
-            @Override
-            public boolean keyUp(InputEvent event, int keycode) {
-                switch(keycode){
-                    case Input.Keys.UP:
-                        upPressed = false;
-                        break;
-                    case Input.Keys.DOWN:
-                        downPressed = false;
-                        break;
-                    case Input.Keys.LEFT:
-                        leftPressed = false;
-                        break;
-                    case Input.Keys.RIGHT:
-                        rightPressed = false;
-                        break;
-                }
-                return true;
-            }
-        });
-
         Gdx.input.setInputProcessor(stage);
 
         Table table = new Table();

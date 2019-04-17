@@ -36,9 +36,8 @@ public class BattleArena extends ApplicationAdapter {
 
 		viewport = new FitViewport(800 / PPM, 480 / PPM, cam);
 		batch = new SpriteBatch();
-		world = new World(new Vector2(0, -10), true);
+		world = new World(new Vector2(0, 0), true);
 		b2dr = new Box2DDebugRenderer();
-		createGround();
 		createPlayer();
 		controller = new Controller();
 
@@ -56,10 +55,12 @@ public class BattleArena extends ApplicationAdapter {
 			player.setLinearVelocity(new Vector2(1, player.getLinearVelocity().y));
 		else if (controller.isLeftPressed())
 			player.setLinearVelocity(new Vector2(-1, player.getLinearVelocity().y));
+		else if (controller.isDownPressed())
+			player.setLinearVelocity(new Vector2(player.getLinearVelocity().x, -1));
+		else if (controller.isUpPressed())
+			player.setLinearVelocity(new Vector2(player.getLinearVelocity().x, 1));
 		else
-			player.setLinearVelocity(new Vector2(0, player.getLinearVelocity().y));
-		if (controller.isUpPressed() && player.getLinearVelocity().y == 0)
-			player.applyLinearImpulse(new Vector2(0, 5f), player.getWorldCenter(), true);
+			player.setLinearVelocity(new Vector2(0, 0));
 	}
 
 	public void update(float dt) {
@@ -75,22 +76,8 @@ public class BattleArena extends ApplicationAdapter {
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		b2dr.render(world, cam.combined);
-		if (Gdx.app.getType() == Application.ApplicationType.Android)
+		//if (Gdx.app.getType() == Application.ApplicationType.Android)
 			controller.draw();
-	}
-
-	public void createGround() {
-		BodyDef bdef = new BodyDef();
-		bdef.position.set(viewport.getWorldWidth() / 2, 0);
-		bdef.type = BodyDef.BodyType.StaticBody;
-		Body b2body = world.createBody(bdef);
-
-		FixtureDef fdef = new FixtureDef();
-		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(viewport.getWorldWidth() / 2, 20 / PPM);
-
-		fdef.shape = shape;
-		b2body.createFixture(fdef);
 	}
 
 	public void createPlayer() {
