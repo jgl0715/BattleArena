@@ -188,7 +188,7 @@ public class Entity
 		return null;
 	}
 
-	public Data FindData(int DataID)
+	public Data findData(int DataID)
 	{
 		Iterator<Integer> ComponentItr = dataComponents.keySet().iterator();
 		while (ComponentItr.hasNext())

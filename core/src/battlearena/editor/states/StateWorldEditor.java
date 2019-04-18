@@ -35,6 +35,7 @@ import battlearena.common.file.TilesetImporter;
 import battlearena.common.tile.CollisionMask;
 import battlearena.common.tile.Tile;
 import battlearena.common.tile.Tileset;
+import battlearena.common.world.Layer;
 import battlearena.common.world.Location;
 import battlearena.common.world.TileLayer;
 import battlearena.common.world.TiledWorld;
@@ -48,9 +49,9 @@ public class StateWorldEditor extends battlearena.common.states.State
 	private TiledWorld editingWorld;
 	private TiledWorldExporter exporter;
 	private HUDWorldEditor hudWorldEditor;
-	private Map<TileLayer, Table> layerTables;
+	private Map<Layer, Table> layerTables;
 	private Map<Tile, Table> tileTables;
-	private TileLayer selectedLayer;
+	private Layer selectedLayer;
 	private Tile selectedTile;
 
 	private boolean disableMovement;
@@ -61,11 +62,13 @@ public class StateWorldEditor extends battlearena.common.states.State
 
 	private InputMultiplexer muxer;
 
+	private PointLight lastLight;
+
 	public StateWorldEditor()
 	{
 		super("World Editor");
 
-		layerTables = new HashMap<TileLayer, Table>();
+		layerTables = new HashMap<Layer, Table>();
 		tileTables = new HashMap<Tile, Table>();
 	}
 
@@ -148,7 +151,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 	{
 		if(!viewOnly)
 		{
-			editingWorld.addLayer(newLayer);
+			editingWorld.addTileLayer(newLayer);
 		}
 
 		// Add the new layer to the view.
@@ -246,7 +249,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 
 		// Remove layer from view and world (model).
 		hudWorldEditor.removeLayer(tableLayer);
-		editingWorld.removeLayer(layer.getName());
+		editingWorld.removeTileLayer(layer.getName());
 		layerTables.remove(layer);
 
 		if(layerTables.size() > 0)
@@ -382,6 +385,14 @@ public class StateWorldEditor extends battlearena.common.states.State
 				return editTile(button);
 			}
 
+			public void leftClickLayer()
+			{
+				if(selectedLayer instanceof TileLayer)
+				{
+
+				}
+			}
+
 			public boolean editTile(int button)
 			{
 				if(button == Input.Buttons.LEFT)
@@ -507,14 +518,9 @@ public class StateWorldEditor extends battlearena.common.states.State
 					{
 						// Create point light in world.
 
-						PointLight light = editingWorld.createPointLight(Color.BLUE, 10, getMouseWorldX(), getMouseWorldY(), CollisionGroup.LIGHTS_PIT);
-
-						System.out.println(getMouseWorldX() + " " + getMouseWorldY());
-
-						System.out.println("test");
-
-
+						lastLight = editingWorld.createPointLight(Color.BLUE, 10, getMouseWorldX(), getMouseWorldY(), CollisionGroup.LIGHTS_PIT);
 					}
+
 
 					if(keycode == Input.Keys.T)
 					{
@@ -684,6 +690,161 @@ public class StateWorldEditor extends battlearena.common.states.State
 		if(floodFill)
 		{
 			floodFillResult = editingWorld.floodSearch(selectedLayer.getName(), getMouseTileX(), getMouseTileY());
+		}
+
+
+		if(Gdx.input.isKeyPressed(Input.Keys.NUMPAD_1))
+		{
+			// Create point light in world.
+			Color c = lastLight.getColor();
+			c.r -= 0.01;
+
+			if(c.r < 0)
+				c.r = 0;
+			if(c.r > 1)
+				c.r = 1;		lastLight.update();				lastLight.setColor(c);
+
+
+
+		}
+
+
+		if(Gdx.input.isKeyPressed(Input.Keys.NUMPAD_2))
+		{
+			// Create point light in world.
+			Color c = lastLight.getColor();
+			c.r += 0.01;
+
+			if(c.r < 0)
+				c.r = 0;
+			if(c.r > 1)
+				c.r = 1;			System.out.println(c.r);
+
+				lastLight.setColor(c);
+
+
+		}
+
+		if(Gdx.input.isKeyPressed(Input.Keys.NUMPAD_4))
+	{
+		// Create point light in world.
+		Color c = lastLight.getColor();
+		c.g -= 0.01;
+
+		if(c.g < 0)
+			c.g = 0;
+		if(c.g > 1)
+			c.g = 1;					lastLight.setColor(c);
+
+
+	}
+
+
+		if(Gdx.input.isKeyPressed(Input.Keys.NUMPAD_5))
+		{
+			// Create point light in world.
+			Color c = lastLight.getColor();
+			c.g += 0.01;
+
+
+			if(c.g < 0)
+				c.g = 0;
+			if(c.g > 1)
+				c.g = 1;						lastLight.setColor(c);
+
+
+		}
+
+
+		if(Gdx.input.isKeyPressed(Input.Keys.NUMPAD_7))
+		{
+			// Create point light in world.
+			Color c = lastLight.getColor();
+			c.b -= 0.01;
+
+			if(c.b < 0)
+				c.b = 0;
+			if(c.b > 1)
+				c.b = 1;					lastLight.setColor(c);
+
+
+		}
+
+
+		if(Gdx.input.isKeyPressed(Input.Keys.NUMPAD_8))
+		{
+			// Create point light in world.
+			Color c = lastLight.getColor();
+			c.b += 0.01;
+
+
+			if(c.b < 0)
+				c.b = 0;
+			if(c.b > 1)
+				c.b = 1;						lastLight.setColor(c);
+
+
+		}
+
+
+		if(Gdx.input.isKeyPressed(Input.Keys.NUM_1))
+		{
+			// Create point light in world.
+
+			float dist = lastLight.getDistance();
+
+			dist -= 1f;
+
+			if(dist < 0)
+				dist = 0;
+
+
+			lastLight.setDistance(dist);
+
+
+		}
+
+
+		if(Gdx.input.isKeyPressed(Input.Keys.NUM_2))
+		{
+			float dist = lastLight.getDistance();
+
+			dist += 1f;
+
+
+			lastLight.setDistance(dist);
+
+
+		}
+
+		if(Gdx.input.isKeyPressed(Input.Keys.NUM_1))
+		{
+			// Create point light in world.
+
+			float dist = lastLight.getDistance();
+
+			dist -= 1f;
+
+			if(dist < 0)
+				dist = 0;
+
+
+			lastLight.setDistance(dist);
+
+
+		}
+
+
+		if(Gdx.input.isKeyPressed(Input.Keys.NUM_2))
+		{
+			float dist = lastLight.getDistance();
+
+			dist += 1f;
+
+
+			lastLight.setDistance(dist);
+
+
 		}
 
 //		if (camera.position.x >= WorldEditor.I.VIRTUAL_WIDTH / 2 * camera.zoom)

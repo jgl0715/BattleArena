@@ -257,14 +257,14 @@ public class TiledWorld extends World
         return layers.containsKey(name);
     }
 
-    public void addLayer(TileLayer layer)
+    public void addTileLayer(TileLayer layer)
     {
         layers.put(layer.getName(), layer);
 
         layersOrdered.add(layer);
     }
 
-    public void removeLayer(String layerName)
+    public void removeTileLayer(String layerName)
     {
         TileLayer layer = layers.get(layerName);
 

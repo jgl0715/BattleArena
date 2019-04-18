@@ -55,7 +55,7 @@ public class TiledWorldImporter
 
                 // No extra ordering required here,
                 // layers should already be ordered correctly in the world definition file.
-                resultWorld.addLayer(layer);
+                resultWorld.addTileLayer(layer);
 
                 for(int x = 0; x < worldWidth; x++)
                 {

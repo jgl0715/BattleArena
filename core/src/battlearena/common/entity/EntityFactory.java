@@ -8,6 +8,27 @@ import battlearena.common.world.World;
 public class EntityFactory
 {
 
+	public static ELight createLight(World world, float x, float y, float r, float g, float b, float d, float ss)
+	{
+		EntityConfig Config = new EntityConfig(world);
+
+		// Define physics body information.
+		Config.AddConfigItem("Pos.X", x);
+		Config.AddConfigItem("Pos.Y", y);
+
+		Config.AddConfigItem("Size.X", 20);
+		Config.AddConfigItem("Size.Y", 20);
+
+		Config.AddConfigItem(ELight.DATA_RED, r);
+		Config.AddConfigItem(ELight.DATA_GREEN, g);
+		Config.AddConfigItem(ELight.DATA_BLUE, b);
+		Config.AddConfigItem(ELight.DATA_DISTANCE, d);
+		Config.AddConfigItem(ELight.DATA_SHADOW_SOFTNESS, d);
+
+		return new ELight(Config);
+	}
+
+
 	public static EPlayer CreatePlayer(World world, float X, float Y)
 	{
 		EntityConfig Config = new EntityConfig(world);

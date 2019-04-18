@@ -12,8 +12,10 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import battlearena.common.CollisionGroup;
 import battlearena.common.entity.Entity;
@@ -28,17 +30,18 @@ public class World
     public static final float PIXELS_PER_METER = 10.0f;
 
     private String name;
-    private List<Entity> entities;
-    private List<Entity> forAdd;
     private com.badlogic.gdx.physics.box2d.World PhysicsWorld;
     private RayHandler handler;
     private Box2DDebugRenderer dbgr;
 
+    private Map<String, EntityLayer> entityLayers;
+    private List<EntityLayer> entityLayersOrdered;
+    private List<EntityLayer> entityLayersToAdd;
+    private List<EntityLayer> entityLayersToRemove;
+
     public World(String n)
     {
         this.name = n;
-        entities = new ArrayList<Entity>();
-        forAdd = new ArrayList<Entity>();
 
         PhysicsWorld = new com.badlogic.gdx.physics.box2d.World(new Vector2(0, 0 / PIXELS_PER_METER), false);
 
@@ -47,6 +50,11 @@ public class World
         handler = new RayHandler(PhysicsWorld);
        // handler.setShadows(true);
         handler.setAmbientLight(0.6f);
+
+        entityLayers = new HashMap<String, EntityLayer>();
+        entityLayersOrdered = new ArrayList<EntityLayer>();
+        entityLayersToAdd = new ArrayList<EntityLayer>();
+        entityLayersToRemove = new ArrayList<EntityLayer>();
     }
 
     public com.badlogic.gdx.physics.box2d.World getPhysicsWorld()
@@ -54,24 +62,14 @@ public class World
         return PhysicsWorld;
     }
 
+    public RayHandler getRayHandler()
+    {
+        return handler;
+    }
+
     public String getName()
     {
         return name;
-    }
-
-    public <T extends Entity> List<T> findObjectsByClass(Class<T> Class)
-    {
-        List<T> objects = new ArrayList<T>();
-        Iterator<Entity> itr = entities.iterator();
-
-        while (itr.hasNext())
-        {
-            Entity next = itr.next();
-            if (next.getClass() == Class)
-                objects.add(Class.cast(next));
-        }
-
-        return objects;
     }
 
     public PointLight createPointLight(Color lightColor, float lightDistance, float x, float y, CollisionGroup group)
@@ -161,39 +159,47 @@ public class World
         return Body;
     }
 
+    public void addEntityLayer(EntityLayer layer)
+    {
+        entityLayersToAdd.add(layer);
+    }
+
+    public void removeEntityLayer(EntityLayer layer)
+    {
+        entityLayersToRemove.add(layer);
+    }
+
     public void update(float delta)
     {
-
-        int Index = 0;
 
         // Step the physics world.
         PhysicsWorld.step(delta, 6, 8);
 
-        // Add pending entities.
-        entities.addAll(forAdd);
-        forAdd.clear();
-
-        // Update entities while removing entities marked for removal.
-        while (Index < entities.size())
+        // Add entity layers
+        Iterator<EntityLayer> layerItr = entityLayersToAdd.iterator();
+        while(layerItr.hasNext())
         {
-            Entity e = entities.get(Index);
-
-            if (e.isDead())
-            {
-                entities.remove(Index);
-            }
-            else
-            {
-                e.Update(delta);
-                Index++;
-            }
+            EntityLayer next = layerItr.next();
+            entityLayers.put(next.getName(), next);
+            entityLayersOrdered.add(next);
         }
+
+        layerItr = entityLayersToRemove.iterator();
+        while(layerItr.hasNext())
+        {
+            EntityLayer next = layerItr.next();
+            entityLayers.remove(next.getName());
+            entityLayersOrdered.remove(next);
+        }
+
+        for(EntityLayer layer : entityLayersOrdered)
+            layer.update(delta);
     }
 
     public void render(SpriteBatch batch, OrthographicCamera cam)
     {
-        for (Entity E : entities)
-            E.Render(batch);
+        for(EntityLayer layer : entityLayersOrdered)
+            layer.render(batch);
 
         Matrix4 mat = new Matrix4(cam.combined);
         mat.scale(World.PIXELS_PER_METER, World.PIXELS_PER_METER, 1);
