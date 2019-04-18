@@ -176,8 +176,34 @@ public class TiledWorld extends World
         if(prevBody != null)
         {
             getPhysicsWorld().destroyBody(prevBody);
+            cell.setBody(null);
         }
 
+    }
+
+    /**
+     * Places a collision mask into this world. This object will be present in the physics world as
+     * a static body and will be used for shadow casting and entity collision.
+     *
+     * @param mask
+     * @param group
+     * @param originX
+     * @param originY
+     * @param x
+     * @param y
+     * @return
+     */
+    public Body placeMask(CollisionMask mask, CollisionGroup group, float originX, float originY, float x, float y)
+    {
+        Vector2[] verts = new Vector2[4];
+        Vector2 origin = new Vector2(originX, originY);
+
+        verts[0] = (new Vector2(origin).sub(mask.getVertex(0))).scl(1.0f / World.PIXELS_PER_METER);
+        verts[1] = (new Vector2(origin).sub(mask.getVertex(1))).scl(1.0f / World.PIXELS_PER_METER);
+        verts[2] = (new Vector2(origin).sub(mask.getVertex(2))).scl(1.0f / World.PIXELS_PER_METER);
+        verts[3] = (new Vector2(origin).sub(mask.getVertex(3))).scl(1.0f / World.PIXELS_PER_METER);
+
+        return createQuad(BodyDef.BodyType.StaticBody, x, y, verts, group);
     }
 
     public void placeTile(String layerName, Tile t, Location loc)
@@ -185,12 +211,13 @@ public class TiledWorld extends World
         placeTile(layerName, t, loc.getTileX(), loc.getTileY());
     }
 
-    public void placeTile(String layerName, Tile t, int x, int y)
+
+    public void placeTile(String layerName, Tile t, int x, int y, int meta)
     {
         TileLayer layer = layers.get(layerName);
         Cell cell = layer.getCell(x, y);
         Body prevBody = cell.getBody();
-        Tile prev = layer.placeTile(t, x, y);
+        Tile prev = layer.placeTile(t, x, y, meta);
 
         // Remove previous tile body
         if(prevBody != null)
@@ -200,21 +227,20 @@ public class TiledWorld extends World
 
         if(t != null)
         {
-            Vector2[] verts = new Vector2[4];
+            CollisionMask mask = t.getMask();
             float tileOriginX = tileset.getTileWidth();
             float tileOriginY = tileset.getTileHeight();
-            CollisionMask mask = t.getMask();
-
-            Vector2 origin = new Vector2(tileOriginX, tileOriginY);
-
-            verts[0] = (new Vector2(origin).sub(t.getMask().getVertex(0))).scl(1.0f / World.PIXELS_PER_METER);
-            verts[1] = (new Vector2(origin).sub(t.getMask().getVertex(1))).scl(1.0f / World.PIXELS_PER_METER);
-            verts[2] = (new Vector2(origin).sub(t.getMask().getVertex(2))).scl(1.0f / World.PIXELS_PER_METER);
-            verts[3] = (new Vector2(origin).sub(t.getMask().getVertex(3))).scl(1.0f / World.PIXELS_PER_METER);
-
-            cell.setBody(createQuad(BodyDef.BodyType.StaticBody, x*tileset.getTileWidth(), (height-y-1)*tileset.getTileHeight(), verts, CollisionGroup.TILES));
+            float tileX = x*tileset.getTileWidth();
+            float tileY = (height-y-1)*tileset.getTileHeight();
+            cell.setBody(placeMask(mask, CollisionGroup.TILES, tileOriginX, tileOriginY, tileX, tileY));
         }
-     }
+    }
+
+    public void placeTile(String layerName, Tile t, int x, int y)
+    {
+        // Use zero for the meta.
+        placeTile(layerName, t, x, y, 0);
+    }
 
     public Tile getTile(String layer, int x, int y)
     {
@@ -267,7 +293,7 @@ public class TiledWorld extends World
             for(int l = 0; l < layersOrdered.size(); l++)
             {
                 TileLayer layer = layersOrdered.get(l);
-                layer.render(spriteBatch, delta, tileset);
+                layer.render(spriteBatch);
             }
         }
         spriteBatch.end();

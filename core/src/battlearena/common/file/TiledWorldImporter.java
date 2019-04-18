@@ -51,7 +51,11 @@ public class TiledWorldImporter
             for(int i = 0; i < layerCount; i++)
             {
                 String layerName = inputStream.readUTF();
-                TileLayer layer = new TileLayer(layerName, worldWidth, worldHeight);
+                TileLayer layer = new TileLayer(layerName, worldTileset, worldWidth, worldHeight);
+
+                // No extra ordering required here,
+                // layers should already be ordered correctly in the world definition file.
+                resultWorld.addLayer(layer);
 
                 for(int x = 0; x < worldWidth; x++)
                 {
@@ -59,16 +63,12 @@ public class TiledWorldImporter
                     {
                         int tileId = inputStream.readInt();
                         int tileMeta = inputStream.readInt();
-
                         Tile tile = worldTileset.getTile(tileId);
-                        Cell c = layer.getCell(x, y);
-                        c.setTile(tile);
-                        c.setMeta(tileMeta);
+
+                        resultWorld.placeTile(layerName, tile, x, y, tileMeta);
                     }
                 }
 
-                // Layers should already be ordered correctly in the world definition file.
-                resultWorld.addLayer(layer);
             }
 
             System.out.println("World successfully imported.");

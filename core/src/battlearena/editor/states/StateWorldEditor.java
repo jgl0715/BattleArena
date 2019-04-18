@@ -178,6 +178,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 					hudWorldEditor.getUI().setKeyboardFocus(null);
 				}
 
+
 				return true;
 			}
 		});
@@ -195,6 +196,13 @@ public class StateWorldEditor extends battlearena.common.states.State
 					deleteMode = false;
 				}else
 				{
+
+                    // Makes the user click the layer again in order to edit the text.
+                    if(selectedLayer != newLayer)
+                    {
+                        hudWorldEditor.getUI().setKeyboardFocus(null);
+                    }
+
 					selectLayer(newLayer);
 				}
 			}
@@ -224,7 +232,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 	 */
 	public TileLayer addNewLayer(String layerName)
 	{
-		final TileLayer newLayer = new TileLayer(layerName, editingWorld.getWidth(), editingWorld.getHeight());
+		final TileLayer newLayer = new TileLayer(layerName, editingWorld.getTileset(), editingWorld.getWidth(), editingWorld.getHeight());
 
 		addNewLayer(newLayer, false);
 
