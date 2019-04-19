@@ -1,38 +1,39 @@
 package battlearena.common.world;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import battlearena.common.entity.Entity;
+import battlearena.common.entity.data.DVector2;
+import battlearena.editor.WorldEditor;
 
 public class EntityLayer extends Layer
 {
 
     private List<Entity> entities;
     private List<Entity> forAdd;
-    private Class<? extends Entity> entityType;
 
     public EntityLayer(String name)
     {
         super(name);
 
-        // Accepts every type of entity
-        this.entityType = null;
-
         entities = new ArrayList<Entity>();
         forAdd = new ArrayList<Entity>();
     }
 
-    public EntityLayer(String name, Class<? extends Entity> et)
+    public Iterator<Entity> iterator()
     {
-        super(name);
-        this.entityType = et;
+        return entities.iterator();
+    }
 
-        entities = new ArrayList<Entity>();
-        forAdd = new ArrayList<Entity>();
+    public void addEntity(Entity e)
+    {
+        forAdd.add(e);
     }
 
     public <T extends Entity> List<T> findEntitiesByClass(Class<T> Class)
@@ -48,11 +49,6 @@ public class EntityLayer extends Layer
         }
 
         return objects;
-    }
-
-    public Class<? extends Entity> getEntityType()
-    {
-        return entityType;
     }
 
     @Override
@@ -86,5 +82,22 @@ public class EntityLayer extends Layer
     {
         for (Entity e : entities)
             e.Render(batch);
+
+        // Render boxes around entities.
+        if (visible)
+        {
+            ShapeRenderer sr = WorldEditor.I.getShapeRenderer();
+
+            sr.begin(ShapeRenderer.ShapeType.Line);
+            for (Entity e : entities)
+            {
+                Vector2 pos = e.find(DVector2.class, Entity.POSITION).Value;
+                Vector2 size = e.find(DVector2.class, Entity.SIZE).Value;
+
+                sr.rect(pos.x - size.x / 2, pos.y - size.y / 2, size.x, size.y);
+
+            }
+            sr.end();
+        }
     }
 }

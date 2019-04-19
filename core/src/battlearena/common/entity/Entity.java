@@ -26,6 +26,9 @@ public class Entity
 	public static final String FRAME = "Frame";
 	public static final String BODY = "Body";
 
+	public static final String DATA_X = "Pos.X";
+	public static final String DATA_Y = "Pos.Y";
+
 	private volatile static int nextId = 0;
 
 	protected volatile int id;

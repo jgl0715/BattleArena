@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import battlearena.common.gui.HUD;
 import battlearena.common.tile.Tile;
 import battlearena.common.tile.Tileset;
+import battlearena.common.world.Layer;
 import battlearena.common.world.TileLayer;
 import battlearena.editor.TileImage;
 
@@ -104,11 +105,12 @@ public class HUDWorldEditor extends HUD
     }
 
 
-    public Table addLayer(TileLayer layer)
+    public Table addLayer(Layer layer, boolean nameEditable)
     {
         Table tableLayer = new Table(skin);
 
         TextField fieldLayerName = new TextField(layer.getName(), skin);
+        fieldLayerName.setDisabled(!nameEditable);
 
         tableLayer.add(fieldLayerName).width(200);
 

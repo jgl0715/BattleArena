@@ -37,7 +37,7 @@ public class World
     private Map<String, EntityLayer> entityLayers;
     private List<EntityLayer> entityLayersOrdered;
     private List<EntityLayer> entityLayersToAdd;
-    private List<EntityLayer> entityLayersToRemove;
+    private List<String> entityLayersToRemove;
 
     public World(String n)
     {
@@ -54,7 +54,7 @@ public class World
         entityLayers = new HashMap<String, EntityLayer>();
         entityLayersOrdered = new ArrayList<EntityLayer>();
         entityLayersToAdd = new ArrayList<EntityLayer>();
-        entityLayersToRemove = new ArrayList<EntityLayer>();
+        entityLayersToRemove = new ArrayList<String>();
     }
 
     public com.badlogic.gdx.physics.box2d.World getPhysicsWorld()
@@ -159,37 +159,55 @@ public class World
         return Body;
     }
 
+    public void addEntity(String layerName, Entity e)
+    {
+        EntityLayer layer = getEntityLayer(layerName);
+
+        layer.addEntity(e);
+    }
+
+    public EntityLayer getEntityLayer(String name)
+    {
+        return entityLayers.get(name);
+    }
+
     public void addEntityLayer(EntityLayer layer)
     {
         entityLayersToAdd.add(layer);
     }
 
-    public void removeEntityLayer(EntityLayer layer)
+    public void removeEntityLayer(String layer)
     {
         entityLayersToRemove.add(layer);
     }
 
     public void update(float delta)
     {
-
         // Step the physics world.
         PhysicsWorld.step(delta, 6, 8);
 
         // Add entity layers
-        Iterator<EntityLayer> layerItr = entityLayersToAdd.iterator();
-        while(layerItr.hasNext())
+        Iterator<EntityLayer> toAddItr = entityLayersToAdd.iterator();
+        while(toAddItr.hasNext())
         {
-            EntityLayer next = layerItr.next();
+            EntityLayer next = toAddItr.next();
+
             entityLayers.put(next.getName(), next);
             entityLayersOrdered.add(next);
+
+            toAddItr.remove();
         }
 
-        layerItr = entityLayersToRemove.iterator();
-        while(layerItr.hasNext())
+        Iterator<String> toRemoveItr = entityLayersToRemove.iterator();
+        while(toRemoveItr.hasNext())
         {
-            EntityLayer next = layerItr.next();
-            entityLayers.remove(next.getName());
-            entityLayersOrdered.remove(next);
+            String next = toRemoveItr.next();
+            EntityLayer layer = entityLayers.get(next);
+
+            entityLayers.remove(next);
+            entityLayersOrdered.remove(layer);
+
+            toRemoveItr.remove();
         }
 
         for(EntityLayer layer : entityLayersOrdered)

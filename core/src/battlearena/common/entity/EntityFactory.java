@@ -12,18 +12,13 @@ public class EntityFactory
 	{
 		EntityConfig Config = new EntityConfig(world);
 
-		// Define physics body information.
-		Config.AddConfigItem("Pos.X", x);
-		Config.AddConfigItem("Pos.Y", y);
-
-		Config.AddConfigItem("Size.X", 20);
-		Config.AddConfigItem("Size.Y", 20);
-
+		Config.AddConfigItem(Entity.DATA_X, x);
+		Config.AddConfigItem(Entity.DATA_Y, y);
 		Config.AddConfigItem(ELight.DATA_RED, r);
 		Config.AddConfigItem(ELight.DATA_GREEN, g);
 		Config.AddConfigItem(ELight.DATA_BLUE, b);
 		Config.AddConfigItem(ELight.DATA_DISTANCE, d);
-		Config.AddConfigItem(ELight.DATA_SHADOW_SOFTNESS, d);
+		Config.AddConfigItem(ELight.DATA_SHADOW_SOFTNESS, ss);
 
 		return new ELight(Config);
 	}
