@@ -17,17 +17,19 @@ import battlearena.common.world.World;
 public class Entity
 {
 
-	// Common component names
+	// Data component names.
 	public static final String POSITION = "Position";
 	public static final String VELOCITY = "Velocity";
 	public static final String SIZE = "Size";
+	public static final String EDITOR_SIZE = "Size.Editor";
 	public static final String ROTATION = "Rotation";
 	public static final String ACCELERATION = "Acceleration";
 	public static final String FRAME = "Frame";
 	public static final String BODY = "Body";
-
 	public static final String DATA_X = "Pos.X";
 	public static final String DATA_Y = "Pos.Y";
+	public static final String DATA_HOVERED = "Hovered";
+	public static final String DATA_PRESSED = "Hovered";
 
 	private volatile static int nextId = 0;
 

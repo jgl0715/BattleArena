@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -129,6 +130,22 @@ public class WorldEditor extends ApplicationAdapter
 	public Viewport getViewport()
 	{
 		return viewport;
+	}
+
+	public int getMouseWorldX()
+	{
+		int x = Gdx.input.getX();
+		int y = Gdx.input.getY();
+		float originX = 0;
+		return (int)(camera.unproject(new Vector3(x, y, 0)).x - originX);
+	}
+
+	public int getMouseWorldY()
+	{
+		int x = Gdx.input.getX();
+		int y = Gdx.input.getY();
+		float originY = 0;
+		return (int)((camera.unproject(new Vector3(x, y, 0)).y - originY));
 	}
 
 	@Override

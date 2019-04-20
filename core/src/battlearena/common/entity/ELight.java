@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 import battlearena.common.CollisionGroup;
+import battlearena.common.entity.behavior.BEditorHoverable;
+import battlearena.common.entity.data.DBoolean;
 import battlearena.common.entity.data.DFloat;
 import battlearena.common.entity.data.DPointLight;
 import battlearena.common.entity.data.DVector2;
@@ -31,6 +33,8 @@ public class ELight extends Entity
     // Todo: make physics system independent.
     private PointLight box2dLight;
 
+    private boolean hovered;
+
     public ELight(EntityConfig config)
     {
         super(config);
@@ -38,13 +42,17 @@ public class ELight extends Entity
         World wor = config.getWorld();
 
         pos = addData(DVector2.class, POSITION, true).Value;
-        size = addData(DVector2.class, SIZE, false).Value;
+        size = addData(DVector2.class, Entity.EDITOR_SIZE, false).Value;
 
         addData(DFloat.class, DATA_RED, true);
         addData(DFloat.class, DATA_GREEN, true);
         addData(DFloat.class, DATA_BLUE, true);
         addData(DFloat.class, DATA_DISTANCE, true);
         addData(DFloat.class, DATA_SHADOW_SOFTNESS, true);
+
+        // Editor data
+        addData(DBoolean.class, Entity.DATA_HOVERED, false);
+        addData(DBoolean.class, Entity.DATA_PRESSED, false);
 
         float red = 1.0f;
         float green = 1.0f;
@@ -79,6 +87,16 @@ public class ELight extends Entity
         find(DFloat.class, DATA_SHADOW_SOFTNESS).Value = shadowSoftness;
 
         addData(DPointLight.class, DATA_LIGHT).Value = (box2dLight = wor.createPointLight(new Color(red,green,blue,1),distance, x, y, CollisionGroup.LIGHTS_GEN));
+
+        // Add behaviors
+        addBehavior(BEditorHoverable.class, "EditorHover");
+
+        this.hovered = false;
+    }
+
+    public boolean isHovered()
+    {
+        return hovered;
     }
 
     public Vector2 getPos()
