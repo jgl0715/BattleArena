@@ -466,7 +466,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 						{
 							if((Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)))
 							{
-								TiledWorldImporter importer = new TiledWorldImporter(WorldEditor.I.getLastLoadedWorldPath(), new BAEntityFactory());
+								TiledWorldImporter importer = new TiledWorldImporter(WorldEditor.I.getLastLoadedWorldPath(), false, new BAEntityFactory());
 								TiledWorld world = importer.imp();
 
 								if(world != null)

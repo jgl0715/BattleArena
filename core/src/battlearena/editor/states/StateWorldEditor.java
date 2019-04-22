@@ -344,7 +344,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 		Tileset result = null;
 		if (res == JFileChooser.APPROVE_OPTION)
 		{
-			TilesetImporter importer = new TilesetImporter(chooser.getSelectedFile().getAbsolutePath());
+			TilesetImporter importer = new TilesetImporter(chooser.getSelectedFile().getAbsolutePath(), false);
 			result = importer.imp();
 		}
 

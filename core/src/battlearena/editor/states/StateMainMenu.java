@@ -56,7 +56,7 @@ public class StateMainMenu extends battlearena.common.states.State
 				TiledWorld result = null;
 				if (res == JFileChooser.APPROVE_OPTION)
 				{
-					TiledWorldImporter importer = new TiledWorldImporter(chooser.getSelectedFile().getAbsolutePath(), new BAEntityFactory());
+					TiledWorldImporter importer = new TiledWorldImporter(chooser.getSelectedFile().getAbsolutePath(), false, new BAEntityFactory());
 					result = importer.imp();
 				}
 
@@ -90,7 +90,7 @@ public class StateMainMenu extends battlearena.common.states.State
 				Tileset result = null;
 				if (res == JFileChooser.APPROVE_OPTION)
 				{
-					TilesetImporter importer = new TilesetImporter(chooser.getSelectedFile().getAbsolutePath());
+					TilesetImporter importer = new TilesetImporter(chooser.getSelectedFile().getAbsolutePath(), false);
 					result = importer.imp();
 				}
 

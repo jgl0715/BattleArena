@@ -13,6 +13,7 @@ import java.io.IOException;
 import battlearena.common.tile.CollisionMask;
 import battlearena.common.tile.Tile;
 import battlearena.common.tile.Tileset;
+import battlearena.game.BattleArena;
 
 public class TilesetImporter
 {
@@ -23,9 +24,9 @@ public class TilesetImporter
     {
     }
 
-    public TilesetImporter(String src)
+    public TilesetImporter(String src, boolean internal)
     {
-        inputStream = new DataInputStream(Gdx.files.absolute(src).read());
+        setImportLocation(src, internal);
     }
 
     public TilesetImporter(DataInputStream inputStream)
@@ -33,9 +34,16 @@ public class TilesetImporter
         this.inputStream = inputStream;
     }
 
-    public void setImportLocation(String src)
+    public void setImportLocation(String src, boolean internal)
     {
-        inputStream = new DataInputStream(Gdx.files.absolute(src).read());
+        if(internal)
+        {
+            inputStream = new DataInputStream(Gdx.files.internal(src).read());
+        }
+        else
+        {
+            inputStream = new DataInputStream(Gdx.files.absolute(src).read());
+        }
     }
 
     public Tileset imp()

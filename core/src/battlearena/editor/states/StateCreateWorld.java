@@ -46,7 +46,7 @@ public class StateCreateWorld extends battlearena.common.states.State
 				int res = chooser.showOpenDialog(null);
 				if (res == JFileChooser.APPROVE_OPTION)
 				{
-					importer.setImportLocation(chooser.getSelectedFile().getAbsolutePath());
+					importer.setImportLocation(chooser.getSelectedFile().getAbsolutePath(), false);
 					worldTileset = importer.imp();
 				}
 

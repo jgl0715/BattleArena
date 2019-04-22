@@ -13,6 +13,6 @@ public class AndroidLauncher extends AndroidApplication
 	{
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-		initialize(new BattleArena(), config);
+		initialize(new BattleArena(true), config);
 	}
 }

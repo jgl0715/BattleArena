@@ -14,6 +14,7 @@ import battlearena.common.world.EntityLayer;
 import battlearena.common.world.TileLayer;
 import battlearena.common.world.TiledWorld;
 import battlearena.common.entity.Entity;
+import battlearena.game.BattleArena;
 
 public class TiledWorldImporter
 {
@@ -26,15 +27,22 @@ public class TiledWorldImporter
         this.factory = factory;
     }
 
-    public TiledWorldImporter(String src, EntityFactory factory)
+    public TiledWorldImporter(String src, boolean internal, EntityFactory factory)
     {
-        importFile = Gdx.files.absolute(src);
+        setImportLocation(src, internal);
         this.factory = factory;
     }
 
-    public void setImportLocation(String src)
+    public void setImportLocation(String src, boolean internal)
     {
-        importFile = Gdx.files.absolute(src);
+        if(internal)
+        {
+            importFile = Gdx.files.internal(src);
+        }
+        else
+        {
+            importFile = Gdx.files.absolute(src);
+        }
     }
 
     public TiledWorld imp()
