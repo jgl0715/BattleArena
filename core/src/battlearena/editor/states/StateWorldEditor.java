@@ -7,8 +7,10 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -28,6 +30,7 @@ import battlearena.common.entity.ELight;
 import battlearena.common.entity.Entity;
 import battlearena.common.entity.data.DBoolean;
 import battlearena.common.entity.data.DFloat;
+import battlearena.common.world.World;
 import battlearena.game.BAEntityFactory;
 import battlearena.common.entity.data.DVector2;
 import battlearena.common.file.TiledWorldExporter;
@@ -67,7 +70,8 @@ public class StateWorldEditor extends battlearena.common.states.State
 	private Entity hoveredEntity;
 	private Entity selectedEntity;
 	private Entity draggingEntity;
-	private ELight lastLight;
+
+	private Box2DDebugRenderer dbgr;
 
 	public StateWorldEditor()
 	{
@@ -703,6 +707,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 		else
 		{
 			editingWorld = (TiledWorld) transitionInput;
+			dbgr = new Box2DDebugRenderer();
 			exporter = new TiledWorldExporter(editingWorld, "/worlds/" + editingWorld.getName() + ".world");
 
 			WorldEditor.I.setLastLoadedWorldPath(exporter.getAbsoluteLocation());
@@ -924,6 +929,12 @@ public class StateWorldEditor extends battlearena.common.states.State
 		ShapeRenderer sr = WorldEditor.I.getShapeRenderer();
 
 		editingWorld.render(WorldEditor.I.getBatch(), WorldEditor.I.getCamera());
+
+
+		OrthographicCamera cam = WorldEditor.I.getCamera();
+		Matrix4 mat = new Matrix4(cam.combined);
+		mat.scale(World.PIXELS_PER_METER, World.PIXELS_PER_METER, 1);
+		dbgr.render(editingWorld.getPhysicsWorld(), mat);
 
 		sr.begin(ShapeRenderer.ShapeType.Line);
 		{

@@ -32,7 +32,6 @@ public class World
     private String name;
     private com.badlogic.gdx.physics.box2d.World PhysicsWorld;
     private RayHandler handler;
-    private Box2DDebugRenderer dbgr;
 
     private boolean layersLocked;
     private Map<String, EntityLayer> entityLayers;
@@ -45,8 +44,6 @@ public class World
         this.name = n;
 
         PhysicsWorld = new com.badlogic.gdx.physics.box2d.World(new Vector2(0, 0 / PIXELS_PER_METER), false);
-
-        dbgr = new Box2DDebugRenderer();
 
         handler = new RayHandler(PhysicsWorld);
        // handler.setShadows(true);
@@ -125,9 +122,9 @@ public class World
         FDef.restitution = 0.2f;
         FDef.shape = Box;
 
-      //ffffff  FDef.filter.categoryBits = Group.getChannel();
+      //  FDef.filter.categoryBits = Group.getChannel();
       //  FDef.filter.groupIndex = Group.getGroup();
-     //   FDef.filter.maskBits = Group.getAccepted();
+      //   FDef.filter.maskBits = Group.getAccepted();
 
         Body.createFixture(FDef);
 
@@ -247,7 +244,5 @@ public class World
 
         handler.setCombinedMatrix(mat, cam.position.x / PIXELS_PER_METER, cam.position.y / PIXELS_PER_METER, cam.viewportWidth * cam.zoom, cam.viewportHeight * cam.zoom);
         handler.updateAndRender();
-
-        dbgr.render(getPhysicsWorld(), mat);
     }
 }
