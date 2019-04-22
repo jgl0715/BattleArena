@@ -2,28 +2,34 @@ package battlearena.common.file;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.DataInput;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 
+import battlearena.common.entity.EntityFactory;
 import battlearena.common.tile.Tile;
 import battlearena.common.tile.Tileset;
 import battlearena.common.world.Cell;
+import battlearena.common.world.EntityLayer;
 import battlearena.common.world.TileLayer;
 import battlearena.common.world.TiledWorld;
+import battlearena.common.entity.Entity;
 
 public class TiledWorldImporter
 {
 
     private FileHandle importFile;
+    private EntityFactory factory;
 
-    public TiledWorldImporter()
+    public TiledWorldImporter(EntityFactory factory)
     {
+        this.factory = factory;
     }
 
-    public TiledWorldImporter(String src)
+    public TiledWorldImporter(String src, EntityFactory factory)
     {
         importFile = Gdx.files.absolute(src);
+        this.factory = factory;
     }
 
     public void setImportLocation(String src)
@@ -34,7 +40,7 @@ public class TiledWorldImporter
     public TiledWorld imp()
     {
 
-        DataInputStream inputStream = new DataInputStream(importFile.read());
+        DataInput inputStream = new DataInput(importFile.read());
 
         try
         {
@@ -69,6 +75,27 @@ public class TiledWorldImporter
                     }
                 }
 
+            }
+
+            int entityLayers = inputStream.readInt();
+
+            for(int i = 0; i < entityLayers; i++)
+            {
+                String name = inputStream.readUTF();
+                int entities = inputStream.readInt();
+
+                EntityLayer layer = new EntityLayer(name);
+                resultWorld.addEntityLayer(layer);
+
+                for(int j = 0; j < entities; j++)
+                {
+                    int typeId = inputStream.readInt();
+                    Entity e = factory.makeEntity(resultWorld, typeId);
+
+                    e.deserialize(inputStream);
+
+                    layer.addEntity(e);
+                }
             }
 
             System.out.println("World successfully imported.");

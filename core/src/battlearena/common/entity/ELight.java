@@ -11,14 +11,14 @@ import battlearena.common.entity.data.DFloat;
 import battlearena.common.entity.data.DPointLight;
 import battlearena.common.entity.data.DVector2;
 import battlearena.common.world.World;
+import battlearena.editor.WorldEditor;
 import box2dLight.PointLight;
-import box2dLight.RayHandler;
 
 public class ELight extends Entity
 {
 
-    public static final int EDITOR_WIDTH = 5;
-    public static final int EDITOR_HEIGHT = 5;
+    public static final int EDITOR_WIDTH = 4;
+    public static final int EDITOR_HEIGHT = 4;
 
     public static final String DATA_LIGHT = "Light";
     public static final String DATA_RED = "Color.Red";
@@ -28,7 +28,6 @@ public class ELight extends Entity
     public static final String DATA_SHADOW_SOFTNESS= "ShadowSoftness";
 
     private Vector2 pos;
-    private Vector2 size;
 
     // Todo: make physics system independent.
     private PointLight box2dLight;
@@ -42,8 +41,8 @@ public class ELight extends Entity
         World wor = config.getWorld();
 
         pos = addData(DVector2.class, POSITION, true).Value;
-        size = addData(DVector2.class, Entity.EDITOR_SIZE, false).Value;
 
+        addData(DFloat.class, Entity.EDITOR_RADIUS, false);
         addData(DFloat.class, DATA_RED, true);
         addData(DFloat.class, DATA_GREEN, true);
         addData(DFloat.class, DATA_BLUE, true);
@@ -51,8 +50,8 @@ public class ELight extends Entity
         addData(DFloat.class, DATA_SHADOW_SOFTNESS, true);
 
         // Editor data
-        addData(DBoolean.class, Entity.DATA_HOVERED, false);
-        addData(DBoolean.class, Entity.DATA_PRESSED, false);
+        addData(DBoolean.class, Entity.HOVERED, false);
+        addData(DBoolean.class, Entity.PRESSED, false);
 
         float red = 1.0f;
         float green = 1.0f;
@@ -78,8 +77,8 @@ public class ELight extends Entity
             y = config.GetConfigFloat(DATA_Y);
 
         pos.set(x, y);
-        size.set(EDITOR_WIDTH, EDITOR_HEIGHT);
 
+        find(DFloat.class, EDITOR_RADIUS).Value = 5.0f;
         find(DFloat.class, DATA_RED).Value = red;
         find(DFloat.class, DATA_GREEN).Value = green;
         find(DFloat.class, DATA_BLUE).Value = blue;
@@ -89,7 +88,9 @@ public class ELight extends Entity
         addData(DPointLight.class, DATA_LIGHT).Value = (box2dLight = wor.createPointLight(new Color(red,green,blue,1),distance, x, y, CollisionGroup.LIGHTS_GEN));
 
         // Add behaviors
-        addBehavior(BEditorHoverable.class, "EditorHover");
+
+        if(WorldEditor.I.isRunning())
+            addBehavior(BEditorHoverable.class, "EditorHover");
 
         this.hovered = false;
     }
@@ -104,14 +105,17 @@ public class ELight extends Entity
         return pos;
     }
 
-    public Vector2 getSize()
-    {
-        return size;
-    }
-
     public PointLight getBox2dLight()
     {
         return box2dLight;
+    }
+
+    @Override
+    public void remove()
+    {
+        super.remove();
+
+        getBox2dLight().remove(true);
     }
 
     @Override

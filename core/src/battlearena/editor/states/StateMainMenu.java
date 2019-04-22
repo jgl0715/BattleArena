@@ -15,6 +15,7 @@ import battlearena.common.tile.Tileset;
 import battlearena.common.world.TiledWorld;
 import battlearena.editor.WorldEditor;
 import battlearena.editor.view.HUDMainMenu;
+import battlearena.game.BAEntityFactory;
 
 public class StateMainMenu extends battlearena.common.states.State
 {
@@ -55,7 +56,7 @@ public class StateMainMenu extends battlearena.common.states.State
 				TiledWorld result = null;
 				if (res == JFileChooser.APPROVE_OPTION)
 				{
-					TiledWorldImporter importer = new TiledWorldImporter(chooser.getSelectedFile().getAbsolutePath());
+					TiledWorldImporter importer = new TiledWorldImporter(chooser.getSelectedFile().getAbsolutePath(), new BAEntityFactory());
 					result = importer.imp();
 				}
 

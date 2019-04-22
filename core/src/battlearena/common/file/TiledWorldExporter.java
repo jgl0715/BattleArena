@@ -2,13 +2,14 @@ package battlearena.common.file;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.DataOutput;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 
-import battlearena.common.tile.Tileset;
+import battlearena.common.entity.Entity;
 import battlearena.common.world.Cell;
+import battlearena.common.world.EntityLayer;
 import battlearena.common.world.TileLayer;
 import battlearena.common.world.TiledWorld;
 
@@ -16,7 +17,7 @@ public class TiledWorldExporter
 {
 
     private TiledWorld toExport;
-    private DataOutputStream outputStream;
+    private DataOutput outputStream;
     private String d;
 
     /**
@@ -31,7 +32,7 @@ public class TiledWorldExporter
         this.d = dst;
     }
 
-    public TiledWorldExporter(TiledWorld toExport, DataOutputStream os)
+    public TiledWorldExporter(TiledWorld toExport, DataOutput os)
     {
         this.toExport = toExport;
         this.outputStream = os;
@@ -60,7 +61,7 @@ public class TiledWorldExporter
 
     public void setDestination(String d)
     {
-        this.outputStream = new DataOutputStream(getLoc(d).write(false));
+        this.outputStream = new DataOutput(getLoc(d).write(false));
         this.d = d;
     }
 
@@ -68,7 +69,7 @@ public class TiledWorldExporter
     {
 
         if(d != null)
-            this.outputStream = new DataOutputStream(getLoc(d).write(false));
+            this.outputStream = new DataOutput(getLoc(d).write(false));
 
         try
         {
@@ -83,7 +84,7 @@ public class TiledWorldExporter
             tilesetExport.exp();
 
             // Export world layers
-            Iterator<TileLayer> layerItr = toExport.layerIterator();
+            Iterator<TileLayer> layerItr = toExport.tileLayerIterator();
             while(layerItr.hasNext())
             {
                 TileLayer next = layerItr.next();
@@ -111,6 +112,24 @@ public class TiledWorldExporter
             }
 
             // Export default entities.
+            Iterator<EntityLayer> entLayerItr = toExport.entityLayerIterator();
+            outputStream.writeInt(toExport.getEntityLayerCount());
+
+            while(entLayerItr.hasNext())
+            {
+                EntityLayer next = entLayerItr.next();
+                Iterator<Entity> entityItr = next.iterator();
+
+                outputStream.writeUTF(next.getName());
+                outputStream.writeInt(next.getEntityCount());
+
+                while(entityItr.hasNext())
+                {
+                    Entity e = entityItr.next();
+                    outputStream.writeInt(e.getConfig().getTypeId());
+                    e.serialize(outputStream);
+                }
+            }
 
             // Export default lights (maybe entities? probably not though. they could be represented as entities?)
 

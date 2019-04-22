@@ -4,45 +4,52 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+
+import battlearena.common.file.TiledWorldImporter;
+import battlearena.common.states.StateMachine;
+import battlearena.common.world.TiledWorld;
 
 public class BattleArena extends ApplicationAdapter
 {
-	
-	private ShapeRenderer sr;
+
+	public static final int VIRTUAL_WIDTH = 432;
+	public static final int VIRTUAL_HEIGHT = 888;
+
+	private StateMachine fsa;
+	private SpriteBatch batch;
+	private ShapeRenderer shapeRenderer;
+	private OrthographicCamera camera;
+	private Viewport viewport;
+
+	private TiledWorld world;
 
 	@Override
 	public void create ()
 	{
-		sr = new ShapeRenderer();
+		batch = new SpriteBatch();
+		shapeRenderer = new ShapeRenderer();
+		camera = new OrthographicCamera(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+		viewport = new StretchViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, camera);
+		viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-		Gdx.input.setInputProcessor(new GestureDetector(new GestureDetector.GestureAdapter()
-		{
-			@Override
-			public boolean tap(float x, float y, int count, int button)
-			{
-				if(count == 2)
-				{
-					color = (color + 1) % colors.length;
-				}
+		camera.zoom = 0.5f;
+		camera.update();
 
-				return true;
-			}
-		}
-		));
+		world = new TiledWorldImporter("C:\\Development\\BattleArena\\android\\assets\\worlds\\test.world", new BAEntityFactory()).imp();
 	}
 
 	@Override
 	public void dispose ()
 	{
-		sr.dispose();
-	}
 
-	public Color[] colors = {Color.RED, Color.BLUE, Color.GREEN};
-	public int color = 0;
+	}
 
 	@Override
 	public void render ()
@@ -50,12 +57,11 @@ public class BattleArena extends ApplicationAdapter
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		sr.setColor(colors[color]);
-		sr.begin(ShapeRenderer.ShapeType.Filled);
-		{
-			sr.circle(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY(), 20.0f);
-		}
-		sr.end();
+		world.update(Gdx.graphics.getDeltaTime());
 
+		batch.setProjectionMatrix(camera.projection);
+		batch.setTransformMatrix(camera.view);
+
+		world.render(batch, camera);
 	}
 }

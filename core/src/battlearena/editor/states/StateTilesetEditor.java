@@ -37,6 +37,7 @@ import battlearena.common.tile.Tileset;
 import battlearena.common.file.TilesetExporter;
 import battlearena.editor.WorldEditor;
 import battlearena.editor.view.HUDTilesetEditor;
+import battlearena.game.BAEntityFactory;
 
 public class StateTilesetEditor extends battlearena.common.states.State
 {
@@ -465,7 +466,7 @@ public class StateTilesetEditor extends battlearena.common.states.State
 						{
 							if((Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)))
 							{
-								TiledWorldImporter importer = new TiledWorldImporter(WorldEditor.I.getLastLoadedWorldPath());
+								TiledWorldImporter importer = new TiledWorldImporter(WorldEditor.I.getLastLoadedWorldPath(), new BAEntityFactory());
 								TiledWorld world = importer.imp();
 
 								if(world != null)

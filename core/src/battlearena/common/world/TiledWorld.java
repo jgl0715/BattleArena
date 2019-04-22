@@ -77,6 +77,7 @@ public class TiledWorld extends World
         return loc.getTileX() >= 0 && loc.getTileY() >= 0 && loc.getTileX() < width && loc.getTileY() < height;
     }
 
+
     public Set<Location> floodSearch(String layer, int tx, int ty)
     {
         Set<Location> results = new HashSet<Location>();
@@ -115,7 +116,7 @@ public class TiledWorld extends World
         floodSearch(layer, depth + 1, floodTile, results, visited, tx, ty - 1);
     }
 
-    public Iterator<TileLayer> layerIterator()
+    public Iterator<TileLayer> tileLayerIterator()
     {
         return layersOrdered.iterator();
     }

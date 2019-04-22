@@ -1,6 +1,8 @@
 package battlearena.common.entity;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.DataInput;
+import com.badlogic.gdx.utils.DataOutput;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import battlearena.common.RenderSettings;
 import battlearena.common.entity.behavior.Behavior;
 import battlearena.common.entity.data.Data;
 import battlearena.common.world.World;
+import sun.awt.datatransfer.DataTransferer;
 
 public class Entity
 {
@@ -21,15 +24,16 @@ public class Entity
 	public static final String POSITION = "Position";
 	public static final String VELOCITY = "Velocity";
 	public static final String SIZE = "Size";
-	public static final String EDITOR_SIZE = "Size.Editor";
 	public static final String ROTATION = "Rotation";
 	public static final String ACCELERATION = "Acceleration";
 	public static final String FRAME = "Frame";
 	public static final String BODY = "Body";
 	public static final String DATA_X = "Pos.X";
 	public static final String DATA_Y = "Pos.Y";
-	public static final String DATA_HOVERED = "Hovered";
-	public static final String DATA_PRESSED = "Hovered";
+	public static final String HOVERED = "Hovered";
+	public static final String PRESSED = "Pressed";
+	public static final String EDITOR_SIZE = "Editor.Size";
+	public static final String EDITOR_RADIUS = "Editor.Radius";
 
 	private volatile static int nextId = 0;
 
@@ -168,6 +172,11 @@ public class Entity
 		return null;
 	}
 
+	public boolean hasData(String name)
+	{
+		return dataComponents.containsKey(name);
+	}
+
 	private <T> T findData(Class<T> Class, String Name)
 	{
 		Iterator<Integer> ComponentItr = dataComponents.keySet().iterator();
@@ -205,6 +214,38 @@ public class Entity
 
 		return null;
 	}
+
+	public void serialize(DataOutput output)
+	{
+		Iterator<Integer> dataItr = dataComponents.keySet().iterator();
+		while(dataItr.hasNext())
+		{
+			int compId = dataItr.next();
+			Data d = dataComponents.get(compId);
+
+			if(d.IsSerialized())
+			{
+				d.send(output);
+			}
+		}
+	}
+
+	public void deserialize(DataInput input)
+	{
+		Iterator<Integer> dataItr = dataComponents.keySet().iterator();
+		while(dataItr.hasNext())
+		{
+			int compId = dataItr.next();
+			Data d = dataComponents.get(compId);
+
+			if(d.IsSerialized())
+			{
+				System.out.println("test deserialize");
+				d.read(input);
+			}
+		}
+	}
+
 
 	public void Update(float delta)
 	{

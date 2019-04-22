@@ -34,6 +34,7 @@ public class World
     private RayHandler handler;
     private Box2DDebugRenderer dbgr;
 
+    private boolean layersLocked;
     private Map<String, EntityLayer> entityLayers;
     private List<EntityLayer> entityLayersOrdered;
     private List<EntityLayer> entityLayersToAdd;
@@ -51,6 +52,7 @@ public class World
        // handler.setShadows(true);
         handler.setAmbientLight(0.6f);
 
+        layersLocked = false;
         entityLayers = new HashMap<String, EntityLayer>();
         entityLayersOrdered = new ArrayList<EntityLayer>();
         entityLayersToAdd = new ArrayList<EntityLayer>();
@@ -70,6 +72,16 @@ public class World
     public String getName()
     {
         return name;
+    }
+
+    public int getEntityLayerCount()
+    {
+        return entityLayers.size();
+    }
+
+    public Iterator<EntityLayer> entityLayerIterator()
+    {
+        return entityLayersOrdered.iterator();
     }
 
     public PointLight createPointLight(Color lightColor, float lightDistance, float x, float y, CollisionGroup group)
@@ -173,7 +185,16 @@ public class World
 
     public void addEntityLayer(EntityLayer layer)
     {
-        entityLayersToAdd.add(layer);
+        if(layersLocked)
+        {
+            entityLayersToAdd.add(layer);
+        }
+        else
+        {
+            // Add layer immediately.
+            entityLayers.put(layer.getName(), layer);
+            entityLayersOrdered.add(layer);
+        }
     }
 
     public void removeEntityLayer(String layer)
@@ -210,8 +231,10 @@ public class World
             toRemoveItr.remove();
         }
 
+        layersLocked = true;
         for(EntityLayer layer : entityLayersOrdered)
             layer.update(delta);
+        layersLocked = false;
     }
 
     public void render(SpriteBatch batch, OrthographicCamera cam)

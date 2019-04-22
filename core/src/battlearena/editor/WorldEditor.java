@@ -47,6 +47,7 @@ public class WorldEditor extends ApplicationAdapter
 	public static final State STATE_TILESET_EDITOR = new StateTilesetEditor();
 	public static final State STATE_QUIT = new StateQuit();
 
+	private boolean running;
 	private StateMachine fsa;
 	private SpriteBatch batch;
 	private ShapeRenderer shapeRenderer;
@@ -137,7 +138,7 @@ public class WorldEditor extends ApplicationAdapter
 		int x = Gdx.input.getX();
 		int y = Gdx.input.getY();
 		float originX = 0;
-		return (int)(camera.unproject(new Vector3(x, y, 0)).x - originX);
+		return (int)Math.ceil(camera.unproject(new Vector3(x, y, 0)).x - originX);
 	}
 
 	public int getMouseWorldY()
@@ -145,13 +146,20 @@ public class WorldEditor extends ApplicationAdapter
 		int x = Gdx.input.getX();
 		int y = Gdx.input.getY();
 		float originY = 0;
-		return (int)((camera.unproject(new Vector3(x, y, 0)).y - originY));
+		return (int)Math.ceil((camera.unproject(new Vector3(x, y, 0)).y - originY));
+	}
+
+	public boolean isRunning()
+	{
+		return running;
 	}
 
 	@Override
 	public void create()
 	{
 		super.create();
+
+		running = true;
 
 		// Initialize state machine
 		fsa = new StateMachine();
@@ -193,7 +201,7 @@ public class WorldEditor extends ApplicationAdapter
 		fsa.registerTransition(STATE_TILESET_EDITOR, STATE_MAIN_MENU, TRANSITION_MAIN_MENU);
 		fsa.registerTransition(STATE_TILESET_EDITOR, STATE_WORLD_EDITOR, TRANSITION_EDIT_WORLD);
 
-		inputToFSA(TRANSITION_EDIT_WORLD, new TiledWorld("test", new TilesetImporter("C:\\Development\\BattleArena\\android\\assets\\tilesets\\MySet.ts").imp(),50, 50));
+		//inputToFSA(TRANSITION_EDIT_WORLD, new TiledWorld("test", new TilesetImporter("C:\\Development\\BattleArena\\android\\assets\\tilesets\\MySet.ts").imp(),50, 50));
 
 	}
 

@@ -9,17 +9,23 @@ public class EntityConfig
 {
 
 	private World world;
+	private int typeId;
 	private Map<String, Object> Configuration;
 
-	public EntityConfig(World World)
+	public EntityConfig(World World, int typeId)
 	{
 		this.world = World;
+		this.typeId = typeId;
 		this.Configuration = new HashMap<String, Object>();
 	}
 
 	public World getWorld()
 	{
 		return world;
+	}
+
+	public int getTypeId() {
+		return typeId;
 	}
 
 	public <T extends World> T GetWorld(Class<T> Class)
