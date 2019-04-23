@@ -14,8 +14,8 @@ public class DesktopLauncher
 		
 		if(args.length < 1 || !(args[0].equals("-editor")))
 		{
-			config.width = 432;
-			config.height = 888;
+			config.width = 888;
+			config.height = 432;
 			config.resizable = false;
 			config.title = "Battle Arena";
 

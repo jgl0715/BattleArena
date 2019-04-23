@@ -54,6 +54,12 @@ public class BattleArena extends ApplicationAdapter
 	private float joystickKnobY;
 	private boolean dragging;
 
+	private float buttonAX;
+	private float buttonAY;
+
+	private float buttonBX;
+	private float buttonBY;
+
 	private InputMultiplexer muxer;
 
 	public BattleArena(boolean onDevice)
@@ -71,6 +77,11 @@ public class BattleArena extends ApplicationAdapter
 
 	}
 
+	public Vector2 getJoystickInput()
+	{
+		return new Vector2(joystickKnobX, joystickKnobY).nor();
+	}
+
 	public boolean isOnDevice()
 	{
 		return onDevice;
@@ -84,7 +95,7 @@ public class BattleArena extends ApplicationAdapter
 		sr = new ShapeRenderer();
 
 		camera = new OrthographicCamera(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
-		viewport = new FitViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, camera);
+		viewport = new StretchViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, camera);
 		viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 		uiCamera = new OrthographicCamera(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
@@ -93,8 +104,11 @@ public class BattleArena extends ApplicationAdapter
 
 		joystickX = -VIRTUAL_WIDTH / 2 * 0.7f;
 		joystickY = -VIRTUAL_HEIGHT / 2 * 0.7f;
-		joystickKnobRad = 20.0f;
-		joystickRad = 25.0f;
+		joystickKnobRad = 15.0f;
+		joystickRad = 50.0f;
+		buttonAX = 100;
+		buttonAY = 100;
+
 
 		camera.zoom = 0.3f;
 		camera.update();
@@ -102,25 +116,28 @@ public class BattleArena extends ApplicationAdapter
 		muxer = new InputMultiplexer(new InputAdapter()
 		{
 
+			public void joystickInput(Vector3 worldSpace)
+			{
+				Vector2 dir = new Vector2(worldSpace.x, worldSpace.y).sub(new Vector2(joystickX, joystickY));
+
+				if(dir.len() >= joystickRad)
+				{
+					dir.nor().scl(joystickRad);
+				}
+
+				joystickKnobX = dir.x;
+				joystickKnobY = dir.y;
+			}
+
+
 			@Override
 			public boolean touchDragged(int screenX, int screenY, int pointer)
 			{
 				if(dragging)
 				{
 					Vector3 worldSpace = uiCamera.unproject(new Vector3(screenX, screenY, 0));
-
-					Vector2 dir = new Vector2(worldSpace.x, worldSpace.y).sub(new Vector2(joystickX, joystickY));
-
-					if(dir.len() >= joystickRad)
-					{
-						dir.nor().scl(joystickRad);
-					}
-
-					joystickKnobX = dir.x;
-					joystickKnobY = dir.y;
-
+					joystickInput(worldSpace);
 					return true;
-
 				}
 
 				return false;
@@ -143,8 +160,10 @@ public class BattleArena extends ApplicationAdapter
 				{
 					dragging = true;
 					System.out.println("dragging");
+					joystickInput(worldSpace);
 					return true;
 				}
+
 
 				return false;
 			}
@@ -201,14 +220,8 @@ public class BattleArena extends ApplicationAdapter
 
 		// Update logic
 		world.update(Gdx.graphics.getDeltaTime());
-		if (Gdx.input.isKeyPressed(Input.Keys.W))
-			camera.translate(0, 1);
-		if (Gdx.input.isKeyPressed(Input.Keys.S))
-			camera.translate(0, -1);
-		if (Gdx.input.isKeyPressed(Input.Keys.A))
-			camera.translate(-1, 0);
-		if (Gdx.input.isKeyPressed(Input.Keys.D))
-			camera.translate(1, 0);
+
+		camera.translate(getJoystickInput());
 		camera.update();
 
 		// Render logic
@@ -219,12 +232,12 @@ public class BattleArena extends ApplicationAdapter
 		sr.setProjectionMatrix(uiCamera.projection);
 		sr.setTransformMatrix(uiCamera.view);
 
-		viewport.apply();
+
 		world.render(batch, camera);
 
 		// Render joystick.
-
-		uiViewport.apply();
+//
+//		uiViewport.apply();
 		{
 			sr.begin(ShapeRenderer.ShapeType.Line);
 			sr.setColor(Color.WHITE);
@@ -234,15 +247,31 @@ public class BattleArena extends ApplicationAdapter
 			sr.end();
 
 			sr.begin(ShapeRenderer.ShapeType.Filled);
+			sr.setColor(Color.DARK_GRAY);
+			{
+				sr.circle(joystickX, joystickY, 5.0f, 100);
+			}
 			sr.setColor(Color.GRAY);
 			{
 				sr.rectLine(joystickX + joystickKnobX, joystickY + joystickKnobY, joystickX, joystickY, 5.0f);
 			}
+
 			sr.setColor(Color.RED);
 			{
 				sr.circle(joystickX + joystickKnobX, joystickY + joystickKnobY, joystickKnobRad, 100);
 			}
 			sr.end();
 		}
+
+		{
+			sr.begin(ShapeRenderer.ShapeType.Filled);
+			sr.setColor(Color.YELLOW);
+			sr.circle(buttonAX, buttonAY, 30);
+			sr.setColor(Color.RED);
+			sr.circle(buttonBX, buttonBY, 30);
+			sr.end();
+
+		}
+
 	}
 }
