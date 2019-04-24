@@ -89,6 +89,7 @@ public class TiledWorldExporter
             {
                 TileLayer next = layerItr.next();
                 outputStream.writeUTF(next.getName());
+                outputStream.writeBoolean(next.isCollisionEnabled());
 
                 for(int x = 0; x < toExport.getWidth(); x++)
                 {
@@ -130,8 +131,6 @@ public class TiledWorldExporter
                     e.serialize(outputStream);
                 }
             }
-
-            // Export default lights (maybe entities? probably not though. they could be represented as entities?)
 
             outputStream.close();
 

@@ -26,7 +26,7 @@ import box2dLight.RayHandler;
 public class World
 {
 
-    public static final int RAYS_NUM = 500;
+    public static final int RAYS_NUM = 2000;
     public static final float PIXELS_PER_METER = 10.0f;
 
     private String name;
@@ -242,7 +242,9 @@ public class World
         Matrix4 mat = new Matrix4(cam.combined);
         mat.scale(World.PIXELS_PER_METER, World.PIXELS_PER_METER, 1);
 
-        handler.setCombinedMatrix(mat, cam.position.x / PIXELS_PER_METER, cam.position.y / PIXELS_PER_METER, cam.viewportWidth * cam.zoom, cam.viewportHeight * cam.zoom);
+        handler.setCombinedMatrix(mat, (int)cam.position.x / PIXELS_PER_METER, (int)cam.position.y / PIXELS_PER_METER, cam.viewportWidth * cam.zoom, cam.viewportHeight * cam.zoom);
         handler.updateAndRender();
     }
+
+
 }

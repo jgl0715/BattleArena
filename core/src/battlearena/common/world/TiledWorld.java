@@ -33,6 +33,9 @@ public class TiledWorld extends World
 
     private float delta;
 
+    private Set<Location> results;
+    private Set<Location> visited;
+
     public TiledWorld(String name, Tileset tileset, int width, int height)
     {
         super(name);
@@ -42,6 +45,9 @@ public class TiledWorld extends World
 
         this.layers = new HashMap<String, TileLayer>();
         this.layersOrdered = new ArrayList<TileLayer>();
+
+        results = new HashSet<Location>();
+        visited = new HashSet<Location>();
     }
 
     public void changeWidth(int amount)
@@ -77,25 +83,24 @@ public class TiledWorld extends World
         return loc.getTileX() >= 0 && loc.getTileY() >= 0 && loc.getTileX() < width && loc.getTileY() < height;
     }
 
-
     public Set<Location> floodSearch(String layer, int tx, int ty)
     {
-        Set<Location> results = new HashSet<Location>();
-        Set<Location> visited = new HashSet<Location>();
+
+        results.clear();
+        visited.clear();
 
         if(isLocInBounds(tx, ty))
-            floodSearch(layer, 0, getTile(layer, tx, ty), results, visited, tx, ty);
+            floodSearch(layer, getTile(layer, tx, ty), tx, ty);
 
         return results;
     }
 
-    private void floodSearch(String layer, int depth, Tile floodTile, Set<Location> results, Set<Location> visited, int tx, int ty)
+    private void floodSearch(String layer, Tile floodTile, int tx, int ty)
     {
         Location loc = new Location(tx, ty);
 
         // Don't repeat visit locations.
-        // TODO: fix basic stack overflow error
-        if(visited.contains(loc) || !isLocInBounds(loc) || depth > 200)
+        if(visited.contains(loc) || !isLocInBounds(loc))
             return;
 
         Tile currentTile = getTile(layer, loc);
@@ -110,10 +115,10 @@ public class TiledWorld extends World
             results.add(loc);
         }
 
-        floodSearch(layer, depth + 1, floodTile, results, visited, tx - 1, ty);
-        floodSearch(layer, depth + 1, floodTile, results, visited, tx + 1, ty);
-        floodSearch(layer, depth + 1, floodTile, results, visited, tx, ty + 1);
-        floodSearch(layer, depth + 1, floodTile, results, visited, tx, ty - 1);
+        floodSearch(layer, floodTile, tx - 1, ty);
+        floodSearch(layer, floodTile, tx + 1, ty);
+        floodSearch(layer, floodTile, tx, ty + 1);
+        floodSearch(layer, floodTile, tx, ty - 1);
     }
 
     public Iterator<TileLayer> tileLayerIterator()
@@ -199,10 +204,10 @@ public class TiledWorld extends World
         Vector2[] verts = new Vector2[4];
         Vector2 origin = new Vector2(originX, originY);
 
-        verts[0] = (new Vector2(origin).sub(mask.getVertex(0))).scl(1.0f / World.PIXELS_PER_METER);
-        verts[1] = (new Vector2(origin).sub(mask.getVertex(1))).scl(1.0f / World.PIXELS_PER_METER);
-        verts[2] = (new Vector2(origin).sub(mask.getVertex(2))).scl(1.0f / World.PIXELS_PER_METER);
-        verts[3] = (new Vector2(origin).sub(mask.getVertex(3))).scl(1.0f / World.PIXELS_PER_METER);
+        verts[0] = (new Vector2(origin).add(mask.getVertex(3))).scl(1.0f / World.PIXELS_PER_METER);
+        verts[1] = (new Vector2(origin).add(mask.getVertex(2))).scl(1.0f / World.PIXELS_PER_METER);
+        verts[2] = (new Vector2(origin).add(mask.getVertex(1))).scl(1.0f / World.PIXELS_PER_METER);
+        verts[3] = (new Vector2(origin).add(mask.getVertex(0))).scl(1.0f / World.PIXELS_PER_METER);
 
         return createQuad(BodyDef.BodyType.StaticBody, x, y, verts, group);
     }
@@ -211,7 +216,6 @@ public class TiledWorld extends World
     {
         placeTile(layerName, t, loc.getTileX(), loc.getTileY());
     }
-
 
     public void placeTile(String layerName, Tile t, int x, int y, int meta)
     {
@@ -226,15 +230,36 @@ public class TiledWorld extends World
             getPhysicsWorld().destroyBody(prevBody);
         }
 
-        if(t != null)
+        if(t != null && layer.isCollisionEnabled())
         {
             CollisionMask mask = t.getMask();
-            float tileOriginX = tileset.getTileWidth();
-            float tileOriginY = tileset.getTileHeight();
+            float tileOriginX = 0;//tileset.getTileWidth();
+            float tileOriginY = 0;//tileset.getTileHeight();
             float tileX = x*tileset.getTileWidth();
             float tileY = (height-y-1)*tileset.getTileHeight();
             cell.setBody(placeMask(mask, CollisionGroup.TILES, tileOriginX, tileOriginY, tileX, tileY));
         }
+    }
+
+    public Set<Location> findLocationsMatchingMeta(int meta)
+    {
+        Set<Location> locs = new HashSet<Location>();
+        for(TileLayer layer : layersOrdered)
+        {
+            for(int x = 0; x < width; x++)
+            {
+                for(int y = 0; y < height; y++)
+                {
+                    Cell c = layer.getCell(x, y);
+                    if(c.getMeta() == meta)
+                    {
+                        locs.add(new Location(x, y));
+                    }
+                }
+            }
+        }
+
+        return locs;
     }
 
     public void placeTile(String layerName, Tile t, int x, int y)

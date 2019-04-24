@@ -52,7 +52,6 @@ public class DBody extends Data
 		Value = Parent.getWorld().getPhysicsWorld().createBody(bDef);
 
 		CreateBoxFixture(EntityConf.GetConfigNumber("Width"), EntityConf.GetConfigNumber("Height"), Category, Accepted);
-
 	}
 
 	public void CreateBoxFixture(float w, float h, short Cat, short Accepted)
@@ -63,7 +62,7 @@ public class DBody extends Data
 		polygon.setAsBox((w / 2) / World.PIXELS_PER_METER, (h / 2) / World.PIXELS_PER_METER);
 
 		fDef.density = 1.0f;
-		fDef.friction = 0.0f;
+		fDef.friction = 0.9f;
 		fDef.isSensor = false;
 		fDef.restitution = 0.2f;
 		fDef.shape = polygon;

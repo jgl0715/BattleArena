@@ -19,7 +19,7 @@ public class DesktopLauncher
 			config.resizable = false;
 			config.title = "Battle Arena";
 
-			new LwjglApplication(new BattleArena(false), config);
+			new LwjglApplication(new BattleArena(), config);
 		}
 		else
 		{

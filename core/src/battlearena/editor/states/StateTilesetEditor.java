@@ -466,13 +466,16 @@ public class StateTilesetEditor extends battlearena.common.states.State
 						{
 							if((Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT)))
 							{
+								exporter.exp();
+
 								TiledWorldImporter importer = new TiledWorldImporter(WorldEditor.I.getLastLoadedWorldPath(), false, new BAEntityFactory());
 								TiledWorld world = importer.imp();
 
+
 								if(world != null)
 								{
-									exporter.exp();
-									WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_EDIT_WORLD, importer.imp());
+									world.changeTileset(tileset);
+									WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_EDIT_WORLD, world);
 								}
 							}
 						}

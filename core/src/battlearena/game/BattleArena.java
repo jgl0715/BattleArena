@@ -2,26 +2,29 @@ package battlearena.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import battlearena.common.entity.Entity;
+import battlearena.common.entity.data.DVector2;
 import battlearena.common.file.TiledWorldImporter;
 import battlearena.common.states.StateMachine;
+import battlearena.common.world.EntityLayer;
 import battlearena.common.world.TiledWorld;
+import battlearena.game.entity.EPlayer;
+import battlearena.game.input.Button;
+import battlearena.game.input.Joystick;
 
 public class BattleArena extends ApplicationAdapter
 {
@@ -31,7 +34,6 @@ public class BattleArena extends ApplicationAdapter
 	public static final int VIRTUAL_WIDTH = 16*40;
 	public static final int VIRTUAL_HEIGHT = 9*40;
 
-	private boolean onDevice;
 	private StateMachine fsa;
 	private ShapeRenderer sr;
 	private SpriteBatch batch;
@@ -43,29 +45,18 @@ public class BattleArena extends ApplicationAdapter
 	private OrthographicCamera uiCamera;
 	private Viewport uiViewport;
 
-
 	private TiledWorld world;
-
-	private float joystickX;
-	private float joystickY;
-	private float joystickRad;
-	private float joystickKnobRad;
-	private float joystickKnobX;
-	private float joystickKnobY;
-	private boolean dragging;
-
-	private float buttonAX;
-	private float buttonAY;
-
-	private float buttonBX;
-	private float buttonBY;
-
 	private InputMultiplexer muxer;
+	private Joystick stick;
+	private Button buttonA;
+	private Button buttonB;
 
-	public BattleArena(boolean onDevice)
+	private EPlayer player;
+	private Vector2 pos;
+
+
+	public BattleArena()
 	{
-		this.onDevice = onDevice;
-
 		if(I == null)
 		{
 			I = this;
@@ -74,17 +65,26 @@ public class BattleArena extends ApplicationAdapter
 		{
 			throw new IllegalStateException("Can only create one instance of BattleArena during runtime.");
 		}
-
 	}
 
-	public Vector2 getJoystickInput()
+	public ShapeRenderer getShapeRenderer()
 	{
-		return new Vector2(joystickKnobX, joystickKnobY).nor();
+		return sr;
 	}
 
-	public boolean isOnDevice()
+	public Joystick getStick()
 	{
-		return onDevice;
+		return stick;
+	}
+
+	public Button getButtonA()
+	{
+		return buttonA;
+	}
+
+	public Button getButtonB()
+	{
+		return buttonB;
 	}
 
 	@Override
@@ -102,91 +102,11 @@ public class BattleArena extends ApplicationAdapter
 		uiViewport = new FitViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, camera);
 		uiViewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-		joystickX = -VIRTUAL_WIDTH / 2 * 0.7f;
-		joystickY = -VIRTUAL_HEIGHT / 2 * 0.7f;
-		joystickKnobRad = 15.0f;
-		joystickRad = 50.0f;
-		buttonAX = 100;
-		buttonAY = 100;
-
-
-		camera.zoom = 0.3f;
+		camera.zoom = 0.1f;
 		camera.update();
 
-		muxer = new InputMultiplexer(new InputAdapter()
-		{
-
-			public void joystickInput(Vector3 worldSpace)
-			{
-				Vector2 dir = new Vector2(worldSpace.x, worldSpace.y).sub(new Vector2(joystickX, joystickY));
-
-				if(dir.len() >= joystickRad)
-				{
-					dir.nor().scl(joystickRad);
-				}
-
-				joystickKnobX = dir.x;
-				joystickKnobY = dir.y;
-			}
-
-
-			@Override
-			public boolean touchDragged(int screenX, int screenY, int pointer)
-			{
-				if(dragging)
-				{
-					Vector3 worldSpace = uiCamera.unproject(new Vector3(screenX, screenY, 0));
-					joystickInput(worldSpace);
-					return true;
-				}
-
-				return false;
-			}
-
-			@Override
-			public boolean touchDown(int screenX, int screenY, int pointer, int button)
-			{
-				Vector3 worldSpace = uiCamera.unproject(new Vector3(screenX, screenY, 0));
-				float dx = worldSpace.x - joystickX;
-				float dy = worldSpace.y - joystickY;
-
-				System.out.println(worldSpace.x + " " + worldSpace.y);
-				System.out.println((joystickX + joystickKnobX) + " " + (joystickY + joystickKnobY));
-				System.out.println(dx + " " + dy);
-
-				System.out.println();
-
-				if(dx*dx+dy*dy<=joystickKnobRad*joystickKnobRad)
-				{
-					dragging = true;
-					System.out.println("dragging");
-					joystickInput(worldSpace);
-					return true;
-				}
-
-
-				return false;
-			}
-
-			@Override
-			public boolean touchUp(int screenX, int screenY, int pointer, int button)
-			{
-				dragging = false;
-				joystickKnobX = 0;
-				joystickKnobY = 0;
-				return false;
-			}
-		}
-		, new GestureDetector(new GestureDetector.GestureAdapter(){
-			@Override
-			public boolean pan(float x, float y, float deltaX, float deltaY)
-			{
-				camera.translate(-deltaX/15.0f, deltaY/15.0f);
-				camera.update();
-
-				return super.pan(x, y, deltaX, deltaY);
-			}
-
+		muxer = new InputMultiplexer(
+		new GestureDetector(new GestureDetector.GestureAdapter(){
 			@Override
 			public boolean zoom(float initialDistance, float distance)
 			{
@@ -201,9 +121,20 @@ public class BattleArena extends ApplicationAdapter
 
 		}));
 
+		stick = new Joystick(-VIRTUAL_WIDTH / 2 * 0.7f, -VIRTUAL_HEIGHT / 2 * 0.6f, muxer, uiCamera);
+		buttonA = new Button(250, -50, Color.DARK_GRAY, Color.RED, muxer, uiCamera);
+		buttonB = new Button(175, -125, Color.DARK_GRAY, Color.YELLOW, muxer, uiCamera);
+
 		Gdx.input.setInputProcessor(muxer);
 
+
 		world = new TiledWorldImporter("worlds/test.world", true, new BAEntityFactory()).imp();
+
+		player = BAEntityFactory.CreatePlayer(world, 100, 100);
+		pos = player.find(DVector2.class, Entity.POSITION).Value;
+		EntityLayer mobs = new EntityLayer("Mobs");
+		mobs.addEntity(player);
+		world.addEntityLayer(mobs);
 	}
 
 	@Override
@@ -221,7 +152,9 @@ public class BattleArena extends ApplicationAdapter
 		// Update logic
 		world.update(Gdx.graphics.getDeltaTime());
 
-		camera.translate(getJoystickInput());
+		camera.translate(stick.getJoystickInput());
+		// Center camera on player
+		camera.position.set(pos.x, pos.y, 0);
 		camera.update();
 
 		// Render logic
@@ -229,49 +162,17 @@ public class BattleArena extends ApplicationAdapter
 		batch.setProjectionMatrix(camera.projection);
 		batch.setTransformMatrix(camera.view);
 
+		sr.setProjectionMatrix(camera.projection);
+		sr.setTransformMatrix(camera.view);
+		world.render(batch, camera);
+
+
 		sr.setProjectionMatrix(uiCamera.projection);
 		sr.setTransformMatrix(uiCamera.view);
 
-
-		world.render(batch, camera);
-
-		// Render joystick.
-//
-//		uiViewport.apply();
-		{
-			sr.begin(ShapeRenderer.ShapeType.Line);
-			sr.setColor(Color.WHITE);
-			{
-				sr.circle(joystickX, joystickY, joystickRad, 100);
-			}
-			sr.end();
-
-			sr.begin(ShapeRenderer.ShapeType.Filled);
-			sr.setColor(Color.DARK_GRAY);
-			{
-				sr.circle(joystickX, joystickY, 5.0f, 100);
-			}
-			sr.setColor(Color.GRAY);
-			{
-				sr.rectLine(joystickX + joystickKnobX, joystickY + joystickKnobY, joystickX, joystickY, 5.0f);
-			}
-
-			sr.setColor(Color.RED);
-			{
-				sr.circle(joystickX + joystickKnobX, joystickY + joystickKnobY, joystickKnobRad, 100);
-			}
-			sr.end();
-		}
-
-		{
-			sr.begin(ShapeRenderer.ShapeType.Filled);
-			sr.setColor(Color.YELLOW);
-			sr.circle(buttonAX, buttonAY, 30);
-			sr.setColor(Color.RED);
-			sr.circle(buttonBX, buttonBY, 30);
-			sr.end();
-
-		}
-
+		// Render input UI
+		stick.render(sr);
+		buttonA.render(sr);
+		buttonB.render(sr);
 	}
 }

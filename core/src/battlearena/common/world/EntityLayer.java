@@ -88,8 +88,10 @@ public class EntityLayer extends Layer
     @Override
     public void render(SpriteBatch batch)
     {
+        batch.begin();
         for (Entity e : entities)
             e.Render(batch);
+        batch.end();
     }
 
 }

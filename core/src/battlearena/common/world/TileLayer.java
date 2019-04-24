@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import java.util.List;
+
 import battlearena.common.tile.Tile;
 import battlearena.common.tile.Tileset;
 
@@ -16,8 +18,9 @@ public class TileLayer extends Layer
     private int height;
     private Cell[] cells;
     private float delta;
+    private boolean collisionEnabled;
 
-    public TileLayer(String name, Tileset set, int width, int height)
+    public TileLayer(String name, Tileset set, int width, int height, boolean collisionEnabled)
     {
         super(name);
         this.tileset = set;
@@ -25,6 +28,7 @@ public class TileLayer extends Layer
         this.height = height;
         this.cells = new Cell[width * height];
         this.visible = true;
+        this.collisionEnabled = collisionEnabled;
 
         for(int x = 0; x < width; x++)
         {
@@ -33,6 +37,16 @@ public class TileLayer extends Layer
                 cells[x + y * width] = new Cell();
             }
         }
+    }
+
+    public boolean isCollisionEnabled()
+    {
+        return collisionEnabled;
+    }
+
+    public void setCollisionEnabled(boolean collisionEnabled)
+    {
+        this.collisionEnabled = collisionEnabled;
     }
 
     public boolean isVisible()
@@ -101,6 +115,7 @@ public class TileLayer extends Layer
 
         cells = newCells;
     }
+
 
     public String getName() {
         return name;

@@ -1,14 +1,12 @@
 package battlearena.game;
 
-import com.badlogic.gdx.graphics.Texture;
-
 import battlearena.common.CollisionGroup;
 import battlearena.common.entity.ELight;
-import battlearena.common.entity.EPlayer;
 import battlearena.common.entity.Entity;
 import battlearena.common.entity.EntityConfig;
 import battlearena.common.entity.EntityFactory;
 import battlearena.common.world.World;
+import battlearena.game.entity.EPlayer;
 
 public class BAEntityFactory extends EntityFactory
 {
@@ -55,8 +53,8 @@ public class BAEntityFactory extends EntityFactory
 		Config.AddConfigItem("Y", Y);
 
 		// Define size.
-		Config.AddConfigItem("Width", 18);
-		Config.AddConfigItem("Height", 18);
+		Config.AddConfigItem("Width", 4);
+		Config.AddConfigItem("Height", 4);
 
 		// Define walking animation.
 	/*	Config.AddConfigItem("Anim.Walk.Tex", LD.GetTexture(Assets.CHARACTER));

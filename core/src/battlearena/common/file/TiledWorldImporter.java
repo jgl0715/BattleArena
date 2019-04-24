@@ -65,7 +65,8 @@ public class TiledWorldImporter
             for(int i = 0; i < layerCount; i++)
             {
                 String layerName = inputStream.readUTF();
-                TileLayer layer = new TileLayer(layerName, worldTileset, worldWidth, worldHeight);
+                boolean collisionEnabled = inputStream.readBoolean();
+                TileLayer layer = new TileLayer(layerName, worldTileset, worldWidth, worldHeight, collisionEnabled);
 
                 // No extra ordering required here,
                 // layers should already be ordered correctly in the world definition file.

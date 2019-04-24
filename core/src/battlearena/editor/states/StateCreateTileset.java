@@ -61,7 +61,7 @@ public class StateCreateTileset extends battlearena.common.states.State
 					String name = hudCreateTileset.nameField.getText();
 					String path = hudCreateTileset.tilesheetField.getText();
 					int width = Integer.parseInt(hudCreateTileset.widthField.getText());
-					int height = Integer.parseInt(hudCreateTileset.widthField.getText());
+					int height = Integer.parseInt(hudCreateTileset.heightField.getText());
 					Tileset newTileset = new Tileset(name, path, width, height);
 
 					WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_EDIT_TILESET, newTileset);

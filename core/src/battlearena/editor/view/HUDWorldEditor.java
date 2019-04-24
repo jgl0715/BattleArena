@@ -32,6 +32,11 @@ public class HUDWorldEditor extends HUD
     public Label tileTilePaneLabel;
     public Table tileHovered;
 
+    // Bottom left pane
+    public Table tableBottomLeft;
+    public Label labelMeta;
+    public TextField fieldMeta;
+
     public HUDWorldEditor(Skin skin)
     {
         super(skin);
@@ -85,8 +90,22 @@ public class HUDWorldEditor extends HUD
 
         }
 
+        tableBottomLeft = new Table();
+        tableBottomLeft.setFillParent(true);
+        tableBottomLeft.left().bottom();
+        tableBottomLeft.pad(5);
+        {
+            labelMeta = new Label("Meta: ", skin);
+            fieldMeta = new TextField("", skin);
+            fieldMeta.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
+
+            tableBottomLeft.add(labelMeta).padRight(5);
+            tableBottomLeft.add(fieldMeta).width(100);
+        }
+
         ui.addActor(tableRightPane);
         ui.addActor(tableLeftPane);
+        ui.addActor(tableBottomLeft);
     }
 
     public Table addTile(Tileset set, Tile tile)

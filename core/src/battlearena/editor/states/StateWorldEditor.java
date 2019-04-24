@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 
@@ -50,6 +51,8 @@ import box2dLight.PointLight;
 public class StateWorldEditor extends battlearena.common.states.State
 {
 
+	public static final int COLLISION_ENABLED_META = 0x01;
+
 	private TiledWorld editingWorld;
 	private TiledWorldExporter exporter;
 	private HUDWorldEditor hudWorldEditor;
@@ -62,6 +65,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 	private boolean renderGrid;
 	private boolean deleteMode;
 	private boolean floodFill;
+	private boolean collisionEnabled;
 	private Set<Location> floodFillResult;
 
 	private InputMultiplexer muxer;
@@ -72,6 +76,8 @@ public class StateWorldEditor extends battlearena.common.states.State
 	private Entity draggingEntity;
 
 	private Box2DDebugRenderer dbgr;
+
+	private Location selectedLocation;
 
 	public StateWorldEditor()
 	{
@@ -249,7 +255,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 	 */
 	public TileLayer addNewTileLayer(String layerName)
 	{
-		final TileLayer newLayer = new TileLayer(layerName, editingWorld.getTileset(), editingWorld.getWidth(), editingWorld.getHeight());
+		final TileLayer newLayer = new TileLayer(layerName, editingWorld.getTileset(), editingWorld.getWidth(), editingWorld.getHeight(), true);
 
 		addNewLayer(newLayer, false, true);
 
@@ -310,7 +316,8 @@ public class StateWorldEditor extends battlearena.common.states.State
 		if(selectedLayer instanceof TileLayer)
 		{
 			return LayerType.TILES;
-		}else if(selectedLayer instanceof EntityLayer)
+		}
+		else if(selectedLayer instanceof EntityLayer)
 		{
 			String name = selectedLayer.getName();
 
@@ -367,8 +374,21 @@ public class StateWorldEditor extends battlearena.common.states.State
 	public void create()
 	{
 		renderGrid = true;
+		collisionEnabled = true;
 
 		hudWorldEditor = new HUDWorldEditor(WorldEditor.I.getUiSkin());
+
+		hudWorldEditor.fieldMeta.addListener(new ChangeListener()
+		{
+			@Override
+			public void changed(ChangeEvent event, Actor actor)
+			{
+
+				if(editingWorld.isLocInBounds(selectedLocation))
+					editingWorld.getLayer(selectedLayer.getName()).getCell(selectedLocation.getTileX(), selectedLocation.getTileY()).setMeta(Integer.parseInt(hudWorldEditor.fieldMeta.getText()));
+
+			}
+		});
 
 		hudWorldEditor.addLayerButton.addListener(new ClickListener(){
 			@Override
@@ -499,12 +519,22 @@ public class StateWorldEditor extends battlearena.common.states.State
 
 			public boolean editTile(int button)
 			{
+				int mtx = getMouseTileX();
+				int mty = getMouseTileY();
+
+				selectedLocation = new Location(mtx, mty);
+
+				if(editingWorld.isLocInBounds(selectedLocation))
+				{
+					hudWorldEditor.fieldMeta.setText("" + editingWorld.getLayer(selectedLayer.getName()).getCell(mtx, mty).getMeta());
+				}
+
 				if(button == Input.Buttons.LEFT)
 				{
-					return tileManip(getMouseTileX(), getMouseTileY(), false);
+					return tileManip(mtx, mty, false);
 				}else if(button == Input.Buttons.RIGHT)
 				{
-					return tileManip(getMouseTileX(), getMouseTileY(), true);
+					return tileManip(mtx, mty, true);
 				}
 				return false;
 			}
@@ -533,7 +563,9 @@ public class StateWorldEditor extends battlearena.common.states.State
 							if(remove)
 								editingWorld.removeTile(layer, loc);
 							else
+							{
 								editingWorld.placeTile(layer, selectedTile, loc);
+							}
 						}
 
 						return true;
@@ -567,14 +599,11 @@ public class StateWorldEditor extends battlearena.common.states.State
 			@Override
 			public boolean keyUp(int keycode)
 			{
-
-
 				if(keycode == Input.Keys.F)
 				{
 					// Enable flood filling
 					floodFill = false;
 				}
-
 				return false;
 			}
 
@@ -588,11 +617,11 @@ public class StateWorldEditor extends battlearena.common.states.State
 			@Override
 			public boolean keyDown(int keycode)
 			{
-
 				// Global command handling
-
 				if(hudWorldEditor.getUI().getKeyboardFocus() == null)
 				{
+
+					LayerType type = getSelectedLayerType();
 
 					if(keycode == Input.Keys.F1)
 					{
@@ -616,6 +645,13 @@ public class StateWorldEditor extends battlearena.common.states.State
 					{
 						// Increase world height by one
 						editingWorld.changeHeight(1);
+					}
+
+					if(keycode == Input.Keys.C && type == LayerType.TILES)
+					{
+						// Enable/Disable layer collision
+						TileLayer tl = (TileLayer) selectedLayer;
+						tl.setCollisionEnabled(!tl.isCollisionEnabled());
 					}
 
 					if(keycode == Input.Keys.T)

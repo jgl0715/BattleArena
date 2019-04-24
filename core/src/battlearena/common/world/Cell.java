@@ -27,6 +27,11 @@ public class Cell
         this.meta = 0;
     }
 
+    public void metaOrWith(int bits)
+    {
+        meta |= bits;
+    }
+
     public Body getBody()
     {
         return bod;
