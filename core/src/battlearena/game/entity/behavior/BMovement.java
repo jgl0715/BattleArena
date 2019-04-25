@@ -32,6 +32,6 @@ public class BMovement extends Behavior
     {
         super.Update(delta);
 
-        bod.applyForceToCenter(stickSource.getJoystickInput().scl(3), true);
+        bod.applyForceToCenter(stickSource.getJoystickInput().scl(100), true);
     }
 }

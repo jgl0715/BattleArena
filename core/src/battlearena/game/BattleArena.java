@@ -96,6 +96,16 @@ public class BattleArena extends ApplicationAdapter
 		return assetManager.get(Assets.SKIN, Skin.class);
 	}
 
+	public void inputToFSA(String input)
+	{
+		fsa.transition(input, null);
+	}
+
+	public void inputToFSA(String input, Object transitionInput)
+	{
+		fsa.transition(input, transitionInput);
+	}
+
 	@Override
 	public void create ()
 	{

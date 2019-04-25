@@ -1,6 +1,8 @@
 package battlearena.game.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import battlearena.common.states.State;
 import battlearena.game.BattleArena;
@@ -20,6 +22,16 @@ public class StateMainMenu extends State
     public void create()
     {
         hudMainMenu = new HUDMainMenu(BattleArena.I.getSkin());
+
+        hudMainMenu.singlePlayerButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+
+                // Start StatePlay
+                BattleArena.I.inputToFSA(BattleArena.TRANSITION_PLAY);
+            }
+        });
     }
 
     @Override

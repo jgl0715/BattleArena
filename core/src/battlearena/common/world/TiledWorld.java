@@ -22,6 +22,8 @@ import battlearena.editor.WorldEditor;
 
 public class TiledWorld extends World
 {
+    public static final String BG_LAYER = "Background";
+    public static final String FG_LAYER = "Foreground";
 
     private Tileset tileset;
 
@@ -81,6 +83,34 @@ public class TiledWorld extends World
     public boolean isLocInBounds(Location loc)
     {
         return loc.getTileX() >= 0 && loc.getTileY() >= 0 && loc.getTileX() < width && loc.getTileY() < height;
+    }
+
+    /**
+     * Checks if there is a tile on the specified location on the foreground tile layer.
+     *
+     * @param tx
+     * @param ty
+     * @return
+     */
+    public boolean isWall(int tx, int ty)
+    {
+        return getTile(FG_LAYER, tx, ty) != null;
+    }
+
+    public boolean isWall(Location loc)
+    {
+        if(!isLocInBounds(loc))
+            return false;
+        
+        return isWall(loc.getTileX(), loc.getTileY());
+    }
+
+    public Location entityLocationToTileLocation(Vector2 pos)
+    {
+        int tx = (int) (pos.x / tileset.getTileWidth());
+        int ty = (int) (pos.y / tileset.getTileHeight());
+
+        return new Location(tx, ty);
     }
 
     public Set<Location> floodSearch(String layer, int tx, int ty)

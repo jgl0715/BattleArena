@@ -19,6 +19,7 @@ import battlearena.common.world.EntityLayer;
 import battlearena.common.world.TiledWorld;
 import battlearena.game.BAEntityFactory;
 import battlearena.game.BattleArena;
+import battlearena.game.entity.EEnemy;
 import battlearena.game.entity.EPlayer;
 import battlearena.game.input.Button;
 import battlearena.game.input.Joystick;
@@ -31,6 +32,7 @@ public class StatePlay extends State
     private InputMultiplexer muxer;
     private TiledWorld world;
     private EPlayer player;
+    private EEnemy enemy;
     private Vector2 pos;
     private Joystick stick;
     private Button buttonA;
@@ -103,15 +105,19 @@ public class StatePlay extends State
     {
         Gdx.input.setInputProcessor(muxer);
 
-
         world = new TiledWorldImporter("worlds/test.world", true, new BAEntityFactory()).imp();
 
         player = BAEntityFactory.CreatePlayer(world, 100, 100);
-        pos = player.find(DVector2.class, Entity.POSITION).Value;
+        enemy = BAEntityFactory.CreateEnemy(world, 150, 100);
+
+        // Add entities here.
         EntityLayer mobs = new EntityLayer("Mobs");
         mobs.addEntity(player);
+        mobs.addEntity(enemy);
+
         world.addEntityLayer(mobs);
 
+        pos = player.find(DVector2.class, Entity.POSITION).Value;
     }
 
     @Override
@@ -127,7 +133,7 @@ public class StatePlay extends State
         // Update logic
         world.update(Gdx.graphics.getDeltaTime());
 
-        camera.translate(stick.getJoystickInput());
+        camera.zoom = 1.0f;
         // Center camera on player
         camera.position.set(pos.x, pos.y, 0);
         camera.update();

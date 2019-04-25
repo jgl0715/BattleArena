@@ -1,5 +1,6 @@
 package battlearena.common.entity;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -81,12 +82,13 @@ public class EBox extends Entity
 
 				// Use default entity texture scaled up here.
 				 ShapeRenderer sr = BattleArena.I.getShapeRenderer();
-					Vector2 position = find(DVector2.class, POSITION).Value;
+				Vector2 position = find(DVector2.class, POSITION).Value;
 				 Vector2 size = find(DVector2.class, SIZE).Value;
 				 float rotation = find(DFloat.class, ROTATION).Value;
 				 float width = size.x;
 				 float height = size.y;
 
+				 sr.setColor(Color.WHITE);
 				 sr.begin(ShapeRenderer.ShapeType.Line);
 				 sr.rect(position.x - width / 2, position.y - height / 2, width / 2, height / 2, width, height, 1.0f, 1.0f, rotation);
 				 sr.end();
