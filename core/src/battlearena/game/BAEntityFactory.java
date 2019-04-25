@@ -57,7 +57,7 @@ public class BAEntityFactory extends EntityFactory
 		Config.AddConfigItem("Height", 4);
 
 		// Define walking animation.
-	/*	Config.AddConfigItem("Anim.Walk.Tex", LD.GetTexture(Assets.CHARACTER));
+		Config.AddConfigItem("Anim.Walk.Tex", BattleArena.I.getTexture(Assets.TEXTURE_CHARACTERS));
 		Config.AddConfigItem("Anim.Walk.SheetX", 0);
 		Config.AddConfigItem("Anim.Walk.SheetY", 0);
 		Config.AddConfigItem("Anim.Walk.SheetWidth", 5);
@@ -65,7 +65,7 @@ public class BAEntityFactory extends EntityFactory
 		Config.AddConfigItem("Anim.Walk.FrameWidth", 18);
 		Config.AddConfigItem("Anim.Walk.FrameHeight", 18);
 		Config.AddConfigItem("Anim.Walk.Duration", 0.1f);
-*/
+
 		return new EPlayer(Config);
 	}
 

@@ -7,6 +7,7 @@ import battlearena.common.entity.behavior.Behavior;
 import battlearena.common.entity.data.DBody;
 import battlearena.game.BattleArena;
 import battlearena.game.input.Joystick;
+import battlearena.game.states.StatePlay;
 
 import com.badlogic.gdx.physics.box2d.Body;
 
@@ -23,7 +24,7 @@ public class BMovement extends Behavior
         AddData(DBody.class, Entity.BODY);
         bod = Get(Body.class, Entity.BODY);
 
-        this.stickSource = BattleArena.I.getStick();
+        this.stickSource = StatePlay.I.getStick();
     }
 
     @Override

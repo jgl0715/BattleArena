@@ -4,14 +4,17 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -25,9 +28,16 @@ import battlearena.common.world.TiledWorld;
 import battlearena.game.entity.EPlayer;
 import battlearena.game.input.Button;
 import battlearena.game.input.Joystick;
+import battlearena.game.states.StateMainMenu;
+import battlearena.game.states.StatePlay;
 
 public class BattleArena extends ApplicationAdapter
 {
+
+	public static final String TRANSITION_PLAY = "T_Play";
+
+	public static final StateMainMenu STATE_MAIN_MENU = new StateMainMenu();
+	public static final StatePlay STATE_PLAY = new StatePlay();
 
 	public static BattleArena I = null;
 
@@ -37,23 +47,12 @@ public class BattleArena extends ApplicationAdapter
 	private StateMachine fsa;
 	private ShapeRenderer sr;
 	private SpriteBatch batch;
-	private ShapeRenderer shapeRenderer;
 
 	private OrthographicCamera camera;
 	private Viewport viewport;
 
-	private OrthographicCamera uiCamera;
-	private Viewport uiViewport;
-
-	private TiledWorld world;
-	private InputMultiplexer muxer;
-	private Joystick stick;
-	private Button buttonA;
-	private Button buttonB;
-
-	private EPlayer player;
-	private Vector2 pos;
-
+	private AssetManager assetManager;
+	private Skin uiSkin;
 
 	public BattleArena()
 	{
@@ -72,25 +71,34 @@ public class BattleArena extends ApplicationAdapter
 		return sr;
 	}
 
-	public Joystick getStick()
+	public SpriteBatch getBatch()
 	{
-		return stick;
+		return batch;
 	}
 
-	public Button getButtonA()
+	public OrthographicCamera getCamera()
 	{
-		return buttonA;
+		return camera;
 	}
 
-	public Button getButtonB()
+	public AssetManager getAssetManager()
 	{
-		return buttonB;
+		return assetManager;
+	}
+
+	public Texture getTexture(String name)
+	{
+		return assetManager.get(name, Texture.class);
+	}
+
+	public Skin getSkin()
+	{
+		return assetManager.get(Assets.SKIN, Skin.class);
 	}
 
 	@Override
 	public void create ()
 	{
-		shapeRenderer = new ShapeRenderer();
 		batch = new SpriteBatch();
 		sr = new ShapeRenderer();
 
@@ -98,43 +106,22 @@ public class BattleArena extends ApplicationAdapter
 		viewport = new StretchViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, camera);
 		viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-		uiCamera = new OrthographicCamera(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
-		uiViewport = new FitViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, camera);
-		uiViewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
 		camera.zoom = 0.1f;
 		camera.update();
 
-		muxer = new InputMultiplexer(
-		new GestureDetector(new GestureDetector.GestureAdapter(){
-			@Override
-			public boolean zoom(float initialDistance, float distance)
-			{
-				camera.zoom += (initialDistance-distance)/90000.0f;
-				camera.update();
+		fsa = new StateMachine();
 
-				if(camera.zoom < 0.1)
-					camera.zoom = 0.1f;
+		assetManager = new AssetManager();
+		assetManager.load(Assets.TEXTURE_CHARACTERS, Texture.class);
+		assetManager.load(Assets.SKIN, Skin.class);
+		assetManager.finishLoading();
 
-				return super.zoom(initialDistance, distance);
-			}
+		// Register states
+		fsa.registerState(STATE_MAIN_MENU, true);
+		fsa.registerState(STATE_PLAY);
 
-		}));
-
-		stick = new Joystick(-VIRTUAL_WIDTH / 2 * 0.7f, -VIRTUAL_HEIGHT / 2 * 0.6f, muxer, uiCamera);
-		buttonA = new Button(250, -50, Color.DARK_GRAY, Color.RED, muxer, uiCamera);
-		buttonB = new Button(175, -125, Color.DARK_GRAY, Color.YELLOW, muxer, uiCamera);
-
-		Gdx.input.setInputProcessor(muxer);
-
-
-		world = new TiledWorldImporter("worlds/test.world", true, new BAEntityFactory()).imp();
-
-		player = BAEntityFactory.CreatePlayer(world, 100, 100);
-		pos = player.find(DVector2.class, Entity.POSITION).Value;
-		EntityLayer mobs = new EntityLayer("Mobs");
-		mobs.addEntity(player);
-		world.addEntityLayer(mobs);
+		// Register transitions
+		fsa.registerTransition(STATE_MAIN_MENU, STATE_PLAY, TRANSITION_PLAY);
 	}
 
 	@Override
@@ -143,36 +130,25 @@ public class BattleArena extends ApplicationAdapter
 
 	}
 
+	public void update(float delta)
+	{
+		fsa.updateCurrent(delta);
+	}
+
 	@Override
 	public void render ()
 	{
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		// Update logic
-		world.update(Gdx.graphics.getDeltaTime());
-
-		camera.translate(stick.getJoystickInput());
-		// Center camera on player
-		camera.position.set(pos.x, pos.y, 0);
-		camera.update();
+		update(Gdx.graphics.getDeltaTime());
 
 		// Render logic
+		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		batch.setProjectionMatrix(camera.projection);
 		batch.setTransformMatrix(camera.view);
 
-		sr.setProjectionMatrix(camera.projection);
-		sr.setTransformMatrix(camera.view);
-		world.render(batch, camera);
-
-
-		sr.setProjectionMatrix(uiCamera.projection);
-		sr.setTransformMatrix(uiCamera.view);
-
-		// Render input UI
-		stick.render(sr);
-		buttonA.render(sr);
-		buttonB.render(sr);
+		fsa.renderCurrent();
 	}
 }

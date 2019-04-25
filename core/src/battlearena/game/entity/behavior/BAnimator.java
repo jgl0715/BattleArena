@@ -1,9 +1,10 @@
-package battlearena.common.entity.behavior;
+package battlearena.game.entity.behavior;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import battlearena.common.entity.Entity;
+import battlearena.common.entity.behavior.Behavior;
 import battlearena.common.entity.data.DAnimation;
 import battlearena.common.entity.data.DFloat;
 import battlearena.common.entity.data.DTextureRegion;
