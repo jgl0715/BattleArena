@@ -35,10 +35,10 @@ public class EBox extends Entity
 		Frame = addData(DTextureRegion.class, FRAME);
 		bod = addData(DBody.class, BODY).Value;
 
-		if (Config.HasItem("Width"))
-			Size.x = Config.GetConfigNumber("Width");
-		if (Config.HasItem("Height"))
-			Size.y = Config.GetConfigNumber("Height");
+		if (Config.HasItem("NavboxWidth"))
+			Size.x = Config.GetConfigNumber("NavboxWidth");
+		if (Config.HasItem("NavboxHeight"))
+			Size.y = Config.GetConfigNumber("NavboxHeight");
 
 		// Add a physics component
 		addBehavior(BPhysics.class, "Physics");

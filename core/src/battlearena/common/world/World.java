@@ -20,8 +20,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import battlearena.common.entity.EntityConfig;
 import battlearena.game.CollisionGroup;
 import battlearena.common.entity.Entity;
+import battlearena.game.entity.EMob;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 

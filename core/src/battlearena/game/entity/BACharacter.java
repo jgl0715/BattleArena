@@ -5,20 +5,24 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 public enum BACharacter
 {
 
-    WARRIOR("Warrior", 40, 57, 20.0f), ARCHER("Archer", 40, 57, 15.0f), WIZARD("Wizard", 40, 57, 15.0f);
+    WARRIOR("Warrior", 40, 57, 40, 10, 20.0f), ARCHER("Archer", 40, 57, 0, 0, 15.0f), WIZARD("Wizard", 40, 57, 0, 0, 15.0f);
 
     private String name;
     private Animation walkAnim;
     private Animation attackAnim;
-    private int width;
-    private int height;
+    private int hitboxWidth;
+    private int hitboxHeight;
+    private int navboxWidth;
+    private int navboxHeight;
     private float speed;
 
-    BACharacter(String n, int w, int h, float speed)
+    BACharacter(String n, int hbWidth, int hbHeight, int nmWidth, int nmHeight, float speed)
     {
         this.name = n;
-        this.width = w;
-        this.height=h;
+        this.hitboxWidth = hbWidth;
+        this.hitboxHeight = hbHeight;
+        this.navboxWidth = nmWidth;
+        this.navboxHeight= nmHeight;
         this.speed = speed;
     }
 
@@ -27,12 +31,24 @@ public enum BACharacter
         return name;
     }
 
-    public int getWidth() {
-        return width;
+    public int getHitboxWidth()
+    {
+        return hitboxWidth;
     }
 
-    public int getHeight() {
-        return height;
+    public int getHitboxHeight()
+    {
+        return hitboxHeight;
+    }
+
+    public int getNavboxWidth()
+    {
+        return navboxWidth;
+    }
+
+    public int getNavboxHeight()
+    {
+        return navboxHeight;
     }
 
     public float getSpeed() {

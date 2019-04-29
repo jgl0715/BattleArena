@@ -54,8 +54,10 @@ public class BAEntityFactory extends EntityFactory
 		Config.AddConfigItem("Y", Y);
 
 		// Define size.
-		Config.AddConfigItem("Width", type.getWidth());
-		Config.AddConfigItem("Height", type.getHeight());
+		Config.AddConfigItem("NavboxWidth", type.getNavboxWidth());
+		Config.AddConfigItem("NavboxHeight", type.getNavboxHeight());
+		Config.AddConfigItem("HitboxWidth", type.getHitboxWidth());
+		Config.AddConfigItem("HitboxHeight", type.getHitboxHeight());
 
 		// Define walking animation.
 /*		Config.AddConfigItem("Anim.Walk.Tex", BattleArena.I.getTexture(Assets.TEXTURE_CHARACTERS));
@@ -90,8 +92,10 @@ public class BAEntityFactory extends EntityFactory
 		Config.AddConfigItem("Y", Y);
 
 		// Define size.
-		Config.AddConfigItem("Width", type.getWidth());
-		Config.AddConfigItem("Height", type.getHeight());
+		Config.AddConfigItem("NavboxWidth", type.getNavboxWidth());
+		Config.AddConfigItem("NavboxHeight", type.getNavboxHeight());
+		Config.AddConfigItem("HitboxWidth", type.getHitboxWidth());
+		Config.AddConfigItem("HitboxHeight", type.getHitboxHeight());
 
 		Config.AddConfigItem("Character", type);
 

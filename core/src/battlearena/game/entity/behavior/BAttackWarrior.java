@@ -37,6 +37,7 @@ public class BAttackWarrior extends BAttack
                     Fixture otherFixture = null;
                     Fixture thisFixture = null;
 
+                    System.out.println(other);
 
                     if (e1 == GetParent()) {
                         other = e2;
@@ -91,7 +92,7 @@ public class BAttackWarrior extends BAttack
 
         fDef.filter.categoryBits = CollisionGroup.WEAPON.getChannel();
         fDef.filter.groupIndex = (short) 0;
-        fDef.filter.maskBits = (short)CollisionGroup.WEAPON.getAccepted();
+        fDef.filter.maskBits = CollisionGroup.WEAPON.getAccepted();
 
         return bod.createFixture(fDef);
     }

@@ -23,6 +23,7 @@ public class TiledWorld extends World
 {
     public static final String BG_LAYER = "Background";
     public static final String FG_LAYER = "Foreground";
+    public static final int TILE_SIZE = 48;
 
     private Tileset tileset;
 
@@ -106,8 +107,8 @@ public class TiledWorld extends World
 
     public Location entityLocationToTileLocation(Vector2 pos)
     {
-        int tx = (int) (pos.x / tileset.getTileWidth());
-        int ty = (int) (pos.y / tileset.getTileHeight());
+        int tx = (int) (pos.x / TILE_SIZE);
+        int ty = (int) (pos.y / TILE_SIZE);
 
         return new Location(tx, ty);
     }
@@ -162,22 +163,22 @@ public class TiledWorld extends World
 
     public int getTileWidth()
     {
-        return tileset.getTileWidth();
+        return TILE_SIZE;
     }
 
     public int getTileHeight()
     {
-        return tileset.getTileHeight();
+        return TILE_SIZE;
     }
 
     public int getPixelWidth()
     {
-        return width * tileset.getTileWidth();
+        return width * TILE_SIZE;
     }
 
     public int getPixelHeight()
     {
-        return height * tileset.getTileHeight();
+        return height * TILE_SIZE;
     }
 
     public Tileset getTileset()
@@ -243,10 +244,13 @@ public class TiledWorld extends World
         Vector2[] verts = new Vector2[4];
         Vector2 origin = new Vector2(originX, originY);
 
-        verts[0] = (new Vector2(origin).add(mask.getVertex(3))).scl(1.0f / World.PIXELS_PER_METER);
-        verts[1] = (new Vector2(origin).add(mask.getVertex(2))).scl(1.0f / World.PIXELS_PER_METER);
-        verts[2] = (new Vector2(origin).add(mask.getVertex(1))).scl(1.0f / World.PIXELS_PER_METER);
-        verts[3] = (new Vector2(origin).add(mask.getVertex(0))).scl(1.0f / World.PIXELS_PER_METER);
+        float scaleX = 1.0f / World.PIXELS_PER_METER * (TILE_SIZE / tileset.getTileWidth());
+        float scaleY = 1.0f / World.PIXELS_PER_METER * (TILE_SIZE / tileset.getTileHeight());
+
+        verts[0] = (new Vector2(origin).add(mask.getVertex(3))).scl(scaleX, scaleY);
+        verts[1] = (new Vector2(origin).add(mask.getVertex(2))).scl(scaleX, scaleY);
+        verts[2] = (new Vector2(origin).add(mask.getVertex(1))).scl(scaleX, scaleY);
+        verts[3] = (new Vector2(origin).add(mask.getVertex(0))).scl(scaleX, scaleY);
 
         return createQuad(BodyDef.BodyType.StaticBody, x, y, verts, group);
     }
@@ -274,8 +278,8 @@ public class TiledWorld extends World
             CollisionMask mask = t.getMask();
             float tileOriginX = 0;//tileset.getTileWidth();
             float tileOriginY = 0;//tileset.getTileHeight();
-            float tileX = x*tileset.getTileWidth();
-            float tileY = (height-y-1)*tileset.getTileHeight();
+            float tileX = x*TILE_SIZE;
+            float tileY = (height-y-1)*TILE_SIZE;
             cell.setBody(placeMask(mask, CollisionGroup.TILES, tileOriginX, tileOriginY, tileX, tileY));
         }
     }

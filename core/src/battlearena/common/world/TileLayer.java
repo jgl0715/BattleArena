@@ -162,10 +162,10 @@ public class TileLayer extends Layer
         {
             delta += Gdx.graphics.getDeltaTime();
 
-            int sx = (int) ((cam.position.x - cam.viewportWidth*cam.zoom / 2) / tileset.getTileWidth());
-            int sy = height - (int) ((cam.position.y + cam.viewportHeight*cam.zoom / 2) / tileset.getTileHeight()) - 1;
-            int ex = (int) ((cam.position.x + cam.viewportWidth*cam.zoom / 2) / tileset.getTileWidth()) + 1;
-            int ey = (height - (int) ((cam.position.y - cam.viewportHeight*cam.zoom / 2) / tileset.getTileHeight()) - 1) + 1;
+            int sx = (int) ((cam.position.x - cam.viewportWidth*cam.zoom / 2) / TiledWorld.TILE_SIZE);
+            int sy = height - (int) ((cam.position.y + cam.viewportHeight*cam.zoom / 2) / TiledWorld.TILE_SIZE) - 1;
+            int ex = (int) ((cam.position.x + cam.viewportWidth*cam.zoom / 2) / TiledWorld.TILE_SIZE) + 1;
+            int ey = (height - (int) ((cam.position.y - cam.viewportHeight*cam.zoom / 2) / TiledWorld.TILE_SIZE) - 1) + 1;
 
             for(int x = sx; x < ex; x++)
             {
@@ -178,7 +178,7 @@ public class TileLayer extends Layer
 
                         if(texture != null)
                         {
-                            batch.draw(texture, x * tileset.getTileWidth(), (height-y-1) * tileset.getTileHeight());
+                            batch.draw(texture, x * TiledWorld.TILE_SIZE, (height-y-1) * TiledWorld.TILE_SIZE, TiledWorld.TILE_SIZE, TiledWorld.TILE_SIZE);
                         }
                     }
                 }

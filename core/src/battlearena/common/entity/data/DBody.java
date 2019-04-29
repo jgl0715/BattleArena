@@ -53,7 +53,7 @@ public class DBody extends Data
 
 		Value.setUserData(GetParent());
 
-		CreateBoxFixture(EntityConf.GetConfigNumber("Width"), EntityConf.GetConfigNumber("Height"), Category, Accepted);
+		CreateBoxFixture(EntityConf.GetConfigNumber("NavboxWidth"), EntityConf.GetConfigNumber("NavboxHeight"), Category, Accepted);
 	}
 
 	public void CreateBoxFixture(float w, float h, short Cat, short Accepted)

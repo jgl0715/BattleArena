@@ -339,7 +339,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 		int y = Gdx.input.getY();
 		float originX = 0;
 		OrthographicCamera camera = WorldEditor.I.getCamera();
-		return (int) Math.floor((camera.unproject(new Vector3(x, y, 0)).x - originX) / editingWorld.getTileset().getTileWidth());
+		return (int) Math.floor((camera.unproject(new Vector3(x, y, 0)).x - originX) / TiledWorld.TILE_SIZE);
 	}
 
 	public int getMouseTileY()
@@ -348,7 +348,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 		int y = Gdx.input.getY();
 		float originY = 0;
 		OrthographicCamera camera = WorldEditor.I.getCamera();
-		return editingWorld.getHeight() - (int) Math.floor((camera.unproject(new Vector3(x, y, 0)).y - originY) / editingWorld.getTileset().getTileHeight()) - 1;
+		return editingWorld.getHeight() - (int) Math.floor((camera.unproject(new Vector3(x, y, 0)).y - originY) / TiledWorld.TILE_SIZE) - 1;
 	}
 
 	public void updateTileset()
@@ -984,8 +984,8 @@ public class StateWorldEditor extends battlearena.common.states.State
 		{
 			int worldWidth = editingWorld.getWidth();
 			int worldHeight = editingWorld.getHeight();
-			int tileWidth = editingWorld.getTileset().getTileWidth();
-			int tileHeight = editingWorld.getTileset().getTileHeight();
+			int tileWidth = TiledWorld.TILE_SIZE;
+			int tileHeight = TiledWorld.TILE_SIZE;
 			float originX = 0;
 			float originY = 0;
 
@@ -1091,7 +1091,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 							int meta = tileLayer.getCell(x, y).getMeta();
 							if(meta != 0)
 							{
-								font.draw(batch, meta + "", x*editingWorld.getTileset().getTileWidth(), (editingWorld.getHeight()-y-1+1)*editingWorld.getTileset().getTileHeight());
+								font.draw(batch, meta + "", x*TiledWorld.TILE_SIZE, (editingWorld.getHeight()-y-1+1)*TiledWorld.TILE_SIZE);
 							}
 						}
 					}

@@ -13,6 +13,7 @@ import battlearena.common.entity.data.DPointLight;
 import battlearena.common.entity.data.DString;
 import battlearena.common.entity.data.DVector2;
 import battlearena.game.entity.BACharacter;
+import battlearena.game.entity.EMob;
 import battlearena.game.entity.EPlayer;
 import box2dLight.PointLight;
 
@@ -31,7 +32,7 @@ public abstract class BAttack extends Behavior
     {
         super(Name, Parent);
 
-        bod = GetParent().find(DBody.class, Entity.BODY).Value;
+        bod = ((EMob) Parent).getHitbox();
         pos = GetParent().find(DVector2.class, Entity.POSITION).Value;
         anim = GetParent().find(DString.class, Entity.ANIM);
         cooldown = GetParent().find(DFloat.class, EPlayer.DATA_COOLDOWN);
