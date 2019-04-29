@@ -156,21 +156,30 @@ public class TileLayer extends Layer
 
     }
 
-    public void render(SpriteBatch batch)
+    public void render(SpriteBatch batch, OrthographicCamera cam)
     {
         if(visible)
         {
             delta += Gdx.graphics.getDeltaTime();
-            for(int x = 0; x < width; x++)
-            {
-                for(int y = 0; y < height; y++)
-                {
-                    Cell cell = getCell(x, y);
-                    TextureRegion texture = cell.getFrame(delta, tileset);
 
-                    if(texture != null)
+            int sx = (int) ((cam.position.x - cam.viewportWidth*cam.zoom / 2) / tileset.getTileWidth());
+            int sy = height - (int) ((cam.position.y + cam.viewportHeight*cam.zoom / 2) / tileset.getTileHeight()) - 1;
+            int ex = (int) ((cam.position.x + cam.viewportWidth*cam.zoom / 2) / tileset.getTileWidth()) + 1;
+            int ey = (height - (int) ((cam.position.y - cam.viewportHeight*cam.zoom / 2) / tileset.getTileHeight()) - 1) + 1;
+
+            for(int x = sx; x < ex; x++)
+            {
+                for(int y = sy; y < ey; y++)
+                {
+                    if(x >= 0 && x < width && y >= 0 && y < height)
                     {
-                        batch.draw(texture, x * tileset.getTileWidth(), (height-y-1) * tileset.getTileHeight());
+                        Cell cell = getCell(x, y);
+                        TextureRegion texture = cell.getFrame(delta, tileset);
+
+                        if(texture != null)
+                        {
+                            batch.draw(texture, x * tileset.getTileWidth(), (height-y-1) * tileset.getTileHeight());
+                        }
                     }
                 }
             }

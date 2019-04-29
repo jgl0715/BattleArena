@@ -11,14 +11,18 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import java.util.Set;
+
 import battlearena.common.entity.Entity;
 import battlearena.common.entity.data.DVector2;
 import battlearena.common.file.TiledWorldImporter;
 import battlearena.common.states.State;
 import battlearena.common.world.EntityLayer;
+import battlearena.common.world.Location;
 import battlearena.common.world.TiledWorld;
 import battlearena.game.BAEntityFactory;
 import battlearena.game.BattleArena;
+import battlearena.game.entity.BACharacter;
 import battlearena.game.entity.EEnemy;
 import battlearena.game.entity.EPlayer;
 import battlearena.game.input.Button;
@@ -90,6 +94,14 @@ public class StatePlay extends State
         buttonB = new Button(175, -125, Color.DARK_GRAY, Color.YELLOW, muxer, uiCamera);
     }
 
+    public Vector2 getSpawnWithMeta(int meta)
+    {
+        Location spawn = world.findLocationsMatchingMeta(meta).iterator().next();
+
+        return new Vector2(spawn.getTileX() * world.getTileWidth(), world.getPixelHeight()-spawn.getTileY()*world.getTileHeight()-1);
+    }
+
+
     @Override
     public void dispose() {
 
@@ -107,8 +119,11 @@ public class StatePlay extends State
 
         world = new TiledWorldImporter("worlds/test.world", true, new BAEntityFactory()).imp();
 
-        player = BAEntityFactory.CreatePlayer(world, 100, 100);
-        enemy = BAEntityFactory.CreateEnemy(world, 150, 100);
+        Vector2 playerSpawn = getSpawnWithMeta(1);
+        Vector2 enemySpawn = getSpawnWithMeta(2);
+
+        player = BAEntityFactory.CreatePlayer(world, playerSpawn.x, playerSpawn.y, BACharacter.WARRIOR);
+        enemy = BAEntityFactory.CreateEnemy(world, enemySpawn.x, enemySpawn.y);
 
         // Add entities here.
         EntityLayer mobs = new EntityLayer("Mobs");
@@ -133,7 +148,7 @@ public class StatePlay extends State
         // Update logic
         world.update(Gdx.graphics.getDeltaTime());
 
-        camera.zoom = 1.0f;
+        camera.zoom = 0.8f;
         // Center camera on player
         camera.position.set(pos.x, pos.y, 0);
         camera.update();
@@ -160,6 +175,9 @@ public class StatePlay extends State
         stick.render(sr);
         buttonA.render(sr);
         buttonB.render(sr);
+
+        // Render HUD
+
 
     }
 }

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import battlearena.common.entity.Entity;
+import battlearena.common.tile.Tile;
 import battlearena.common.world.Cell;
 import battlearena.common.world.EntityLayer;
 import battlearena.common.world.TileLayer;

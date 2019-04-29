@@ -1,6 +1,7 @@
 package battlearena.common.world;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import battlearena.common.RenderSettings;
 import battlearena.common.entity.Entity;
 import battlearena.common.entity.data.DBoolean;
 import battlearena.common.entity.data.DFloat;
@@ -86,12 +88,15 @@ public class EntityLayer extends Layer
     }
 
     @Override
-    public void render(SpriteBatch batch)
+    public void render(SpriteBatch batch, OrthographicCamera cam)
     {
         batch.begin();
         for (Entity e : entities)
-            e.Render(batch);
+            e.Render(batch, cam, RenderSettings.RenderMode.TEXTURED);
         batch.end();
+
+        for (Entity e : entities)
+            e.Render(batch, cam, RenderSettings.RenderMode.FRAME);
     }
 
 }

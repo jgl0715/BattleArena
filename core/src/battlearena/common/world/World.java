@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 
@@ -17,16 +16,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import battlearena.common.CollisionGroup;
+import battlearena.game.CollisionGroup;
 import battlearena.common.entity.Entity;
-import battlearena.editor.WorldEditor;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 
 public class World
 {
 
-    public static final int RAYS_NUM = 2000;
+    public static final int RAYS_NUM = 500;
     public static final float PIXELS_PER_METER = 10.0f;
 
     private String name;
@@ -46,8 +44,8 @@ public class World
         PhysicsWorld = new com.badlogic.gdx.physics.box2d.World(new Vector2(0, 0 / PIXELS_PER_METER), false);
 
         handler = new RayHandler(PhysicsWorld);
-       // handler.setShadows(true);
-        handler.setAmbientLight(0.6f);
+        handler.setShadows(true);
+        handler.setAmbientLight(0.3f);
 
         layersLocked = false;
         entityLayers = new HashMap<String, EntityLayer>();
@@ -59,11 +57,6 @@ public class World
     public com.badlogic.gdx.physics.box2d.World getPhysicsWorld()
     {
         return PhysicsWorld;
-    }
-
-    public RayHandler getRayHandler()
-    {
-        return handler;
     }
 
     public String getName()
@@ -86,10 +79,10 @@ public class World
         PointLight light = new PointLight(handler, RAYS_NUM, lightColor, lightDistance, x/ PIXELS_PER_METER, y / PIXELS_PER_METER);
 
         light.setSoft(true);
-       // light.setStaticLight(true);
+        light.setStaticLight(true);
         light.setSoftnessLength(1.0f);
 
-    //    light.setContactFilter(group.getChannel(), group.getGroup(), group.getAccepted());
+        light.setContactFilter(group.getChannel(), group.getGroup(), group.getAccepted());
 
         return light;
     }
@@ -237,7 +230,7 @@ public class World
     public void render(SpriteBatch batch, OrthographicCamera cam)
     {
         for(EntityLayer layer : entityLayersOrdered)
-            layer.render(batch);
+            layer.render(batch, cam);
 
         Matrix4 mat = new Matrix4(cam.combined);
         mat.scale(World.PIXELS_PER_METER, World.PIXELS_PER_METER, 1);

@@ -27,6 +27,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 
+import javax.swing.JFileChooser;
+
 import battlearena.common.file.TiledWorldImporter;
 import battlearena.common.file.TilesetImporter;
 import battlearena.common.tile.CollisionMask;
@@ -477,6 +479,18 @@ public class StateTilesetEditor extends battlearena.common.states.State
 									world.changeTileset(tileset);
 									WorldEditor.I.inputToFSA(WorldEditor.TRANSITION_EDIT_WORLD, world);
 								}
+							}
+						}
+
+						if(keycode == Keys.X)
+						{
+
+							JFileChooser chooser = new JFileChooser();
+							int res = chooser.showOpenDialog(null);
+							if (res == JFileChooser.APPROVE_OPTION)
+							{
+								String path = chooser.getSelectedFile().getAbsolutePath();
+								tileset.importNewImage(path);
 							}
 						}
 

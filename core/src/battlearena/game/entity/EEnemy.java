@@ -12,7 +12,7 @@ public class EEnemy extends EBox
     {
         super(Config);
 
-        addBehavior(BEnemyAI.class, "EnemyAI");
+        //addBehavior(BEnemyAI.class, "EnemyAI");
 
         renderSettings.mode = RenderSettings.RenderMode.FRAME;
     }

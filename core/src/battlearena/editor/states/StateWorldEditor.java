@@ -6,6 +6,8 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
@@ -14,6 +16,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -65,7 +68,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 	private boolean renderGrid;
 	private boolean deleteMode;
 	private boolean floodFill;
-	private boolean collisionEnabled;
+	private boolean showMeta;
 	private Set<Location> floodFillResult;
 
 	private InputMultiplexer muxer;
@@ -374,7 +377,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 	public void create()
 	{
 		renderGrid = true;
-		collisionEnabled = true;
+		showMeta = true;
 
 		hudWorldEditor = new HUDWorldEditor(WorldEditor.I.getUiSkin());
 
@@ -384,9 +387,10 @@ public class StateWorldEditor extends battlearena.common.states.State
 			public void changed(ChangeEvent event, Actor actor)
 			{
 
-				if(editingWorld.isLocInBounds(selectedLocation))
+				if(editingWorld.isLocInBounds(selectedLocation) &&  hudWorldEditor.fieldMeta.getText().length() > 0)
+				{
 					editingWorld.getLayer(selectedLayer.getName()).getCell(selectedLocation.getTileX(), selectedLocation.getTileY()).setMeta(Integer.parseInt(hudWorldEditor.fieldMeta.getText()));
-
+				}
 			}
 		});
 
@@ -411,7 +415,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 			}
 		});
 
-		muxer = new InputMultiplexer(new InputProcessor()
+		muxer = new InputMultiplexer(hudWorldEditor.getUI(), new InputProcessor()
 		{
 			int touchingButton;
 
@@ -647,6 +651,12 @@ public class StateWorldEditor extends battlearena.common.states.State
 						editingWorld.changeHeight(1);
 					}
 
+					if(keycode == Input.Keys.M)
+					{
+						// Decrease world width by one
+						showMeta = !showMeta;
+					}
+
 					if(keycode == Input.Keys.C && type == LayerType.TILES)
 					{
 						// Enable/Disable layer collision
@@ -714,7 +724,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 				return false;
 			}
 
-		}, hudWorldEditor.getUI());
+		});
 
 
 	}
@@ -772,8 +782,6 @@ public class StateWorldEditor extends battlearena.common.states.State
 				{
 					EntityLayer layer = entityLayerItr.next();
 					addNewLayer(layer, true, false);
-
-					System.out.println("adding layer to view " + layer.getName());
 				}
 
 				// Load existing tile layers
@@ -841,7 +849,6 @@ public class StateWorldEditor extends battlearena.common.states.State
 					if(hovered.Value)
 					{
 						hoveredEntity = e;
-						System.out.println(e);
 					}
 				}
 			}
@@ -963,6 +970,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 	public void render()
 	{
 		ShapeRenderer sr = WorldEditor.I.getShapeRenderer();
+		SpriteBatch batch = WorldEditor.I.getBatch();
 
 		editingWorld.render(WorldEditor.I.getBatch(), WorldEditor.I.getCamera());
 
@@ -1064,6 +1072,35 @@ public class StateWorldEditor extends battlearena.common.states.State
 
 		sr.end();
 
+		// Render meta
+		batch.begin();
+		batch.setColor(Color.WHITE);
+		if(showMeta)
+		{
+			{
+				Skin sk = WorldEditor.I.getUiSkin();
+				BitmapFont font = sk.getFont("default");
+
+				for(int x = 0; x < editingWorld.getWidth(); x++)
+				{
+					for(int y = 0; y < editingWorld.getHeight(); y++)
+					{
+						if(getSelectedLayerType() == LayerType.TILES)
+						{
+							TileLayer tileLayer = (TileLayer) selectedLayer;
+							int meta = tileLayer.getCell(x, y).getMeta();
+							if(meta != 0)
+							{
+								font.draw(batch, meta + "", x*editingWorld.getTileset().getTileWidth(), (editingWorld.getHeight()-y-1+1)*editingWorld.getTileset().getTileHeight());
+							}
+						}
+					}
+				}
+
+			}
+		}
+		batch.end();
+
 		hudWorldEditor.render();
 
 		// Render the selected definition.
@@ -1136,6 +1173,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 
 	private boolean canModifyWorld()
 	{
+
 		if(hudWorldEditor.tileHovered != null)
 			return false;
 

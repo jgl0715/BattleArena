@@ -1,10 +1,12 @@
 package battlearena.common.entity;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
-import battlearena.common.CollisionGroup;
+import battlearena.game.CollisionGroup;
+import battlearena.common.RenderSettings;
 import battlearena.common.entity.behavior.BEditorHoverable;
 import battlearena.common.entity.data.DBoolean;
 import battlearena.common.entity.data.DFloat;
@@ -85,7 +87,7 @@ public class ELight extends Entity
         find(DFloat.class, DATA_DISTANCE).Value = distance;
         find(DFloat.class, DATA_SHADOW_SOFTNESS).Value = shadowSoftness;
 
-        addData(DPointLight.class, DATA_LIGHT).Value = (box2dLight = wor.createPointLight(new Color(red,green,blue,1),distance, x, y, CollisionGroup.LIGHTS_GEN));
+        addData(DPointLight.class, DATA_LIGHT).Value = (box2dLight = wor.createPointLight(new Color(red,green,blue,1),distance, x, y, CollisionGroup.LIGHTS));
 
         // Add behaviors
 
@@ -139,8 +141,23 @@ public class ELight extends Entity
     }
 
     @Override
-    public void Render(SpriteBatch batch)
+    public void Render(SpriteBatch batch, OrthographicCamera cam, RenderSettings.RenderMode filter)
     {
-        super.Render(batch);
+        super.Render(batch, cam, filter);
+
+        float screenRadius = (float)Math.sqrt(cam.viewportWidth/2*cam.zoom*cam.viewportWidth/2*cam.zoom+cam.viewportHeight/2*cam.zoom*+cam.viewportHeight/2*cam.zoom);
+        float d = box2dLight.getDistance()*World.PIXELS_PER_METER;
+        float dx = (cam.position.x - box2dLight.getPosition().x * World.PIXELS_PER_METER);
+        float dy = (cam.position.y - box2dLight.getPosition().y * World.PIXELS_PER_METER);
+
+        if((dx*dx-screenRadius*screenRadius)+(dy*dy-screenRadius*screenRadius) <= d*d)
+        {
+            box2dLight.setActive(true);
+        }
+        else
+        {
+            box2dLight.setActive(false);
+        }
+
     }
 }

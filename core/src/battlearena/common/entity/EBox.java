@@ -1,7 +1,9 @@
 package battlearena.common.entity;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
@@ -60,11 +62,11 @@ public class EBox extends Entity
 	}
 
 	@Override
-	public void Render(SpriteBatch batch)
+	public void Render(SpriteBatch batch, OrthographicCamera cam, RenderSettings.RenderMode filter)
 	{
-		super.Render(batch);
+		super.Render(batch, cam, filter);
 
-		if (renderSettings.visible)
+		if (renderSettings.visible && filter == renderSettings.mode)
 		{
 			switch (renderSettings.mode)
 			{
@@ -75,14 +77,17 @@ public class EBox extends Entity
 				float MidX = Wid / 2;
 				float MidY = Hei / 2;
 
-				batch.draw(Frame.Value, Pos.x - MidX, Pos.y - MidY, MidX, MidY, Wid, Hei, renderSettings.FlipX ? -1.0f : 1.0f, 1.0f, Rot.Value);
+				TextureRegion reg = Frame.Value;
 
+
+				//batch.setColor(Color.RED);
+				batch.draw(reg, Pos.x - MidX, Pos.y - MidY, MidX, MidY, reg.getRegionWidth(), reg.getRegionHeight(), renderSettings.FlipX ? -1.0f : 1.0f, 1.0f, Rot.Value);
 				break;
 			case FRAME:
 
 				// Use default entity texture scaled up here.
 				 ShapeRenderer sr = BattleArena.I.getShapeRenderer();
-				Vector2 position = find(DVector2.class, POSITION).Value;
+				 Vector2 position = find(DVector2.class, POSITION).Value;
 				 Vector2 size = find(DVector2.class, SIZE).Value;
 				 float rotation = find(DFloat.class, ROTATION).Value;
 				 float width = size.x;
@@ -92,7 +97,7 @@ public class EBox extends Entity
 				 sr.begin(ShapeRenderer.ShapeType.Line);
 				 sr.rect(position.x - width / 2, position.y - height / 2, width / 2, height / 2, width, height, 1.0f, 1.0f, rotation);
 				 sr.end();
-					break;
+				 break;
 			default:
 				break;
 			}

@@ -14,11 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import battlearena.common.CollisionGroup;
+import battlearena.game.CollisionGroup;
 import battlearena.common.tile.CollisionMask;
 import battlearena.common.tile.Tile;
 import battlearena.common.tile.Tileset;
-import battlearena.editor.WorldEditor;
 
 public class TiledWorld extends World
 {
@@ -159,6 +158,16 @@ public class TiledWorld extends World
     public void changeTileset(Tileset set)
     {
         this.tileset = set;
+    }
+
+    public int getTileWidth()
+    {
+        return tileset.getTileWidth();
+    }
+
+    public int getTileHeight()
+    {
+        return tileset.getTileHeight();
     }
 
     public int getPixelWidth()
@@ -349,7 +358,7 @@ public class TiledWorld extends World
             for(int l = 0; l < layersOrdered.size(); l++)
             {
                 TileLayer layer = layersOrdered.get(l);
-                layer.render(spriteBatch);
+                layer.render(spriteBatch, cam);
             }
         }
         spriteBatch.end();

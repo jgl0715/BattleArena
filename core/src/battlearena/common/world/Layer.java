@@ -1,5 +1,6 @@
 package battlearena.common.world;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public abstract class Layer
@@ -47,5 +48,5 @@ public abstract class Layer
      * @param batch The sprite batch to render the layer with. The matrix transformations of the batch
      *              are assumed to have already been set.
      */
-    public abstract void render(SpriteBatch batch);
+    public abstract void render(SpriteBatch batch, OrthographicCamera cam);
 }

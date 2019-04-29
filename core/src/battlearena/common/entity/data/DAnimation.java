@@ -18,23 +18,4 @@ public class DAnimation extends Data
 		super(Name, Parent, false);
 	}
 
-	public void Make(Texture Tex, int StartX, int StartY, int FrameWidth, int FrameHeight, int AnimWidth, int AnimHeight, float Dur)
-	{
-		Array<TextureRegion> Result = new Array<TextureRegion>();
-
-		for (int x = 0; x < AnimWidth; x++)
-		{
-			for (int y = 0; y < AnimHeight; y++)
-			{
-				int AX = StartX + FrameWidth * x;
-				int AY = StartY + FrameHeight * y;
-
-				Result.add(new TextureRegion(Tex, AX, AY, FrameWidth, FrameHeight));
-			}
-		}
-
-		Value = new Animation<TextureRegion>(Dur, Result);
-		Value.setPlayMode(PlayMode.LOOP);
-	}
-
 }

@@ -1,5 +1,6 @@
 package battlearena.common.entity;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.DataInput;
 import com.badlogic.gdx.utils.DataOutput;
@@ -25,7 +26,9 @@ public class Entity
 	public static final String VELOCITY = "Velocity";
 	public static final String SIZE = "Size";
 	public static final String ROTATION = "Rotation";
+	public static final String ANIM_TIME = "AnimTime";
 	public static final String ACCELERATION = "Acceleration";
+	public static final String ANIM = "Anim";
 	public static final String FRAME = "Frame";
 	public static final String BODY = "Body";
 	public static final String DATA_X = "Pos.X";
@@ -97,17 +100,20 @@ public class Entity
 		return world;
 	}
 
-	public <T> void addBehavior(Class<T> Class, String Name)
+	public <T extends Behavior> T addBehavior(Class<T> Class, String Name)
 	{
 		try
 		{
 			Constructor<?> CTor = Class.getConstructor(String.class, Entity.class);
 			Behavior Component = (Behavior) CTor.newInstance(Name, this);
 			addBehavior(Component);
+
+			return Class.cast(Component);
 		} catch (Exception e)
 		{
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 	public <T> T addData(Class<T> CompClass, String Name, boolean Serialized)
@@ -240,7 +246,6 @@ public class Entity
 
 			if(d.IsSerialized())
 			{
-				System.out.println("test deserialize");
 				d.read(input);
 			}
 		}
@@ -256,7 +261,7 @@ public class Entity
 		}
 	}
 
-	public void Render(SpriteBatch batch)
+	public void Render(SpriteBatch batch, OrthographicCamera cam, RenderSettings.RenderMode filter)
 	{
 
 	}

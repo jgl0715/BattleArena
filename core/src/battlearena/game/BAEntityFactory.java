@@ -1,11 +1,11 @@
 package battlearena.game;
 
-import battlearena.common.CollisionGroup;
 import battlearena.common.entity.ELight;
 import battlearena.common.entity.Entity;
 import battlearena.common.entity.EntityConfig;
 import battlearena.common.entity.EntityFactory;
 import battlearena.common.world.World;
+import battlearena.game.entity.BACharacter;
 import battlearena.game.entity.EEnemy;
 import battlearena.game.entity.EPlayer;
 
@@ -46,8 +46,8 @@ public class BAEntityFactory extends EntityFactory
 
 		// Define physics body information.
 		Config.AddConfigItem("Physics.BodyType", "dynamic");
-		Config.AddConfigItem("Physics.Category", CollisionGroup.PLAYER.getChannel());
-		Config.AddConfigItem("Physics.Accepted", CollisionGroup.PLAYER.getAccepted());
+		Config.AddConfigItem("Physics.Category", CollisionGroup.ENTITIES.getChannel());
+		Config.AddConfigItem("Physics.Accepted", CollisionGroup.ENTITIES.getAccepted());
 
 		// Define position.
 		Config.AddConfigItem("X", X);
@@ -73,22 +73,22 @@ public class BAEntityFactory extends EntityFactory
 	}
 
 
-	public static EPlayer CreatePlayer(World world, float X, float Y)
+	public static EPlayer CreatePlayer(World world, float X, float Y, BACharacter type)
 	{
 		EntityConfig Config = new EntityConfig(world, ENT_PLAYER);
 
 		// Define physics body information.
 		Config.AddConfigItem("Physics.BodyType", "dynamic");
-		Config.AddConfigItem("Physics.Category", CollisionGroup.TILES.getChannel());
-		Config.AddConfigItem("Physics.Accepted", CollisionGroup.TILES.getAccepted());
+		Config.AddConfigItem("Physics.Category", CollisionGroup.PLAYER.getChannel());
+		Config.AddConfigItem("Physics.Accepted", CollisionGroup.PLAYER.getAccepted());
 
 		// Define position.
 		Config.AddConfigItem("X", X);
 		Config.AddConfigItem("Y", Y);
 
 		// Define size.
-		Config.AddConfigItem("Width", 16);
-		Config.AddConfigItem("Height", 16);
+		Config.AddConfigItem("Width", 40);
+		Config.AddConfigItem("Height", 57);
 
 		// Define walking animation.
 		Config.AddConfigItem("Anim.Walk.Tex", BattleArena.I.getTexture(Assets.TEXTURE_CHARACTERS));
@@ -99,6 +99,8 @@ public class BAEntityFactory extends EntityFactory
 		Config.AddConfigItem("Anim.Walk.FrameWidth", 18);
 		Config.AddConfigItem("Anim.Walk.FrameHeight", 18);
 		Config.AddConfigItem("Anim.Walk.Duration", 0.1f);
+
+		Config.AddConfigItem("Character", type);
 
 		return new EPlayer(Config);
 	}

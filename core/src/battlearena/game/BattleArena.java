@@ -5,11 +5,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.resolvers.LocalFileHandleResolver;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
@@ -19,12 +21,14 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import battlearena.common.AnimationUtil;
 import battlearena.common.entity.Entity;
 import battlearena.common.entity.data.DVector2;
 import battlearena.common.file.TiledWorldImporter;
 import battlearena.common.states.StateMachine;
 import battlearena.common.world.EntityLayer;
 import battlearena.common.world.TiledWorld;
+import battlearena.game.entity.BACharacter;
 import battlearena.game.entity.EPlayer;
 import battlearena.game.input.Button;
 import battlearena.game.input.Joystick;
@@ -113,7 +117,7 @@ public class BattleArena extends ApplicationAdapter
 		sr = new ShapeRenderer();
 
 		camera = new OrthographicCamera(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
-		viewport = new StretchViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, camera);
+		viewport = new FitViewport(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, camera);
 		viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 		camera.zoom = 0.1f;
@@ -125,6 +129,10 @@ public class BattleArena extends ApplicationAdapter
 		assetManager.load(Assets.TEXTURE_CHARACTERS, Texture.class);
 		assetManager.load(Assets.SKIN, Skin.class);
 		assetManager.finishLoading();
+
+		// Setup character animations
+		BACharacter.WARRIOR.setWalkAnim(AnimationUtil.MakeAnim(getTexture(Assets.TEXTURE_CHARACTERS), 0, 0, new int[]{40, 40}, new int[]{57, 57}, 2, 0.2f));
+		BACharacter.WARRIOR.setAttackAnim(AnimationUtil.MakeAnim(getTexture(Assets.TEXTURE_CHARACTERS), 80, 0, new int[]{74}, new int[]{67}, 1, 0.0f));
 
 		// Register states
 		fsa.registerState(STATE_MAIN_MENU, true);
@@ -160,5 +168,9 @@ public class BattleArena extends ApplicationAdapter
 		batch.setTransformMatrix(camera.view);
 
 		fsa.renderCurrent();
+//
+//		batch.begin();
+//		batch.draw(new TextureRegion(getTexture(Assets.TEXTURE_CHARACTERS), 0, 0, 40, 57), 0, 0);
+//		batch.end();
 	}
 }

@@ -22,6 +22,7 @@ public class Joystick extends InputAdapter
     private float joystickKnobX;
     private float joystickKnobY;
     private boolean dragging;
+    private int pointer;
     private OrthographicCamera cam;
 
     public Joystick(float joystickX, float joystickY, InputMultiplexer muxer, OrthographicCamera cam)
@@ -70,12 +71,14 @@ public class Joystick extends InputAdapter
     {
         Vector3 worldSpace = cam.unproject(new Vector3(screenX, screenY, 0));
 
-        if(inJoyStick(worldSpace))
+        if(inJoyStick(worldSpace) && !dragging)
         {
+            this.pointer = pointer;
             dragging = true;
             joystickInput(worldSpace);
             return true;
         }
+
 
         return false;
     }
@@ -83,9 +86,12 @@ public class Joystick extends InputAdapter
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button)
     {
-        dragging = false;
-        joystickKnobX = 0;
-        joystickKnobY = 0;
+        if(pointer == this.pointer)
+        {
+            dragging = false;
+            joystickKnobX = 0;
+            joystickKnobY = 0;
+        }
 
         return false;
     }
@@ -93,7 +99,7 @@ public class Joystick extends InputAdapter
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer)
     {
-        if(dragging)
+        if(dragging && pointer == this.pointer)
         {
             Vector3 worldSpace = cam.unproject(new Vector3(screenX, screenY, 0));
             joystickInput(worldSpace);

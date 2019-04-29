@@ -3,6 +3,7 @@ package battlearena.common.tile;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -26,7 +27,7 @@ public class Tileset
 		this.height = height;
 		this.tileSheet = tileSheet;
 
-		this.tilesByName = new HashMap<String, Tile>();
+		this.tilesByName = new TreeMap<String, Tile>();
 		this.tilesById = new HashMap<Integer, Tile>();
 
 		this.nextId = -1;
@@ -97,6 +98,11 @@ public class Tileset
 		}
 	}
 
+	public void importNewImage(String path)
+	{
+		this.tileSheet = new Texture(Gdx.files.absolute(path));
+	}
+
 	public void updateTileName(String newName, Tile tile)
 	{
 		tilesByName.remove(tile.getName());
@@ -152,10 +158,6 @@ public class Tileset
 	{
 		tilesByName.remove(tile.getName());
 		tilesById.remove(tile.getId());
-
-		// If the tile being removed has the current highest ID, we can decrement the ID so we don't have ID gaps.
-		if(tile.getId() == nextId)
-			nextId--;
 	}
 
 	public int getTileCount()
