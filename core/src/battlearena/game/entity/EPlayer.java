@@ -16,7 +16,9 @@ import battlearena.game.entity.behavior.BAttack;
 import battlearena.game.entity.behavior.BAttackArcher;
 import battlearena.game.entity.behavior.BAttackWarrior;
 import battlearena.game.entity.behavior.BAttackWizard;
-import battlearena.game.entity.behavior.BMovement;
+import battlearena.game.entity.behavior.BController;
+import battlearena.game.input.ButtonListener;
+import battlearena.game.states.StatePlay;
 
 public class EPlayer extends EBox
 {
@@ -25,7 +27,7 @@ public class EPlayer extends EBox
 	public static final String DATA_ATTACK_ANIM = "AttackAnim";
 	public static final String DATA_COOLDOWN = "Cooldown";
 
-	private BMovement movement;
+	private BController movement;
 
 	private BACharacter character;
 	private Animation walkAnim;
@@ -56,7 +58,7 @@ public class EPlayer extends EBox
 		renderSettings.mode = RenderSettings.RenderMode.TEXTURED;
 
 		// Add behaviors
-		movement = addBehavior(BMovement.class, "PlayerMovement");
+		movement = addBehavior(BController.class, "PlayerMovement");
 		addBehavior(BAnimator.class, "Animator");
 
 		switch(character)
@@ -72,6 +74,15 @@ public class EPlayer extends EBox
 				break;
 		}
 		attack.setType(character);
+
+		StatePlay.I.getButtonA().addListener(new ButtonListener()
+		{
+			@Override
+			public void buttonPressed()
+			{
+				attack.attack();
+			}
+		});
 	}
 
 	@Override
@@ -84,10 +95,11 @@ public class EPlayer extends EBox
 		if(attackCooldown.Value < 0.0f)
 			attackCooldown.Value = 0.0f;
 
+		movement.setDirection(StatePlay.I.getStick().getJoystickInput());
+
 		if(Gdx.input.isKeyPressed(Input.Keys.E))
 		{
-			anim.Value = DATA_ATTACK_ANIM;
-			movement.dash();
+			attack.attack();
 		}
 		else
 		{

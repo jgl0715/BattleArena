@@ -3,6 +3,7 @@ package battlearena.common.world;
 import com.badlogic.gdx.math.Vector2;
 
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 public class Location
 {
@@ -39,7 +40,7 @@ public class Location
     @Override
     public int hashCode()
     {
-        return new Point2D.Double(tileX, tileY).hashCode();
+        return Integer.hashCode(tileX) + 32 * Integer.hashCode(tileY);
     }
 
     @Override
