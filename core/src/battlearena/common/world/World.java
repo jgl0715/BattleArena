@@ -7,7 +7,11 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 
 import java.util.ArrayList;
@@ -37,6 +41,8 @@ public class World
     private List<EntityLayer> entityLayersToAdd;
     private List<String> entityLayersToRemove;
 
+    private List<HitListener> hitListeners;
+
     public World(String n)
     {
         this.name = n;
@@ -52,6 +58,54 @@ public class World
         entityLayersOrdered = new ArrayList<EntityLayer>();
         entityLayersToAdd = new ArrayList<EntityLayer>();
         entityLayersToRemove = new ArrayList<String>();
+
+        hitListeners = new ArrayList<HitListener>();
+
+        PhysicsWorld.setContactListener(new ContactListener() {
+            @Override
+            public void beginContact(Contact contact)
+            {
+                Entity e1 = (Entity) contact.getFixtureA().getBody().getUserData();
+                Entity e2 = (Entity) contact.getFixtureB().getBody().getUserData();
+
+                for(HitListener listener : hitListeners)
+                {
+                    listener.beginHit(e1, e2, contact.getFixtureA(), contact.getFixtureB());
+                }
+            }
+
+            @Override
+            public void endContact(Contact contact)
+            {
+                Entity e1 = (Entity) contact.getFixtureA().getBody().getUserData();
+                Entity e2 = (Entity) contact.getFixtureB().getBody().getUserData();
+
+                for(HitListener listener : hitListeners)
+                {
+                    listener.endHit(e1, e2, contact.getFixtureA(), contact.getFixtureB());
+                }
+            }
+
+            @Override
+            public void preSolve(Contact contact, Manifold oldManifold) {
+
+            }
+
+            @Override
+            public void postSolve(Contact contact, ContactImpulse impulse) {
+
+            }
+        });
+    }
+
+    public void addHitListener(HitListener listener)
+    {
+        hitListeners.add(listener);
+    }
+
+    public void removeHitListener(HitListener listener)
+    {
+        hitListeners.remove(listener);
     }
 
     public com.badlogic.gdx.physics.box2d.World getPhysicsWorld()
@@ -89,10 +143,15 @@ public class World
 
     public Body createQuad(BodyDef.BodyType Type, float x, float y, Vector2[] verts, CollisionGroup Group)
     {
+        return createQuad(Type, x, y, verts, Group, false);
+    }
+
+    public Body createQuad(BodyDef.BodyType Type, float x, float y, Vector2[] verts, CollisionGroup Group, boolean sensor)
+    {
         BodyDef BDef = new BodyDef();
         BDef.fixedRotation = true;
         BDef.active = true;
-        BDef.allowSleep = false;
+        BDef.allowSleep = true;
         BDef.angle = 0.0f;
         BDef.angularDamping = 0.0f;
         BDef.angularVelocity = 0.0f;
@@ -111,7 +170,7 @@ public class World
 
         FDef.density = 1.0f;
         FDef.friction = 0.0f;
-        FDef.isSensor = false;
+        FDef.isSensor = sensor;
         FDef.restitution = 0.2f;
         FDef.shape = Box;
 

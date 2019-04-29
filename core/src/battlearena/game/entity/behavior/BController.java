@@ -7,6 +7,7 @@ import battlearena.common.entity.Entity;
 import battlearena.common.entity.behavior.Behavior;
 import battlearena.common.entity.data.DBody;
 import battlearena.common.entity.data.DFloat;
+import battlearena.game.entity.EMob;
 
 /**
  * Created by fores on 4/28/2019.
@@ -15,7 +16,10 @@ import battlearena.common.entity.data.DFloat;
 public class BController extends Behavior
 {
 
+    public static final float DASH_BOOST = 30.0f;
+
     private DFloat animTime;
+    private DFloat speed;
     private Body bod;
     private boolean dash;
     private float dashLength;
@@ -26,6 +30,7 @@ public class BController extends Behavior
         super(Name, Parent);
 
         animTime = Parent.find(DFloat.class, Entity.ANIM_TIME);
+        speed = Parent.find(DFloat.class, EMob.DATA_SPEED);
         bod = Parent.find(DBody.class, Entity.BODY).Value;
         direction = new Vector2();
     }
@@ -33,7 +38,19 @@ public class BController extends Behavior
     public void dash()
     {
         dash = true;
-        dashLength = 0.1f;
+        dashLength = 0.2f;
+
+        if(direction.len() <= .01f)
+        {
+            if(GetParent().getRenderSettings().FlipX)
+            {
+                direction = new Vector2(-1.0f, 0.0f);
+            }
+            else
+            {
+                direction = new Vector2(1.0f, 0.0f);
+            }
+        }
     }
 
     public boolean isDashing()
@@ -56,19 +73,21 @@ public class BController extends Behavior
     {
         super.Update(delta);
 
-        if(direction.len() > 0.01f)
+        if(direction.len() > 0.0f)
         {
+
             if(dash)
             {
-                bod.setLinearVelocity(new Vector2(direction).scl(50));
+                bod.setLinearVelocity(new Vector2(direction).scl(speed.Value + DASH_BOOST));
                 dashLength -= delta;
+
 
                 if(dashLength < 0)
                     dash = false;
             }
             else
             {
-                bod.setLinearVelocity(direction.scl(15));
+                bod.setLinearVelocity(direction.scl(speed.Value));
             }
 
             if(direction.x < 0.0f)

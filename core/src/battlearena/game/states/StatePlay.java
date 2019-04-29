@@ -7,7 +7,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -20,6 +22,7 @@ import battlearena.common.states.State;
 import battlearena.common.world.EntityLayer;
 import battlearena.common.world.Location;
 import battlearena.common.world.TiledWorld;
+import battlearena.common.world.World;
 import battlearena.game.BAEntityFactory;
 import battlearena.game.BattleArena;
 import battlearena.game.entity.BACharacter;
@@ -44,6 +47,8 @@ public class StatePlay extends State
 
     private OrthographicCamera uiCamera;
     private Viewport uiViewport;
+
+    private Box2DDebugRenderer dbgr;
 
     public StatePlay()
     {
@@ -119,11 +124,13 @@ public class StatePlay extends State
 
         world = new TiledWorldImporter("worlds/test.world", true, new BAEntityFactory()).imp();
 
+        dbgr = new Box2DDebugRenderer();
+
         Vector2 playerSpawn = getSpawnWithMeta(1);
         Vector2 enemySpawn = getSpawnWithMeta(2);
 
         player = BAEntityFactory.CreatePlayer(world, playerSpawn.x, playerSpawn.y, BACharacter.WARRIOR);
-        enemy = BAEntityFactory.CreateEnemy(world, enemySpawn.x, enemySpawn.y);
+        enemy = BAEntityFactory.CreateEnemy(world, enemySpawn.x, enemySpawn.y, BACharacter.WARRIOR);
 
         // Add entities here.
         EntityLayer mobs = new EntityLayer("Mobs");
@@ -167,6 +174,10 @@ public class StatePlay extends State
         sr.setTransformMatrix(camera.view);
 
         world.render(batch, camera);
+
+        Matrix4 mat = new Matrix4(camera.combined);
+        mat.scale(World.PIXELS_PER_METER, World.PIXELS_PER_METER, 1);
+        dbgr.render(world.getPhysicsWorld(), mat);
 
         sr.setProjectionMatrix(uiCamera.projection);
         sr.setTransformMatrix(uiCamera.view);

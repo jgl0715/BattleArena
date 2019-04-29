@@ -51,6 +51,8 @@ public class DBody extends Data
 
 		Value = Parent.getWorld().getPhysicsWorld().createBody(bDef);
 
+		Value.setUserData(GetParent());
+
 		CreateBoxFixture(EntityConf.GetConfigNumber("Width"), EntityConf.GetConfigNumber("Height"), Category, Accepted);
 	}
 

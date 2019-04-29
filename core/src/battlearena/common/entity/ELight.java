@@ -30,6 +30,9 @@ public class ELight extends Entity
     public static final String DATA_SHADOW_SOFTNESS= "ShadowSoftness";
 
     private Vector2 pos;
+    private DFloat dataRed;
+    private DFloat dataGreen;
+    private DFloat dataBlue;
 
     // Todo: make physics system independent.
     private PointLight box2dLight;
@@ -45,9 +48,9 @@ public class ELight extends Entity
         pos = addData(DVector2.class, POSITION, true).Value;
 
         addData(DFloat.class, Entity.EDITOR_RADIUS, false);
-        addData(DFloat.class, DATA_RED, true);
-        addData(DFloat.class, DATA_GREEN, true);
-        addData(DFloat.class, DATA_BLUE, true);
+        dataRed = addData(DFloat.class, DATA_RED, true);
+        dataGreen = addData(DFloat.class, DATA_GREEN, true);
+        dataBlue = addData(DFloat.class, DATA_BLUE, true);
         addData(DFloat.class, DATA_DISTANCE, true);
         addData(DFloat.class, DATA_SHADOW_SOFTNESS, true);
 
@@ -107,6 +110,13 @@ public class ELight extends Entity
         return pos;
     }
 
+    public void setColor(float r, float g, float b)
+    {
+        dataRed.Value = r;
+        dataGreen.Value = g;
+        dataBlue.Value = b;
+    }
+
     public PointLight getBox2dLight()
     {
         return box2dLight;
@@ -138,6 +148,7 @@ public class ELight extends Entity
         box2dLight.setDistance(distance);
         box2dLight.setColor(red, green, blue, 1);
         box2dLight.setPosition(x, y);
+
     }
 
     @Override
@@ -150,7 +161,7 @@ public class ELight extends Entity
         float dx = (cam.position.x - box2dLight.getPosition().x * World.PIXELS_PER_METER);
         float dy = (cam.position.y - box2dLight.getPosition().y * World.PIXELS_PER_METER);
 
-        if((dx*dx-screenRadius*screenRadius)+(dy*dy-screenRadius*screenRadius) <= d*d)
+        if(renderSettings.visible && (dx*dx-screenRadius*screenRadius)+(dy*dy-screenRadius*screenRadius) <= d*d)
         {
             box2dLight.setActive(true);
         }
@@ -158,6 +169,5 @@ public class ELight extends Entity
         {
             box2dLight.setActive(false);
         }
-
     }
 }

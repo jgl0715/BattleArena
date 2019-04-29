@@ -18,7 +18,7 @@ import battlearena.common.entity.data.Data;
 import battlearena.common.world.World;
 import sun.awt.datatransfer.DataTransferer;
 
-public class Entity
+public class Entity implements Comparable<Entity>
 {
 
 	// Data component names.
@@ -48,6 +48,7 @@ public class Entity
 	private List<Behavior> behaviorComponents;
 	private int nextDataID;
 	private boolean dead;
+	private int z;
 
 	/**
 	 * All game objects must contain this constructor.
@@ -68,6 +69,16 @@ public class Entity
 		this.dataComponents = new TreeMap<Integer, Data>();
 		this.behaviorComponents = new ArrayList<Behavior>();
 		this.dead = false;
+	}
+
+	public int getZ()
+	{
+		return z;
+	}
+
+	public void setZ(int z)
+	{
+		this.z = z;
 	}
 
 	public EntityConfig getConfig()
@@ -266,4 +277,9 @@ public class Entity
 
 	}
 
+	@Override
+	public int compareTo(Entity entity)
+	{
+		return z - entity.z;
+	}
 }

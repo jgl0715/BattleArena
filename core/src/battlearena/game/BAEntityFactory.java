@@ -40,7 +40,7 @@ public class BAEntityFactory extends EntityFactory
 		return new ELight(Config);
 	}
 
-	public static EEnemy CreateEnemy(World world, float X, float Y)
+	public static EEnemy CreateEnemy(World world, float X, float Y, BACharacter type)
 	{
 		EntityConfig Config = new EntityConfig(world, ENT_PLAYER);
 
@@ -54,8 +54,8 @@ public class BAEntityFactory extends EntityFactory
 		Config.AddConfigItem("Y", Y);
 
 		// Define size.
-		Config.AddConfigItem("Width", 16);
-		Config.AddConfigItem("Height", 16);
+		Config.AddConfigItem("Width", type.getWidth());
+		Config.AddConfigItem("Height", type.getHeight());
 
 		// Define walking animation.
 /*		Config.AddConfigItem("Anim.Walk.Tex", BattleArena.I.getTexture(Assets.TEXTURE_CHARACTERS));
@@ -66,9 +66,12 @@ public class BAEntityFactory extends EntityFactory
 		Config.AddConfigItem("Anim.Walk.FrameWidth", 18);
 		Config.AddConfigItem("Anim.Walk.FrameHeight", 18);
 		Config.AddConfigItem("Anim.Walk.Duration", 0.1f);
-/*
+*/
 
- */
+		Config.AddConfigItem("Character", type);
+
+
+
 		return new EEnemy(Config);
 	}
 
@@ -87,18 +90,8 @@ public class BAEntityFactory extends EntityFactory
 		Config.AddConfigItem("Y", Y);
 
 		// Define size.
-		Config.AddConfigItem("Width", 40);
-		Config.AddConfigItem("Height", 57);
-
-		// Define walking animation.
-		Config.AddConfigItem("Anim.Walk.Tex", BattleArena.I.getTexture(Assets.TEXTURE_CHARACTERS));
-		Config.AddConfigItem("Anim.Walk.SheetX", 0);
-		Config.AddConfigItem("Anim.Walk.SheetY", 0);
-		Config.AddConfigItem("Anim.Walk.SheetWidth", 5);
-		Config.AddConfigItem("Anim.Walk.SheetHeight", 1);
-		Config.AddConfigItem("Anim.Walk.FrameWidth", 18);
-		Config.AddConfigItem("Anim.Walk.FrameHeight", 18);
-		Config.AddConfigItem("Anim.Walk.Duration", 0.1f);
+		Config.AddConfigItem("Width", type.getWidth());
+		Config.AddConfigItem("Height", type.getHeight());
 
 		Config.AddConfigItem("Character", type);
 

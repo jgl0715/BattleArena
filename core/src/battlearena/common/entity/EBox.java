@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 
 import battlearena.common.RenderSettings;
 import battlearena.common.entity.behavior.BPhysics;
@@ -20,6 +21,7 @@ public class EBox extends Entity
 
 	private Vector2 Pos;
 	private Vector2 Size;
+	private Body bod;
 	private DTextureRegion Frame;
 	private DFloat Rot;
 
@@ -31,7 +33,7 @@ public class EBox extends Entity
 		Size = addData(DVector2.class, SIZE, false).Value;
 		Rot = addData(DFloat.class, ROTATION, true);
 		Frame = addData(DTextureRegion.class, FRAME);
-		addData(DBody.class, BODY);
+		bod = addData(DBody.class, BODY).Value;
 
 		if (Config.HasItem("Width"))
 			Size.x = Config.GetConfigNumber("Width");
@@ -43,6 +45,10 @@ public class EBox extends Entity
 
 		renderSettings.visible = true;
 		renderSettings.mode = RenderSettings.RenderMode.TEXTURED;
+	}
+
+	public Body getBody() {
+		return bod;
 	}
 
 	public Vector2 GetPosition()
@@ -59,6 +65,8 @@ public class EBox extends Entity
 	public void Update(float delta)
 	{
 		super.Update(delta);
+
+		setZ((int) -GetPosition().y);
 	}
 
 	@Override

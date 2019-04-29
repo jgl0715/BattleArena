@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -90,6 +91,9 @@ public class EntityLayer extends Layer
     @Override
     public void render(SpriteBatch batch, OrthographicCamera cam)
     {
+        // Sort entities before rendering them.
+        Collections.sort(entities);
+
         batch.begin();
         for (Entity e : entities)
             e.Render(batch, cam, RenderSettings.RenderMode.TEXTURED);

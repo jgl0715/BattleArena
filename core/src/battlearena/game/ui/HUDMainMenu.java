@@ -23,6 +23,8 @@ public class HUDMainMenu extends HUD
             multiplayerButton = new TextButton("MultiPlayer", skin);
             optionsButton = new TextButton("Options", skin);
 
+            root.defaults().width(400);
+            root.defaults().height(100);
             root.add(singlePlayerButton).row();
             root.add(multiplayerButton).row();
             root.add(optionsButton).row();
