@@ -134,6 +134,10 @@ public class BattleArena extends ApplicationAdapter
 		BACharacter.WARRIOR.setWalkAnim(AnimationUtil.MakeAnim(getTexture(Assets.TEXTURE_CHARACTERS), 0, 0, new int[]{40, 40}, new int[]{57, 57}, 2, 0.2f));
 		BACharacter.WARRIOR.setAttackAnim(AnimationUtil.MakeAnim(getTexture(Assets.TEXTURE_CHARACTERS), 80, 0, new int[]{74}, new int[]{67}, 1, 0.0f));
 
+		BACharacter.ARCHER.setWalkAnim(AnimationUtil.MakeAnim(getTexture(Assets.TEXTURE_CHARACTERS), 0, 67, new int[]{37, 37}, new int[]{59, 59}, 2, 0.2f));
+		BACharacter.ARCHER.setAttackAnim(AnimationUtil.MakeAnim(getTexture(Assets.TEXTURE_CHARACTERS), 80, 0, new int[]{74}, new int[]{67}, 1, 0.0f));
+
+
 		// Register states
 		fsa.registerState(STATE_MAIN_MENU, true);
 		fsa.registerState(STATE_PLAY);

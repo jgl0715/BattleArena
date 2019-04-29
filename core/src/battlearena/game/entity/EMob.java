@@ -152,7 +152,7 @@ public class EMob extends EBox
         return hitbox;
     }
 
-    public void damage(int damage, EMob damaging)
+    public void damage(float damage, EMob damaging)
     {
         this.inflicting = damage;
 

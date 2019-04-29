@@ -51,6 +51,13 @@ public class EPlayer extends EMob
 		if(!movement.isDashing())
 			movement.setDirection(StatePlay.I.getStick().getJoystickInput());
 
+		if(Gdx.input.isKeyPressed(Input.Keys.E))
+		{
+			attack.charge();
+		}
+
+		if(Gdx.input.iske)
+
 		if(Gdx.input.isKeyJustPressed(Input.Keys.E))
 		{
 			attack.attack();

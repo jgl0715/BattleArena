@@ -7,7 +7,9 @@ import battlearena.common.entity.EntityFactory;
 import battlearena.common.world.World;
 import battlearena.game.entity.BACharacter;
 import battlearena.game.entity.EEnemy;
+import battlearena.game.entity.EMob;
 import battlearena.game.entity.EPlayer;
+import battlearena.game.entity.EProjectile;
 
 public class BAEntityFactory extends EntityFactory
 {
@@ -100,6 +102,33 @@ public class BAEntityFactory extends EntityFactory
 		Config.AddConfigItem("Character", type);
 
 		return new EPlayer(Config);
+	}
+
+	public static EProjectile CreateProjectile(World world, EMob shooter, float X, float Y, float W, float H, float velX, float velY, int damage)
+	{
+		EntityConfig Config = new EntityConfig(world, ENT_PLAYER);
+
+		// Define physics body information.
+		Config.AddConfigItem("Physics.BodyType", "dynamic");
+		Config.AddConfigItem("Physics.Category", CollisionGroup.WEAPON.getChannel());
+		Config.AddConfigItem("Physics.Accepted", CollisionGroup.WEAPON.getAccepted());
+
+		// Define position.
+		Config.AddConfigItem("X", X);
+		Config.AddConfigItem("Y", Y);
+
+		// Define size.
+		Config.AddConfigItem("NavboxWidth", W);
+		Config.AddConfigItem("NavboxHeight", H);
+
+		Config.AddConfigItem("VelX", velX);
+		Config.AddConfigItem("VelY", velY);
+
+		Config.AddConfigItem("Damage", damage);
+		Config.AddConfigItem("Shooter", shooter);
+		Config.AddConfigItem("Rotation", (float) Math.atan2(velY, velX));
+
+		return new EProjectile(Config);
 	}
 
 }

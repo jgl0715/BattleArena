@@ -26,16 +26,24 @@ public class DBody extends Data
 
 		bDef.active = true;
 		bDef.allowSleep = false;
-		bDef.angle = 0.0f;
 		bDef.angularDamping = 0.0f;
 		bDef.angularVelocity = 0.0f;
 		bDef.awake = true;
 		bDef.bullet = false;
-		bDef.fixedRotation = true;
 		bDef.gravityScale = 1.0f;
 		bDef.linearDamping = 0.0f;
 		bDef.linearVelocity.set(0, 0);
 		bDef.position.set(EntityConf.GetConfigNumber("X") / TiledWorld.PIXELS_PER_METER, EntityConf.GetConfigNumber("Y") / TiledWorld.PIXELS_PER_METER);
+
+		if(EntityConf.HasItem("Rotation"))
+		{
+			bDef.fixedRotation = false;
+			bDef.angle = EntityConf.GetConfigNumber("Rotation");
+		}
+		else
+		{
+			bDef.fixedRotation = true;
+		}
 		
 		// Check for type in configuration properties.
 		String Type = EntityConf.GetConfigString("Physics.BodyType");

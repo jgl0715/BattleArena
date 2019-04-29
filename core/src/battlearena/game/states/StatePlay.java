@@ -129,7 +129,7 @@ public class StatePlay extends State
         Vector2 playerSpawn = getSpawnWithMeta(1);
         Vector2 enemySpawn = getSpawnWithMeta(2);
 
-        player = BAEntityFactory.CreatePlayer(world, playerSpawn.x, playerSpawn.y, BACharacter.WARRIOR);
+        player = BAEntityFactory.CreatePlayer(world, playerSpawn.x, playerSpawn.y, BACharacter.ARCHER);
         enemy = BAEntityFactory.CreateEnemy(world, enemySpawn.x, enemySpawn.y, BACharacter.WARRIOR);
 
         // Add entities here.

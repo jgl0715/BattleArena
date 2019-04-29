@@ -26,7 +26,8 @@ public class BAttackWarrior extends BAttack
 //        swordSensorLeft = createSwordFixture(vertsLeft);
 //        swordSensorRight = createSwordFixture(vertsRight);
 
-        Parent.getWorld().addHitListener(new HitListener() {
+        Parent.getWorld().addHitListener(new HitListener()
+        {
             @Override
             public void beginHit(Entity e1, Entity e2, Fixture f1, Fixture f2)
             {

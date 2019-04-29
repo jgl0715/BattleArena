@@ -90,6 +90,7 @@ public abstract class BAttack extends Behavior
 
     }
 
+    public abstract void charge();
     public abstract void attack();
 
     @Override
