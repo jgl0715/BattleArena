@@ -35,6 +35,8 @@ import battlearena.game.input.Joystick;
 import battlearena.game.states.StateMainMenu;
 import battlearena.game.states.StatePlay;
 
+import java.lang.Object;
+
 public class BattleArena extends ApplicationAdapter
 {
 
