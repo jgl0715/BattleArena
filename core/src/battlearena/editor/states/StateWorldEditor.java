@@ -82,6 +82,8 @@ public class StateWorldEditor extends battlearena.common.states.State
 
 	private Location selectedLocation;
 
+	private float cameraSpeed = 5.0f;
+
 	public StateWorldEditor()
 	{
 		super("World Editor");
@@ -816,19 +818,19 @@ public class StateWorldEditor extends battlearena.common.states.State
 		{
 			if (Gdx.input.isKeyPressed(Input.Keys.W))
 			{
-				camera.translate(0, 1);
+				camera.translate(0, cameraSpeed);
 			}
 			if (Gdx.input.isKeyPressed(Input.Keys.S))
 			{
-				camera.translate(0, -1);
+				camera.translate(0, -cameraSpeed);
 			}
 			if (Gdx.input.isKeyPressed(Input.Keys.A))
 			{
-				camera.translate(-1, 0);
+				camera.translate(-cameraSpeed, 0);
 			}
 			if (Gdx.input.isKeyPressed(Input.Keys.D))
 			{
-				camera.translate(1, 0);
+				camera.translate(cameraSpeed, 0);
 			}
 		}
 
@@ -884,6 +886,18 @@ public class StateWorldEditor extends battlearena.common.states.State
 
 				PointLight light = lightEnt.getBox2dLight();
 				Color c = light.getColor();
+
+				if (Gdx.input.isKeyPressed(Input.Keys.PLUS)) {
+					// Create point light in world.
+					cameraSpeed += 0.01;
+				}
+
+				if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
+					// Create point light in world.
+					cameraSpeed -= 0.01;
+					if(cameraSpeed <= 1.0f)
+						cameraSpeed = 1.0f;
+				}
 
 				if (Gdx.input.isKeyPressed(Input.Keys.NUMPAD_1)) {
 					// Create point light in world.

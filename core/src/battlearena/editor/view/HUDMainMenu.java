@@ -20,7 +20,7 @@ public class HUDMainMenu extends HUD
 
     public HUDMainMenu(Skin skin)
     {
-        super(skin);
+        super(skin, WorldEditor.VIRTUAL_WIDTH, WorldEditor.VIRTUAL_HEIGHT);
 
         root.defaults().pad(5);
         root.center();

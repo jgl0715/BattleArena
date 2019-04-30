@@ -79,6 +79,7 @@ public class EntityLayer extends Layer
 
             if (e.isDead())
             {
+                e.onKill();
                 entities.remove(index);
 
                 DBody bod = e.find(DBody.class, Entity.BODY);

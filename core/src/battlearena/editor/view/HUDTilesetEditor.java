@@ -15,6 +15,7 @@ import battlearena.common.gui.HUD;
 import battlearena.common.tile.Tile;
 import battlearena.common.tile.Tileset;
 import battlearena.editor.TileImage;
+import battlearena.editor.WorldEditor;
 
 public class HUDTilesetEditor extends HUD
 {
@@ -46,7 +47,7 @@ public class HUDTilesetEditor extends HUD
 
     public HUDTilesetEditor(Skin skin)
     {
-        super(skin);
+        super(skin, WorldEditor.VIRTUAL_WIDTH, WorldEditor.VIRTUAL_HEIGHT);
 
         editTilePane = new Table();
         editTilePane.setFillParent(true);

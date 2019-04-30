@@ -1,5 +1,7 @@
 package battlearena.game;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+
 import battlearena.common.entity.ELight;
 import battlearena.common.entity.Entity;
 import battlearena.common.entity.EntityConfig;
@@ -9,6 +11,7 @@ import battlearena.game.entity.BACharacter;
 import battlearena.game.entity.EArrow;
 import battlearena.game.entity.EEnemy;
 import battlearena.game.entity.EMob;
+import battlearena.game.entity.EParticle;
 import battlearena.game.entity.EPlayer;
 import battlearena.game.entity.EProjectile;
 
@@ -157,6 +160,34 @@ public class BAEntityFactory extends EntityFactory
 		Config.AddConfigItem("Rotation", (float) Math.atan2(velY, velX));
 
 		return new EArrow(Config);
+	}
+
+	public static EParticle CreateDestructionParticle(World world, float X, float Y, float minSpeed, float maxSpeed)
+	{
+		EntityConfig Config = new EntityConfig(world, ENT_PLAYER);
+
+		// Define physics body information.
+		Config.AddConfigItem("Physics.BodyType", "kinematic");
+		Config.AddConfigItem("Physics.Category", CollisionGroup.PARTICLE.getChannel());
+		Config.AddConfigItem("Physics.Accepted", CollisionGroup.PARTICLE.getAccepted());
+
+		// Define position.
+		Config.AddConfigItem("X", X);
+		Config.AddConfigItem("Y", Y);
+
+		// Define size.
+		Config.AddConfigItem("NavboxWidth", 8);
+		Config.AddConfigItem("NavboxHeight", 8);
+
+		Config.AddConfigItem("MinLife", 0.5f);
+		Config.AddConfigItem("MaxLife", 1.0f);
+
+		Config.AddConfigItem("MinSpeed",  minSpeed);
+		Config.AddConfigItem("MaxSpeed", maxSpeed);
+
+		Config.AddConfigItem("Frame", new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_PROJECTILES), 44, 1, 8, 8));
+
+		return new EParticle(Config);
 	}
 
 }

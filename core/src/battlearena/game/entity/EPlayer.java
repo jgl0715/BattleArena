@@ -41,7 +41,6 @@ public class EPlayer extends EMob
 			@Override
 			public void buttonReleased()
 			{
-				System.out.println("test");
 				attack.attack();
 			}
 

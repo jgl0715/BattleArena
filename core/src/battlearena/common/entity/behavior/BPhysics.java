@@ -33,7 +33,7 @@ public class BPhysics extends Behavior
 		float NewY = Transform.getPosition().y * World.PIXELS_PER_METER;
 
 		// Update components
-		Get(Vector2.class, Entity.POSITION).set(NewX, NewY);
+		Get(Vector2.class, Entity.POSITION).set((int) NewX, (int) NewY);
 		Set(Entity.ROTATION, Transform.getRotation());
 	}
 

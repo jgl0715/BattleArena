@@ -20,10 +20,10 @@ public abstract class HUD
     private Viewport viewport;
     private OrthographicCamera camera;
 
-    public HUD(Skin skin)
+    public HUD(Skin skin, int virtualWidth, int virtualHeight)
     {
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        viewport = new StretchViewport(WorldEditor.VIRTUAL_WIDTH, WorldEditor.VIRTUAL_HEIGHT, camera);
+        viewport = new StretchViewport(virtualWidth, virtualHeight, camera);
 
         resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 

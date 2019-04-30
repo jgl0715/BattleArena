@@ -23,7 +23,7 @@ public class StateMainMenu extends State
     {
         hudMainMenu = new HUDMainMenu(BattleArena.I.getSkin());
 
-        hudMainMenu.singlePlayerButton.addListener(new ClickListener(){
+        hudMainMenu.tdmButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);

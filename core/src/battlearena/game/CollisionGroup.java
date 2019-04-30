@@ -9,6 +9,7 @@ public class CollisionGroup
 	public static final short LIGHTS_GROUP = 0x0020;
 	public static final short WEAPON_GROUP = 0x0040;
 	public static final short HITBOX_GROUP = 0x0080;
+	public static final short PARTICLE_GROUP = 0x0200;
 
 	public static final CollisionGroup PLAYER = new CollisionGroup(PLAYER_GROUP, (short) (TILES_GROUP | LIGHTS_GROUP | WEAPON_GROUP));
 	public static final CollisionGroup LIGHTS = new CollisionGroup(LIGHTS_GROUP, (short) (TILES_GROUP));
@@ -16,6 +17,7 @@ public class CollisionGroup
 	public static final CollisionGroup ENTITIES = new CollisionGroup(ENTITIES_GROUP, (short) (TILES_GROUP | LIGHTS_GROUP | WEAPON_GROUP));
 	public static final CollisionGroup WEAPON = new CollisionGroup(WEAPON_GROUP, (short) (TILES_GROUP | LIGHTS_GROUP | HITBOX_GROUP));
 	public static final CollisionGroup HITBOX = new CollisionGroup(HITBOX_GROUP, (short) (WEAPON_GROUP));
+	public static final CollisionGroup PARTICLE = new CollisionGroup(PARTICLE_GROUP, (short) (0));
 
 	private short Channel;
 	private short Group;

@@ -94,7 +94,12 @@ public class Tileset
 		}
 		else
 		{
-			return new TextureRegion(tileSheet, col * tw, row * th, tw, th);
+			float uvX = (col * tw) / (float) tileSheet.getWidth()+0.000001f;
+			float uvY = (row * th) / (float) tileSheet.getHeight()-0.000001f;
+			float uvw = getTileWidth() / (float) tileSheet.getWidth()-0.000001f;
+			float uvh = getTileHeight() / (float) tileSheet.getHeight()-0.000001f;
+
+			return new TextureRegion(tileSheet, uvX, uvY, uvX + uvw, uvY + uvh);
 		}
 	}
 

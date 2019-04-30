@@ -5,6 +5,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Matrix4;
@@ -23,6 +24,7 @@ import battlearena.common.world.EntityLayer;
 import battlearena.common.world.Location;
 import battlearena.common.world.TiledWorld;
 import battlearena.common.world.World;
+import battlearena.game.Assets;
 import battlearena.game.BAEntityFactory;
 import battlearena.game.BattleArena;
 import battlearena.game.entity.BACharacter;
@@ -84,8 +86,8 @@ public class StatePlay extends State
         muxer = new InputMultiplexer();
 
         stick = new Joystick(-BattleArena.VIRTUAL_WIDTH / 2 * 0.7f, -BattleArena.VIRTUAL_HEIGHT / 2 * 0.6f, muxer, uiCamera);
-        buttonA = new Button(250, -50, Color.DARK_GRAY, Color.RED, muxer, uiCamera);
-        buttonB = new Button(175, -125, Color.DARK_GRAY, Color.YELLOW, muxer, uiCamera);
+        buttonA = new Button(250, -50, new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_BUTTONS), 32, 0, 32, 32), new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_BUTTONS), 0, 0, 32, 32), muxer, uiCamera);
+        buttonB = new Button(175, -125, new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_BUTTONS), 32, 32, 32, 32), new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_BUTTONS), 0, 32, 32, 32), muxer, uiCamera);
     }
 
     public Vector2 getSpawnWithMeta(int meta)
@@ -111,7 +113,7 @@ public class StatePlay extends State
     {
         Gdx.input.setInputProcessor(muxer);
 
-        world = new TiledWorldImporter("worlds/test.world", true, new BAEntityFactory()).imp();
+        world = new TiledWorldImporter("worlds/WorldOne.world", true, new BAEntityFactory()).imp();
 
         dbgr = new Box2DDebugRenderer();
 
@@ -144,7 +146,7 @@ public class StatePlay extends State
         // Update logic
         world.update(Gdx.graphics.getDeltaTime());
 
-        camera.zoom = 0.8f;
+        camera.zoom = 1.3f;
         // Center camera on player
         camera.position.set(pos.x, pos.y, 0);
         camera.update();
@@ -164,17 +166,19 @@ public class StatePlay extends State
 
         world.render(batch, camera);
 
-        Matrix4 mat = new Matrix4(camera.combined);
-        mat.scale(World.PIXELS_PER_METER, World.PIXELS_PER_METER, 1);
-        dbgr.render(world.getPhysicsWorld(), mat);
+//        Matrix4 mat = new Matrix4(camera.combined);
+//        mat.scale(World.PIXELS_PER_METER, World.PIXELS_PER_METER, 1);
+//        dbgr.render(world.getPhysicsWorld(), mat);
 
         sr.setProjectionMatrix(uiCamera.projection);
         sr.setTransformMatrix(uiCamera.view);
+        batch.setProjectionMatrix(uiCamera.projection);
+        batch.setTransformMatrix(uiCamera.view);
 
         // Render input UI
         stick.render(sr);
-        buttonA.render(sr);
-        buttonB.render(sr);
+        buttonA.render(batch);
+        buttonB.render(batch);
 
         // Render HUD
 

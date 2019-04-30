@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
 import battlearena.common.gui.HUD;
+import battlearena.editor.WorldEditor;
 
 public class HUDCreateWorld extends HUD
 {
@@ -29,7 +30,7 @@ public class HUDCreateWorld extends HUD
 
     public HUDCreateWorld(Skin skin)
     {
-        super(skin);
+        super(skin, WorldEditor.VIRTUAL_WIDTH, WorldEditor.VIRTUAL_HEIGHT);
 
         labelWorldName = new Label("Name", skin);
         fieldWorldName = new TextField("", skin);

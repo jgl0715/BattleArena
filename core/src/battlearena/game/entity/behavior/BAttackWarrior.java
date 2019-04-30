@@ -29,7 +29,7 @@ public class BAttackWarrior extends BAttack
         Parent.getWorld().addHitListener(new HitListener()
         {
             @Override
-            public void beginHit(Entity e1, Entity e2, Fixture f1, Fixture f2)
+            public void beginHit(Vector2 point, Entity e1, Entity e2, Fixture f1, Fixture f2)
             {
                 // Check if the player is current attacking.
                 if(getController().isDashing())
@@ -37,8 +37,6 @@ public class BAttackWarrior extends BAttack
                     Entity other = null;
                     Fixture otherFixture = null;
                     Fixture thisFixture = null;
-
-                    System.out.println(other);
 
                     if (e1 == GetParent()) {
                         other = e2;
