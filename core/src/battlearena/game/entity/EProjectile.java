@@ -1,5 +1,6 @@
 package battlearena.game.entity;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 
 import battlearena.common.entity.EBox;
@@ -7,6 +8,7 @@ import battlearena.common.entity.Entity;
 import battlearena.common.entity.EntityConfig;
 import battlearena.common.entity.behavior.BAnimator;
 import battlearena.common.entity.data.DAnimation;
+import battlearena.common.entity.data.DFloat;
 import battlearena.common.entity.data.DString;
 import battlearena.common.world.HitListener;
 
@@ -25,6 +27,7 @@ public class EProjectile extends EBox
     {
         super(Config);
 
+        addData(DFloat.class, Entity.ANIM_TIME, false);
         anim = addData(DString.class, Entity.ANIM, false);
         anim.Value = DATA_PROJECTILE_ANIM;
         projectileAnim = addData(DAnimation.class, DATA_PROJECTILE_ANIM);
@@ -57,7 +60,9 @@ public class EProjectile extends EBox
                     {
                         // Inflict damage
                         EMob mob = (EMob) other;
-                        mob.damage(damage, shooter);
+                        Vector2 knockback = new Vector2(getBody().getLinearVelocity()).scl(80);
+
+                        mob.damage(damage, knockback);
 
                         remove();
 

@@ -34,6 +34,8 @@ import battlearena.game.input.Joystick;
 public class StatePlay extends State
 {
 
+    public static final String MOBS_LAYER = "Mobs";
+
     public static StatePlay I;
 
     private InputMultiplexer muxer;
@@ -79,20 +81,7 @@ public class StatePlay extends State
         uiViewport = new FitViewport(BattleArena.VIRTUAL_WIDTH, BattleArena.VIRTUAL_HEIGHT, uiCamera);
         uiViewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        muxer = new InputMultiplexer(
-                new GestureDetector(new GestureDetector.GestureAdapter(){
-                    @Override
-                    public boolean zoom(float initialDistance, float distance)
-                    {
-                        uiCamera.zoom += (initialDistance-distance)/90000.0f;
-                        uiCamera.update();
-
-                        if(uiCamera.zoom < 0.1)
-                            uiCamera.zoom = 0.1f;
-
-                        return super.zoom(initialDistance, distance);
-                    }
-                }));
+        muxer = new InputMultiplexer();
 
         stick = new Joystick(-BattleArena.VIRTUAL_WIDTH / 2 * 0.7f, -BattleArena.VIRTUAL_HEIGHT / 2 * 0.6f, muxer, uiCamera);
         buttonA = new Button(250, -50, Color.DARK_GRAY, Color.RED, muxer, uiCamera);
@@ -133,7 +122,7 @@ public class StatePlay extends State
         enemy = BAEntityFactory.CreateEnemy(world, enemySpawn.x, enemySpawn.y, BACharacter.WARRIOR);
 
         // Add entities here.
-        EntityLayer mobs = new EntityLayer("Mobs");
+        EntityLayer mobs = new EntityLayer(MOBS_LAYER);
         mobs.addEntity(player);
         mobs.addEntity(enemy);
 

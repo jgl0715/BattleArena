@@ -12,6 +12,9 @@ public class EArrow extends EProjectile
         super(Config);
 
         projectileAnim.Value = AnimationUtil.MakeAnim(BattleArena.I.getTexture(Assets.TEXTURE_PROJECTILES), 0, 0, new int[]{43}, new int[]{20}, 1, 0.0f);
+
+        if(Config.GetConfigNumber("VelX") < 0)
+            getRenderSettings().FlipX = true;
     }
 
     @Override

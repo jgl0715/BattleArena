@@ -104,6 +104,21 @@ public class EMob extends EBox
         attack.setLight(attackLight);
     }
 
+    public DFloat getSpeed()
+    {
+        return speed;
+    }
+
+    public void setSpeedMultiplier(float multiplier)
+    {
+        speed.Value = character.getSpeed() * multiplier;
+    }
+
+    public BACharacter getCharacter()
+    {
+        return character;
+    }
+
     private Body createHitbox(float w, float h)
     {
         BodyDef bDef = new BodyDef();
@@ -152,15 +167,11 @@ public class EMob extends EBox
         return hitbox;
     }
 
-    public void damage(float damage, EMob damaging)
+    public void damage(float damage, Vector2 knockback)
     {
         this.inflicting = damage;
 
-        Vector2 vel = damaging.getBody().getLinearVelocity();
-
-        System.out.println(vel);
-
-        getBody().applyForceToCenter(new Vector2(vel).scl(500), true);
+        getBody().applyForceToCenter(knockback, true);
 
     }
 

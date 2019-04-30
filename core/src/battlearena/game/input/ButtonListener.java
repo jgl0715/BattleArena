@@ -5,4 +5,6 @@ public interface ButtonListener
 
     void buttonPressed();
 
+    void buttonReleased();
+
 }

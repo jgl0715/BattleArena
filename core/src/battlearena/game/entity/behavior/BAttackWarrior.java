@@ -53,17 +53,17 @@ public class BAttackWarrior extends BAttack
                     if (other != null && other instanceof EMob)
                     {
                         EMob mob = (EMob) other;
+                        Vector2 vel = ((EMob)GetParent()).getBody().getLinearVelocity();
+                        Vector2 knockback = new Vector2(vel).scl(500);
 
                         if (thisFixture == swordSensorLeft && GetParent().getRenderSettings().FlipX) {
-                            System.out.println("Hit left!");
 
                             // Do damage here
-                            mob.damage(3, (EMob) GetParent());
+                            mob.damage(3, knockback);
                         } else if (thisFixture == swordSensorRight && !GetParent().getRenderSettings().FlipX) {
-                            System.out.println("Hit right!");
 
                             // Do damage here
-                            mob.damage(3, (EMob) GetParent());
+                            mob.damage(3, knockback);
                         }
                     }
                 }
@@ -80,7 +80,9 @@ public class BAttackWarrior extends BAttack
     @Override
     public void charge()
     {
-
+        super.charge();
+        // Charging does nothing for warrior.
+        attack();
     }
 
     private Fixture createSwordFixture(Vector2[] verts)
@@ -107,6 +109,8 @@ public class BAttackWarrior extends BAttack
     @Override
     public void attack()
     {
+        super.attack();
+
         if(canAttack())
         {
             getCooldown().Value = 1.0f;

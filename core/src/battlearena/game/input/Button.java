@@ -105,6 +105,12 @@ public class Button extends InputAdapter
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button)
     {
+        if(pressed)
+        {
+            for(ButtonListener listener : listeners)
+                listener.buttonReleased();
+        }
+
         pressed = false;
 
         return false;

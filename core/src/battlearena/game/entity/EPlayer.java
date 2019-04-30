@@ -1,5 +1,7 @@
 package battlearena.game.entity;
 
+import com.badlogic.gdx.ai.pfa.Connection;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -28,6 +30,8 @@ import battlearena.game.states.StatePlay;
 public class EPlayer extends EMob
 {
 
+	private boolean kbCharging;
+
 	public EPlayer(EntityConfig Config)
 	{
 		super(Config);
@@ -35,10 +39,17 @@ public class EPlayer extends EMob
 		StatePlay.I.getButtonA().addListener(new ButtonListener()
 		{
 			@Override
+			public void buttonReleased()
+			{
+				System.out.println("test");
+				attack.attack();
+			}
+
+			@Override
 			public void buttonPressed()
 			{
-				attack.attack();
 				movement.setDirection(StatePlay.I.getStick().getJoystickInput());
+				attack.charge();
 			}
 		});
 	}
@@ -53,14 +64,14 @@ public class EPlayer extends EMob
 
 		if(Gdx.input.isKeyPressed(Input.Keys.E))
 		{
+			kbCharging = true;
 			attack.charge();
 		}
 
-//		if(Gdx.input.iske)
-
-		if(Gdx.input.isKeyJustPressed(Input.Keys.E))
+		if(kbCharging  && !Gdx.input.isKeyPressed(Input.Keys.E))
 		{
 			attack.attack();
+			kbCharging = false;
 		}
 
 	}

@@ -6,6 +6,7 @@ import battlearena.common.entity.EntityConfig;
 import battlearena.common.entity.EntityFactory;
 import battlearena.common.world.World;
 import battlearena.game.entity.BACharacter;
+import battlearena.game.entity.EArrow;
 import battlearena.game.entity.EEnemy;
 import battlearena.game.entity.EMob;
 import battlearena.game.entity.EPlayer;
@@ -129,6 +130,33 @@ public class BAEntityFactory extends EntityFactory
 		Config.AddConfigItem("Rotation", (float) Math.atan2(velY, velX));
 
 		return new EProjectile(Config);
+	}
+
+	public static EArrow CreateArrow(World world, EMob shooter, float X, float Y, float velX, float velY)
+	{
+		EntityConfig Config = new EntityConfig(world, ENT_PLAYER);
+
+		// Define physics body information.
+		Config.AddConfigItem("Physics.BodyType", "dynamic");
+		Config.AddConfigItem("Physics.Category", CollisionGroup.WEAPON.getChannel());
+		Config.AddConfigItem("Physics.Accepted", CollisionGroup.WEAPON.getAccepted());
+
+		// Define position.
+		Config.AddConfigItem("X", X);
+		Config.AddConfigItem("Y", Y);
+
+		// Define size.
+		Config.AddConfigItem("NavboxWidth", 43);
+		Config.AddConfigItem("NavboxHeight", 20);
+
+		Config.AddConfigItem("VelX", velX);
+		Config.AddConfigItem("VelY", velY);
+
+		Config.AddConfigItem("Damage", 5);
+		Config.AddConfigItem("Shooter", shooter);
+		Config.AddConfigItem("Rotation", (float) Math.atan2(velY, velX));
+
+		return new EArrow(Config);
 	}
 
 }

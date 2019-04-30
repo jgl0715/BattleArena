@@ -127,6 +127,7 @@ public class BattleArena extends ApplicationAdapter
 
 		assetManager = new AssetManager();
 		assetManager.load(Assets.TEXTURE_CHARACTERS, Texture.class);
+		assetManager.load(Assets.TEXTURE_PROJECTILES, Texture.class);
 		assetManager.load(Assets.SKIN, Skin.class);
 		assetManager.finishLoading();
 
@@ -135,7 +136,7 @@ public class BattleArena extends ApplicationAdapter
 		BACharacter.WARRIOR.setAttackAnim(AnimationUtil.MakeAnim(getTexture(Assets.TEXTURE_CHARACTERS), 80, 0, new int[]{74}, new int[]{67}, 1, 0.0f));
 
 		BACharacter.ARCHER.setWalkAnim(AnimationUtil.MakeAnim(getTexture(Assets.TEXTURE_CHARACTERS), 0, 67, new int[]{37, 37}, new int[]{59, 59}, 2, 0.2f));
-		BACharacter.ARCHER.setAttackAnim(AnimationUtil.MakeAnim(getTexture(Assets.TEXTURE_CHARACTERS), 80, 0, new int[]{74}, new int[]{67}, 1, 0.0f));
+		BACharacter.ARCHER.setAttackAnim(AnimationUtil.MakeAnim(getTexture(Assets.TEXTURE_CHARACTERS), 73, 67, new int[]{86}, new int[]{67}, 1, 0.0f));
 
 
 		// Register states

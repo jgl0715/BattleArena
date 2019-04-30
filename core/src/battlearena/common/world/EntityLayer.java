@@ -13,6 +13,7 @@ import java.util.List;
 
 import battlearena.common.RenderSettings;
 import battlearena.common.entity.Entity;
+import battlearena.common.entity.data.DBody;
 import battlearena.common.entity.data.DBoolean;
 import battlearena.common.entity.data.DFloat;
 import battlearena.common.entity.data.DVector2;
@@ -79,6 +80,13 @@ public class EntityLayer extends Layer
             if (e.isDead())
             {
                 entities.remove(index);
+
+                DBody bod = e.find(DBody.class, Entity.BODY);
+                if(bod != null)
+                {
+                    e.getWorld().getPhysicsWorld().destroyBody(bod.Value);
+                }
+
             }
             else
             {
