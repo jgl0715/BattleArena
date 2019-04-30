@@ -10,6 +10,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder;
+import com.google.android.gms.common.SignInButton;
 
 public class AndroidLauncher extends AndroidApplication
 {
@@ -21,6 +22,7 @@ public class AndroidLauncher extends AndroidApplication
 		initialize(new BattleArena(), config);
 		GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
         GoogleSignInClient mGoogleSigninClient = GoogleSignIn.getClient(this, gso);
+        SignInButton signInButton = findViewById(R.id.sign_int_button);
 	}
 
     @Override
@@ -31,6 +33,6 @@ public class AndroidLauncher extends AndroidApplication
     }
 
     private void updateUI(GoogleSignInAccount account) {
-	    
+
     }
 }
