@@ -77,6 +77,12 @@ public class BAttackWarrior extends BAttack
         });
     }
 
+    @Override
+    public void charge()
+    {
+
+    }
+
     private Fixture createSwordFixture(Vector2[] verts)
     {
         Body bod = getBody();

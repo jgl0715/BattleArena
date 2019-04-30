@@ -10,6 +10,12 @@ public class BAttackWizard extends BAttack
     }
 
     @Override
+    public void charge()
+    {
+
+    }
+
+    @Override
     public void attack()
     {
 

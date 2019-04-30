@@ -10,6 +10,11 @@ public class BAttackArcher extends BAttack
     }
 
     @Override
+    public void charge() {
+
+    }
+
+    @Override
     public void attack()
     {
 

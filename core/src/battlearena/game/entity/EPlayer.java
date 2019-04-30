@@ -56,7 +56,7 @@ public class EPlayer extends EMob
 			attack.charge();
 		}
 
-		if(Gdx.input.iske)
+//		if(Gdx.input.iske)
 
 		if(Gdx.input.isKeyJustPressed(Input.Keys.E))
 		{
