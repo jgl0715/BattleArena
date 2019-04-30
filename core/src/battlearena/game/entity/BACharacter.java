@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 public enum BACharacter
 {
 
-    WARRIOR("Warrior", 40, 57, 40, 10, 20.0f), ARCHER("Archer", 37, 59, 37, 10, 15.0f), WIZARD("Wizard", 40, 57, 0, 0, 15.0f);
+    WARRIOR("Warrior", 40, 57, 40, 10, 20.0f), ARCHER("Archer", 37, 59, 37, 10, 15.0f), GUNNER("Gunner", 34, 49, 34, 10, 15.0f);
 
     private String name;
     private Animation walkAnim;

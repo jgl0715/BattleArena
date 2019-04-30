@@ -32,16 +32,35 @@ import battlearena.game.entity.BACharacter;
 import battlearena.game.entity.EPlayer;
 import battlearena.game.input.Button;
 import battlearena.game.input.Joystick;
+import battlearena.game.states.StateChooseMap;
 import battlearena.game.states.StateMainMenu;
 import battlearena.game.states.StatePlay;
+import battlearena.game.states.StateSetupTeams;
 
 public class BattleArena extends ApplicationAdapter
 {
 
+	// Add power up items: speed boost, knockback boost, cooldown lower
+	// Add pause menu that allows you to view stats about the current game mode: tdm(deaths, kills, team scores) towers(kills, deaths, tower stats)
+	// Add achievements: changing character, starting a game, kiling first enemy, kill ten enemies
+	// Add map selection screen
+	// Add game setup screen (tdm and towers)
+	// Implement tdm game mode
+	// Implement towers game mode
+	// Implement AI for warrior
+	// Implement AI for archer
+	// Implement AI for gunner
+	// Implement multiplayer room creation
+	// Implement multiplayer lobby joining
+
 	public static final String TRANSITION_PLAY = "T_Play";
+	public static final String TRANSITION_CHOOSE_MAP = "T_Choose_Map";
+	public static final String TRANSITION_SETUP_TEAMS = "T_Setup_Teams";
 
 	public static final StateMainMenu STATE_MAIN_MENU = new StateMainMenu();
 	public static final StatePlay STATE_PLAY = new StatePlay();
+	public static final StateChooseMap STATE_CHOOSE_MAP = new StateChooseMap();
+	public static final StateSetupTeams STATE_SETUP_TEAMS = new StateSetupTeams();
 
 	public static BattleArena I = null;
 
@@ -140,12 +159,20 @@ public class BattleArena extends ApplicationAdapter
 		BACharacter.ARCHER.setWalkAnim(AnimationUtil.MakeAnim(getTexture(Assets.TEXTURE_CHARACTERS), 0, 67, new int[]{37, 37}, new int[]{59, 59}, 2, 0.2f));
 		BACharacter.ARCHER.setAttackAnim(AnimationUtil.MakeAnim(getTexture(Assets.TEXTURE_CHARACTERS), 73, 67, new int[]{86}, new int[]{67}, 1, 0.0f));
 
+		BACharacter.GUNNER.setWalkAnim(AnimationUtil.MakeAnim(getTexture(Assets.TEXTURE_CHARACTERS), 0, 133, new int[]{35, 45}, new int[]{49, 51}, 2, 0.2f));
+		BACharacter.GUNNER.setAttackAnim(AnimationUtil.MakeAnim(getTexture(Assets.TEXTURE_CHARACTERS), 80, 140, new int[]{63}, new int[]{45}, 1, 0.0f));
+
 		// Register states
 		fsa.registerState(STATE_MAIN_MENU, true);
 		fsa.registerState(STATE_PLAY);
+		fsa.registerState(STATE_CHOOSE_MAP);
+		fsa.registerState(STATE_SETUP_TEAMS);
 
 		// Register transitions
 		fsa.registerTransition(STATE_MAIN_MENU, STATE_PLAY, TRANSITION_PLAY);
+		fsa.registerTransition(STATE_MAIN_MENU, STATE_CHOOSE_MAP, TRANSITION_CHOOSE_MAP);
+		fsa.registerTransition(STATE_CHOOSE_MAP, STATE_SETUP_TEAMS, TRANSITION_SETUP_TEAMS);
+
 	}
 
 	@Override

@@ -16,7 +16,7 @@ import battlearena.common.world.HitListener;
 import battlearena.game.BAEntityFactory;
 import battlearena.game.states.StatePlay;
 
-public class EProjectile extends EBox
+public abstract class EProjectile extends EBox
 {
 
     public static final String DATA_PROJECTILE_ANIM = "ProjectileAnim";
@@ -117,6 +117,8 @@ public class EProjectile extends EBox
         return damage;
     }
 
+    public abstract EParticle createDestructionParticle(Vector2 contactPoint, float projectileSpeed);
+
     @Override
     public void onKill()
     {
@@ -127,8 +129,7 @@ public class EProjectile extends EBox
             for(int i = 0; i < 20; i++)
             {
                 float projectileSpeed = getBody().getLinearVelocity().len();
-                EParticle particle = BAEntityFactory.CreateDestructionParticle(getWorld(), contactPoint.x, contactPoint.y, projectileSpeed *0.1f, projectileSpeed);
-                getWorld().addEntity(StatePlay.MOBS_LAYER, particle);
+                getWorld().addEntity(StatePlay.MOBS_LAYER, createDestructionParticle(contactPoint, projectileSpeed));
             }
         }
     }

@@ -24,7 +24,6 @@ public class EParticle extends EBox
     {
         super(Config);
 
-
         float randAngle = (float) (Math.random() * Math.PI * 2);
         float minSpeed = Config.GetConfigFloat("MinSpeed");
         float maxSpeed = Config.GetConfigFloat("MaxSpeed");
@@ -50,7 +49,6 @@ public class EParticle extends EBox
         if(life <= 0)
         {
             remove();
-            System.out.println("removed");
         }
     }
 }

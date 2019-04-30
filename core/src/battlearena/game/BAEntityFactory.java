@@ -9,6 +9,7 @@ import battlearena.common.entity.EntityFactory;
 import battlearena.common.world.World;
 import battlearena.game.entity.BACharacter;
 import battlearena.game.entity.EArrow;
+import battlearena.game.entity.EBullet;
 import battlearena.game.entity.EEnemy;
 import battlearena.game.entity.EMob;
 import battlearena.game.entity.EParticle;
@@ -108,31 +109,60 @@ public class BAEntityFactory extends EntityFactory
 		return new EPlayer(Config);
 	}
 
-	public static EProjectile CreateProjectile(World world, EMob shooter, float X, float Y, float W, float H, float velX, float velY, int damage)
+	public static EParticle CreateDestructionParticle_Arrow(World world, float X, float Y, float minSpeed, float maxSpeed)
 	{
 		EntityConfig Config = new EntityConfig(world, ENT_PLAYER);
 
 		// Define physics body information.
-		Config.AddConfigItem("Physics.BodyType", "dynamic");
-		Config.AddConfigItem("Physics.Category", CollisionGroup.WEAPON.getChannel());
-		Config.AddConfigItem("Physics.Accepted", CollisionGroup.WEAPON.getAccepted());
+		Config.AddConfigItem("Physics.BodyType", "kinematic");
+		Config.AddConfigItem("Physics.Category", CollisionGroup.PARTICLE.getChannel());
+		Config.AddConfigItem("Physics.Accepted", CollisionGroup.PARTICLE.getAccepted());
 
 		// Define position.
 		Config.AddConfigItem("X", X);
 		Config.AddConfigItem("Y", Y);
 
 		// Define size.
-		Config.AddConfigItem("NavboxWidth", W);
-		Config.AddConfigItem("NavboxHeight", H);
+		Config.AddConfigItem("NavboxWidth", 8);
+		Config.AddConfigItem("NavboxHeight", 8);
 
-		Config.AddConfigItem("VelX", velX);
-		Config.AddConfigItem("VelY", velY);
+		Config.AddConfigItem("MinLife", 0.5f);
+		Config.AddConfigItem("MaxLife", 1.0f);
 
-		Config.AddConfigItem("Damage", damage);
-		Config.AddConfigItem("Shooter", shooter);
-		Config.AddConfigItem("Rotation", (float) Math.atan2(velY, velX));
+		Config.AddConfigItem("MinSpeed",  minSpeed);
+		Config.AddConfigItem("MaxSpeed", maxSpeed);
 
-		return new EProjectile(Config);
+		Config.AddConfigItem("Frame", new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_PROJECTILES), 44, 1, 8, 8));
+
+		return new EParticle(Config);
+	}
+
+	public static EParticle CreateDestructionParticle_Bullet(World world, float X, float Y, float minSpeed, float maxSpeed)
+	{
+		EntityConfig Config = new EntityConfig(world, ENT_PLAYER);
+
+		// Define physics body information.
+		Config.AddConfigItem("Physics.BodyType", "kinematic");
+		Config.AddConfigItem("Physics.Category", CollisionGroup.PARTICLE.getChannel());
+		Config.AddConfigItem("Physics.Accepted", CollisionGroup.PARTICLE.getAccepted());
+
+		// Define position.
+		Config.AddConfigItem("X", X);
+		Config.AddConfigItem("Y", Y);
+
+		// Define size.
+		Config.AddConfigItem("NavboxWidth", 8);
+		Config.AddConfigItem("NavboxHeight", 8);
+
+		Config.AddConfigItem("MinLife", 0.5f);
+		Config.AddConfigItem("MaxLife", 1.0f);
+
+		Config.AddConfigItem("MinSpeed",  minSpeed);
+		Config.AddConfigItem("MaxSpeed", maxSpeed);
+
+		Config.AddConfigItem("Frame", new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_PROJECTILES), 44, 10, 8, 8));
+
+		return new EParticle(Config);
 	}
 
 	public static EArrow CreateArrow(World world, EMob shooter, float X, float Y, float velX, float velY)
@@ -162,32 +192,32 @@ public class BAEntityFactory extends EntityFactory
 		return new EArrow(Config);
 	}
 
-	public static EParticle CreateDestructionParticle(World world, float X, float Y, float minSpeed, float maxSpeed)
+	public static EBullet CreateBullet(World world, EMob shooter, float X, float Y, float velX, float velY)
 	{
 		EntityConfig Config = new EntityConfig(world, ENT_PLAYER);
 
 		// Define physics body information.
-		Config.AddConfigItem("Physics.BodyType", "kinematic");
-		Config.AddConfigItem("Physics.Category", CollisionGroup.PARTICLE.getChannel());
-		Config.AddConfigItem("Physics.Accepted", CollisionGroup.PARTICLE.getAccepted());
+		Config.AddConfigItem("Physics.BodyType", "dynamic");
+		Config.AddConfigItem("Physics.Category", CollisionGroup.WEAPON.getChannel());
+		Config.AddConfigItem("Physics.Accepted", CollisionGroup.WEAPON.getAccepted());
 
 		// Define position.
 		Config.AddConfigItem("X", X);
 		Config.AddConfigItem("Y", Y);
 
 		// Define size.
-		Config.AddConfigItem("NavboxWidth", 8);
-		Config.AddConfigItem("NavboxHeight", 8);
+		Config.AddConfigItem("NavboxWidth", 43);
+		Config.AddConfigItem("NavboxHeight", 20);
 
-		Config.AddConfigItem("MinLife", 0.5f);
-		Config.AddConfigItem("MaxLife", 1.0f);
+		Config.AddConfigItem("VelX", velX);
+		Config.AddConfigItem("VelY", velY);
 
-		Config.AddConfigItem("MinSpeed",  minSpeed);
-		Config.AddConfigItem("MaxSpeed", maxSpeed);
+		Config.AddConfigItem("Damage", 5);
+		Config.AddConfigItem("Shooter", shooter);
+//		Config.AddConfigItem("Rotation", (float) Math.atan2(velY, velX));
 
-		Config.AddConfigItem("Frame", new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_PROJECTILES), 44, 1, 8, 8));
-
-		return new EParticle(Config);
+		return new EBullet(Config);
 	}
+
 
 }

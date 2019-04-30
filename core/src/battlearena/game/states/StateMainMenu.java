@@ -29,7 +29,7 @@ public class StateMainMenu extends State
                 super.clicked(event, x, y);
 
                 // Start StatePlay
-                BattleArena.I.inputToFSA(BattleArena.TRANSITION_PLAY);
+                BattleArena.I.inputToFSA(BattleArena.TRANSITION_CHOOSE_MAP);
             }
         });
     }

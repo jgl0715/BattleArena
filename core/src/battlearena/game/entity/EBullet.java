@@ -11,17 +11,17 @@ import battlearena.game.BattleArena;
 import battlearena.game.LayerType;
 import battlearena.game.states.StatePlay;
 
-public class EArrow extends EProjectile
+public class EBullet extends EProjectile
 {
 
     private ELight light;
     private Vector2 lightPos;
 
-    public EArrow(EntityConfig Config)
+    public EBullet(EntityConfig Config)
     {
         super(Config);
 
-        projectileAnim.Value = AnimationUtil.MakeAnim(BattleArena.I.getTexture(Assets.TEXTURE_PROJECTILES), 0, 0, new int[]{43}, new int[]{20}, 1, 0.0f);
+        projectileAnim.Value = AnimationUtil.MakeAnim(BattleArena.I.getTexture(Assets.TEXTURE_PROJECTILES), 53, 1, new int[]{6}, new int[]{6}, 1, 0.0f);
 
         if(Config.GetConfigNumber("VelX") < 0)
             getRenderSettings().FlipX = true;
@@ -34,7 +34,7 @@ public class EArrow extends EProjectile
     @Override
     public EParticle createDestructionParticle(Vector2 contactPoint, float projectileSpeed)
     {
-        return BAEntityFactory.CreateDestructionParticle_Arrow(getWorld(), contactPoint.x, contactPoint.y, projectileSpeed *0.1f, projectileSpeed);
+        return BAEntityFactory.CreateDestructionParticle_Bullet(getWorld(), contactPoint.x, contactPoint.y, projectileSpeed *0.1f, projectileSpeed);
     }
 
     @Override
@@ -44,15 +44,6 @@ public class EArrow extends EProjectile
 
         // Update light position based on projectile position.
         lightPos.set(getPos());
-
-        // Create streamers
-        for(int i = 0; i < 3; i++)
-        {
-            Vector2 pos = getPos();
-            float projectileSpeed = -getBody().getLinearVelocity().len();
-            EParticle particle = BAEntityFactory.CreateDestructionParticle_Arrow(getWorld(), pos.x, pos.y, 3.0f, 3.0f);
-            getWorld().addEntity(StatePlay.MOBS_LAYER, particle);
-        }
     }
 
     @Override

@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 
@@ -17,11 +16,8 @@ import battlearena.common.entity.ELight;
 import battlearena.common.entity.EntityConfig;
 import battlearena.common.entity.behavior.BAnimator;
 import battlearena.common.entity.data.DAnimation;
-import battlearena.common.entity.data.DBody;
 import battlearena.common.entity.data.DFloat;
 import battlearena.common.entity.data.DString;
-import battlearena.common.tile.CollisionMask;
-import battlearena.common.world.TiledWorld;
 import battlearena.common.world.World;
 import battlearena.game.BAEntityFactory;
 import battlearena.game.CollisionGroup;
@@ -29,7 +25,7 @@ import battlearena.game.LayerType;
 import battlearena.game.entity.behavior.BAttack;
 import battlearena.game.entity.behavior.BAttackArcher;
 import battlearena.game.entity.behavior.BAttackWarrior;
-import battlearena.game.entity.behavior.BAttackWizard;
+import battlearena.game.entity.behavior.BAttackGunner;
 import battlearena.game.entity.behavior.BController;
 import battlearena.common.entity.Entity;
 
@@ -95,8 +91,8 @@ public class EMob extends EBox
             case ARCHER:
                 attack = addBehavior(BAttackArcher.class, "Attack");
                 break;
-            case WIZARD:
-                attack = addBehavior(BAttackWizard.class, "Attack");
+            case GUNNER:
+                attack = addBehavior(BAttackGunner.class, "Attack");
                 break;
         }
 
