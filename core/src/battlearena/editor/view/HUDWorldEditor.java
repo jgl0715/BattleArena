@@ -13,6 +13,7 @@ import battlearena.common.tile.Tileset;
 import battlearena.common.world.Layer;
 import battlearena.common.world.TileLayer;
 import battlearena.editor.TileImage;
+import battlearena.editor.WorldEditor;
 
 public class HUDWorldEditor extends HUD
 {
@@ -39,7 +40,7 @@ public class HUDWorldEditor extends HUD
 
     public HUDWorldEditor(Skin skin)
     {
-        super(skin);
+        super(skin, WorldEditor.VIRTUAL_WIDTH, WorldEditor.VIRTUAL_HEIGHT);
 
         Table tableLeftPane = new Table();
         tableLeftPane.setFillParent(true);

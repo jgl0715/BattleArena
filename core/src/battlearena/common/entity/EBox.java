@@ -47,6 +47,16 @@ public class EBox extends Entity
 		renderSettings.mode = RenderSettings.RenderMode.TEXTURED;
 	}
 
+	public DTextureRegion getFrame()
+	{
+		return Frame;
+	}
+
+	public Vector2 getPos()
+	{
+		return Pos;
+	}
+
 	public Body getBody() {
 		return bod;
 	}

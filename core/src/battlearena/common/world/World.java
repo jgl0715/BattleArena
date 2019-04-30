@@ -53,7 +53,7 @@ public class World
 
         handler = new RayHandler(PhysicsWorld);
         handler.setShadows(true);
-        handler.setAmbientLight(0.3f);
+        handler.setAmbientLight(0.1f);
 
         layersLocked = false;
         entityLayers = new HashMap<String, EntityLayer>();
@@ -70,9 +70,12 @@ public class World
                 Entity e1 = (Entity) contact.getFixtureA().getBody().getUserData();
                 Entity e2 = (Entity) contact.getFixtureB().getBody().getUserData();
 
+                Vector2 physicsWorldPoint = contact.getWorldManifold().getPoints()[0];
+                Vector2 gameWorldPoint = new Vector2(physicsWorldPoint).scl(World.PIXELS_PER_METER);
+
                 for(HitListener listener : hitListeners)
                 {
-                    listener.beginHit(e1, e2, contact.getFixtureA(), contact.getFixtureB());
+                    listener.beginHit(gameWorldPoint, e1, e2, contact.getFixtureA(), contact.getFixtureB());
                 }
             }
 
@@ -89,12 +92,14 @@ public class World
             }
 
             @Override
-            public void preSolve(Contact contact, Manifold oldManifold) {
+            public void preSolve(Contact contact, Manifold oldManifold)
+            {
 
             }
 
             @Override
-            public void postSolve(Contact contact, ContactImpulse impulse) {
+            public void postSolve(Contact contact, ContactImpulse impulse)
+            {
 
             }
         });

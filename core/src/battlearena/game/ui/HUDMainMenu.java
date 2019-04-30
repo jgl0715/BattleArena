@@ -1,34 +1,48 @@
 package battlearena.game.ui;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 import battlearena.common.gui.HUD;
+import battlearena.editor.WorldEditor;
+import battlearena.game.Assets;
+import battlearena.game.BattleArena;
 
 public class HUDMainMenu extends HUD
 {
 
-    public TextButton singlePlayerButton;
+    public TextButton tdmButton;
+    public TextButton towersButton;
     public TextButton optionsButton;
     public TextButton multiplayerButton;
 
     public HUDMainMenu(Skin skin)
     {
-        super(skin);
+        super(skin, BattleArena.VIRTUAL_WIDTH, BattleArena.VIRTUAL_HEIGHT);
 
-        root.setFillParent(true);
-        root.defaults().pad(50);
+        root.setBackground(new TextureRegionDrawable(new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_MAIN_MENU))));
+        root.bottom();
+
+        Table buttonGroup = new Table();
+        buttonGroup.bottom();
         {
-            singlePlayerButton = new TextButton("Single Player", skin);
+            tdmButton = new TextButton("Deathmatch", skin);
+            towersButton = new TextButton("Towers", skin);
             multiplayerButton = new TextButton("MultiPlayer", skin);
             optionsButton = new TextButton("Options", skin);
 
-            root.defaults().width(400);
-            root.defaults().height(100);
-            root.add(singlePlayerButton).row();
-            root.add(multiplayerButton).row();
-            root.add(optionsButton).row();
+            buttonGroup.defaults().width(214).height(42).padTop(6).expand();
+            buttonGroup.add(tdmButton).row();
+            buttonGroup.add(towersButton).row();
+            buttonGroup.add(multiplayerButton).row();
+            buttonGroup.add(optionsButton).padBottom(23).row();
         }
+
+        root.add(buttonGroup).pad(0);
+
     }
 
 

@@ -36,7 +36,11 @@ allprojects {
         google()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+<<<<<<< HEAD
         maven { url 'https://maven.google.com'}
+=======
+        maven { url "https://maven.google.com" }
+>>>>>>> d258046554a437b0732bb4a4d248070f3ba503dc
     }
 }
 
@@ -51,8 +55,15 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-ai:1.8.1"
+<<<<<<< HEAD
         compile "com.google.android.gms:play-services-identity:16.0.0"
         compile "com.google.android.gms:play-services-base:16.1.0"
+=======
+        compile "com.google.android.gms:play-services-games:17.0.0"
+        compile "com.google.android.gms:play-services-identity:16.0.0"
+        compile "com.google.android.gms:play-services-base:16.1.0"
+        compile "com.google.android.gms:play-services-auth:16.0.1"
+>>>>>>> d258046554a437b0732bb4a4d248070f3ba503dc
     }
 }
 
@@ -84,9 +95,16 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86_64"
         compile "com.badlogicgames.gdx:gdx-ai:1.8.1"
+<<<<<<< HEAD
         compile 'com.google.android.gms:play-services-auth:16.0.1'
         compile "com.google.android.gms:play-services-identity:16.0.0"
         compile "com.google.android.gms:play-services-base:16.1.0"
+=======
+        compile "com.google.android.gms:play-services-games:17.0.0"
+        compile "com.google.android.gms:play-services-identity:16.0.0"
+        compile "com.google.android.gms:play-services-base:16.1.0"
+        compile "com.google.android.gms:play-services-auth:16.0.1"
+>>>>>>> d258046554a437b0732bb4a4d248070f3ba503dc
     }
 }
 
@@ -100,8 +118,16 @@ project(":core") {
         compile "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-ai:1.8.1"
+<<<<<<< HEAD
         compile "com.google.android.gms:play-services-identity:16.0.0"
         compile "com.google.android.gms:play-services-base:16.1.0"
+=======
+        compile "com.google.android.gms:play-services-games:17.0.0"
+        compile "com.google.android.gms:play-services-identity:16.0.0"
+        compile "com.google.android.gms:play-services-base:16.1.0"
+        compile "com.google.android.gms:play-services-auth:16.0.1"
+
+>>>>>>> d258046554a437b0732bb4a4d248070f3ba503dc
     }
 }
 

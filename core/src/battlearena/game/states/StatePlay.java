@@ -5,6 +5,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Matrix4;
@@ -23,6 +24,7 @@ import battlearena.common.world.EntityLayer;
 import battlearena.common.world.Location;
 import battlearena.common.world.TiledWorld;
 import battlearena.common.world.World;
+import battlearena.game.Assets;
 import battlearena.game.BAEntityFactory;
 import battlearena.game.BattleArena;
 import battlearena.game.entity.BACharacter;
@@ -33,6 +35,8 @@ import battlearena.game.input.Joystick;
 
 public class StatePlay extends State
 {
+
+    public static final String MOBS_LAYER = "Mobs";
 
     public static StatePlay I;
 
@@ -79,24 +83,11 @@ public class StatePlay extends State
         uiViewport = new FitViewport(BattleArena.VIRTUAL_WIDTH, BattleArena.VIRTUAL_HEIGHT, uiCamera);
         uiViewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        muxer = new InputMultiplexer(
-                new GestureDetector(new GestureDetector.GestureAdapter(){
-                    @Override
-                    public boolean zoom(float initialDistance, float distance)
-                    {
-                        uiCamera.zoom += (initialDistance-distance)/90000.0f;
-                        uiCamera.update();
-
-                        if(uiCamera.zoom < 0.1)
-                            uiCamera.zoom = 0.1f;
-
-                        return super.zoom(initialDistance, distance);
-                    }
-                }));
+        muxer = new InputMultiplexer();
 
         stick = new Joystick(-BattleArena.VIRTUAL_WIDTH / 2 * 0.7f, -BattleArena.VIRTUAL_HEIGHT / 2 * 0.6f, muxer, uiCamera);
-        buttonA = new Button(250, -50, Color.DARK_GRAY, Color.RED, muxer, uiCamera);
-        buttonB = new Button(175, -125, Color.DARK_GRAY, Color.YELLOW, muxer, uiCamera);
+        buttonA = new Button(250, -50, new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_BUTTONS), 32, 0, 32, 32), new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_BUTTONS), 0, 0, 32, 32), muxer, uiCamera);
+        buttonB = new Button(175, -125, new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_BUTTONS), 32, 32, 32, 32), new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_BUTTONS), 0, 32, 32, 32), muxer, uiCamera);
     }
 
     public Vector2 getSpawnWithMeta(int meta)
@@ -122,18 +113,18 @@ public class StatePlay extends State
     {
         Gdx.input.setInputProcessor(muxer);
 
-        world = new TiledWorldImporter("worlds/test.world", true, new BAEntityFactory()).imp();
+        world = new TiledWorldImporter("worlds/WorldOne.world", true, new BAEntityFactory()).imp();
 
         dbgr = new Box2DDebugRenderer();
 
         Vector2 playerSpawn = getSpawnWithMeta(1);
         Vector2 enemySpawn = getSpawnWithMeta(2);
 
-        player = BAEntityFactory.CreatePlayer(world, playerSpawn.x, playerSpawn.y, BACharacter.ARCHER);
+        player = BAEntityFactory.CreatePlayer(world, playerSpawn.x, playerSpawn.y, BACharacter.GUNNER);
         enemy = BAEntityFactory.CreateEnemy(world, enemySpawn.x, enemySpawn.y, BACharacter.WARRIOR);
 
         // Add entities here.
-        EntityLayer mobs = new EntityLayer("Mobs");
+        EntityLayer mobs = new EntityLayer(MOBS_LAYER);
         mobs.addEntity(player);
         mobs.addEntity(enemy);
 
@@ -155,7 +146,7 @@ public class StatePlay extends State
         // Update logic
         world.update(Gdx.graphics.getDeltaTime());
 
-        camera.zoom = 0.8f;
+        camera.zoom = 1.3f;
         // Center camera on player
         camera.position.set(pos.x, pos.y, 0);
         camera.update();
@@ -175,17 +166,19 @@ public class StatePlay extends State
 
         world.render(batch, camera);
 
-        Matrix4 mat = new Matrix4(camera.combined);
-        mat.scale(World.PIXELS_PER_METER, World.PIXELS_PER_METER, 1);
-        dbgr.render(world.getPhysicsWorld(), mat);
+//        Matrix4 mat = new Matrix4(camera.combined);
+//        mat.scale(World.PIXELS_PER_METER, World.PIXELS_PER_METER, 1);
+//        dbgr.render(world.getPhysicsWorld(), mat);
 
         sr.setProjectionMatrix(uiCamera.projection);
         sr.setTransformMatrix(uiCamera.view);
+        batch.setProjectionMatrix(uiCamera.projection);
+        batch.setTransformMatrix(uiCamera.view);
 
         // Render input UI
         stick.render(sr);
-        buttonA.render(sr);
-        buttonB.render(sr);
+        buttonA.render(batch);
+        buttonB.render(batch);
 
         // Render HUD
 

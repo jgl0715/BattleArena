@@ -33,6 +33,7 @@ public class ELight extends Entity
     private DFloat dataRed;
     private DFloat dataGreen;
     private DFloat dataBlue;
+    private DFloat dataDist;
 
     // Todo: make physics system independent.
     private PointLight box2dLight;
@@ -51,7 +52,7 @@ public class ELight extends Entity
         dataRed = addData(DFloat.class, DATA_RED, true);
         dataGreen = addData(DFloat.class, DATA_GREEN, true);
         dataBlue = addData(DFloat.class, DATA_BLUE, true);
-        addData(DFloat.class, DATA_DISTANCE, true);
+        dataDist = addData(DFloat.class, DATA_DISTANCE, true);
         addData(DFloat.class, DATA_SHADOW_SOFTNESS, true);
 
         // Editor data
@@ -117,6 +118,11 @@ public class ELight extends Entity
         dataBlue.Value = b;
     }
 
+    public void setDistance(float dist)
+    {
+        dataDist.Value = dist;
+    }
+
     public PointLight getBox2dLight()
     {
         return box2dLight;
@@ -125,9 +131,12 @@ public class ELight extends Entity
     @Override
     public void remove()
     {
-        super.remove();
+        if(!isDead())
+        {
+            getBox2dLight().remove();
+        }
 
-        getBox2dLight().remove(true);
+        super.remove();
     }
 
     @Override

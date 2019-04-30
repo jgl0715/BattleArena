@@ -26,7 +26,9 @@ public abstract class BAttack extends Behavior
     private DFloat cooldown;
     private BACharacter type;
     private BController controller;
-    private ELight light;
+    protected ELight light;
+
+    private boolean charging;
 
     public BAttack(String Name, Entity Parent)
     {
@@ -90,8 +92,20 @@ public abstract class BAttack extends Behavior
 
     }
 
-    public abstract void charge();
-    public abstract void attack();
+    public boolean isCharging()
+    {
+        return charging;
+    }
+
+    public void charge()
+    {
+        charging = true;
+    }
+
+    public void attack()
+    {
+        charging = false;
+    }
 
     @Override
     public void Update(float delta)

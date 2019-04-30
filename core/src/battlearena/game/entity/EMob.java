@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 
@@ -17,11 +16,8 @@ import battlearena.common.entity.ELight;
 import battlearena.common.entity.EntityConfig;
 import battlearena.common.entity.behavior.BAnimator;
 import battlearena.common.entity.data.DAnimation;
-import battlearena.common.entity.data.DBody;
 import battlearena.common.entity.data.DFloat;
 import battlearena.common.entity.data.DString;
-import battlearena.common.tile.CollisionMask;
-import battlearena.common.world.TiledWorld;
 import battlearena.common.world.World;
 import battlearena.game.BAEntityFactory;
 import battlearena.game.CollisionGroup;
@@ -29,7 +25,7 @@ import battlearena.game.LayerType;
 import battlearena.game.entity.behavior.BAttack;
 import battlearena.game.entity.behavior.BAttackArcher;
 import battlearena.game.entity.behavior.BAttackWarrior;
-import battlearena.game.entity.behavior.BAttackWizard;
+import battlearena.game.entity.behavior.BAttackGunner;
 import battlearena.game.entity.behavior.BController;
 import battlearena.common.entity.Entity;
 
@@ -95,13 +91,28 @@ public class EMob extends EBox
             case ARCHER:
                 attack = addBehavior(BAttackArcher.class, "Attack");
                 break;
-            case WIZARD:
-                attack = addBehavior(BAttackWizard.class, "Attack");
+            case GUNNER:
+                attack = addBehavior(BAttackGunner.class, "Attack");
                 break;
         }
 
         attack.setType(character);
         attack.setLight(attackLight);
+    }
+
+    public DFloat getSpeed()
+    {
+        return speed;
+    }
+
+    public void setSpeedMultiplier(float multiplier)
+    {
+        speed.Value = character.getSpeed() * multiplier;
+    }
+
+    public BACharacter getCharacter()
+    {
+        return character;
     }
 
     private Body createHitbox(float w, float h)
@@ -152,15 +163,11 @@ public class EMob extends EBox
         return hitbox;
     }
 
-    public void damage(float damage, EMob damaging)
+    public void damage(float damage, Vector2 knockback)
     {
         this.inflicting = damage;
 
-        Vector2 vel = damaging.getBody().getLinearVelocity();
-
-        System.out.println(vel);
-
-        getBody().applyForceToCenter(new Vector2(vel).scl(500), true);
+        getBody().applyForceToCenter(knockback, true);
 
     }
 

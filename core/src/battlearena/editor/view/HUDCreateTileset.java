@@ -31,7 +31,7 @@ public class HUDCreateTileset extends HUD
 
     public HUDCreateTileset(Skin skin)
     {
-        super(skin);
+        super(skin, WorldEditor.VIRTUAL_WIDTH, WorldEditor.VIRTUAL_HEIGHT);
 
         Table nameRow = new Table();
         Table sizeRow = new Table();

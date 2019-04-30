@@ -106,6 +106,11 @@ public class Entity implements Comparable<Entity>
 		return id;
 	}
 
+	public void onKill()
+	{
+
+	}
+
 	public World getWorld()
 	{
 		return world;

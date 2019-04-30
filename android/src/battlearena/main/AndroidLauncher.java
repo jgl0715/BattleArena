@@ -5,15 +5,20 @@ import battlearena.game.BattleArena;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+<<<<<<< HEAD
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder;
 import com.google.android.gms.common.SignInButton;
+=======
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+>>>>>>> d258046554a437b0732bb4a4d248070f3ba503dc
 
 public class AndroidLauncher extends AndroidApplication
 {
+
 	@Override
 	protected void onCreate (Bundle savedInstanceState)
 	{

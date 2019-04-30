@@ -5,6 +5,8 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 
@@ -16,24 +18,23 @@ public class Button extends InputAdapter
 
     public static final float BUTTON_RAD = 30.0f;
 
-
     private float buttonX;
     private float buttonY;
     private boolean pressed;
-    private Color pressedColor;
-    private Color releasedColor;
+    private TextureRegion pressedIm;
+    private TextureRegion releasedIm;
 
     private OrthographicCamera cam;
 
     private List<ButtonListener> listeners;
 
-    public Button(float x, float y, Color pressedColor, Color releasedColor, InputMultiplexer muxer, OrthographicCamera cam)
+    public Button(float x, float y, TextureRegion pressed, TextureRegion released, InputMultiplexer muxer, OrthographicCamera cam)
     {
         this.buttonX = x;
         this.buttonY = y;
         this.cam = cam;
-        this.pressedColor = pressedColor;
-        this.releasedColor = releasedColor;
+        this.pressedIm = pressed;
+        this.releasedIm = released;
 
         listeners = new ArrayList<ButtonListener>();
 
@@ -72,18 +73,14 @@ public class Button extends InputAdapter
 
     }
 
-    public void render(ShapeRenderer sr)
+    public void render(SpriteBatch batch)
     {
-        sr.begin(ShapeRenderer.ShapeType.Filled);
-
+        batch.begin();
         if(pressed)
-            sr.setColor(pressedColor);
+            batch.draw(pressedIm, (int)(buttonX - BUTTON_RAD), (int)(buttonY - BUTTON_RAD), BUTTON_RAD*2, BUTTON_RAD*2);
         else
-            sr.setColor(releasedColor);
-
-        sr.circle(buttonX, buttonY, BUTTON_RAD, 100);
-
-        sr.end();
+            batch.draw(releasedIm, (int)(buttonX - BUTTON_RAD), (int)(buttonY - BUTTON_RAD), BUTTON_RAD*2, BUTTON_RAD*2);
+        batch.end();
     }
 
 
@@ -105,6 +102,12 @@ public class Button extends InputAdapter
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button)
     {
+        if(pressed)
+        {
+            for(ButtonListener listener : listeners)
+                listener.buttonReleased();
+        }
+
         pressed = false;
 
         return false;
