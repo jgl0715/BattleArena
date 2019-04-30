@@ -5,12 +5,9 @@ sourceSets.main.java.srcDirs = ["src/"]
 eclipse.project {
     name = appName + "-core"
 }
-<<<<<<< HEAD
 
-
-=======
 dependencies {
     implementation 'com.google.android.gms:play-services-base:16.1.0'
     implementation 'com.google.android.gms:play-services-identity:16.0.0'
 }
->>>>>>> d258046554a437b0732bb4a4d248070f3ba503dc
+

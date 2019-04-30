@@ -5,16 +5,15 @@ import battlearena.game.BattleArena;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-<<<<<<< HEAD
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder;
 import com.google.android.gms.common.SignInButton;
-=======
+
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
->>>>>>> d258046554a437b0732bb4a4d248070f3ba503dc
+
 
 public class AndroidLauncher extends AndroidApplication
 {
@@ -27,7 +26,7 @@ public class AndroidLauncher extends AndroidApplication
 		initialize(new BattleArena(), config);
 		GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
         GoogleSignInClient mGoogleSigninClient = GoogleSignIn.getClient(this, gso);
-        SignInButton signInButton = findViewById(R.id.sign_int_button);
+        //SignInButton signInButton = findViewById(R.id.sign_int_button);
 	}
 
     @Override
