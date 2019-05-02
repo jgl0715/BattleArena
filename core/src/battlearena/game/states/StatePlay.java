@@ -32,6 +32,7 @@ import battlearena.game.entity.EEnemy;
 import battlearena.game.entity.EPlayer;
 import battlearena.game.input.Button;
 import battlearena.game.input.Joystick;
+import battlearena.game.modes.GameMode;
 
 public class StatePlay extends State
 {
@@ -41,10 +42,8 @@ public class StatePlay extends State
     public static StatePlay I;
 
     private InputMultiplexer muxer;
-    private TiledWorld world;
-    private EPlayer player;
-    private EEnemy enemy;
     private Vector2 pos;
+
     private Joystick stick;
     private Button buttonA;
     private Button buttonB;
@@ -53,6 +52,8 @@ public class StatePlay extends State
     private Viewport uiViewport;
 
     private Box2DDebugRenderer dbgr;
+
+    private GameMode mode;
 
     public StatePlay()
     {
@@ -90,13 +91,6 @@ public class StatePlay extends State
         buttonB = new Button(175, -125, new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_BUTTONS), 32, 32, 32, 32), new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_BUTTONS), 0, 32, 32, 32), muxer, uiCamera);
     }
 
-    public Vector2 getSpawnWithMeta(int meta)
-    {
-        Location spawn = world.findLocationsMatchingMeta(meta).iterator().next();
-
-        return new Vector2(spawn.getTileX() * world.getTileWidth(), world.getPixelHeight()-spawn.getTileY()*world.getTileHeight()-1);
-    }
-
 
     @Override
     public void dispose() {
@@ -113,28 +107,25 @@ public class StatePlay extends State
     {
         Gdx.input.setInputProcessor(muxer);
 
-        world = new TiledWorldImporter("worlds/WorldOne.world", true, new BAEntityFactory()).imp();
-
         dbgr = new Box2DDebugRenderer();
 
-        Vector2 playerSpawn = getSpawnWithMeta(1);
-        Vector2 enemySpawn = getSpawnWithMeta(2);
+        mode = (GameMode) transitionInput;
+        mode.startMatch();
 
-        player = BAEntityFactory.CreatePlayer(world, playerSpawn.x, playerSpawn.y, BACharacter.GUNNER);
-        enemy = BAEntityFactory.CreateEnemy(world, enemySpawn.x, enemySpawn.y, BACharacter.WARRIOR);
+//        player = BAEntityFactory.CreatePlayer(world, playerSpawn.x, playerSpawn.y, BACharacter.GUNNER);
+//        enemy = BAEntityFactory.CreateEnemy(world, enemySpawn.x, enemySpawn.y, BACharacter.WARRIOR);
 
         // Add entities here.
-        EntityLayer mobs = new EntityLayer(MOBS_LAYER);
-        mobs.addEntity(player);
-        mobs.addEntity(enemy);
+//        EntityLayer mobs = new EntityLayer(MOBS_LAYER);
+//        mobs.addEntity(player);
+//        mobs.addEntity(enemy);
 
-        world.addEntityLayer(mobs);
 
-        pos = player.find(DVector2.class, Entity.POSITION).Value;
     }
 
     @Override
-    public void hide() {
+    public void hide()
+    {
 
     }
 
@@ -144,7 +135,11 @@ public class StatePlay extends State
         OrthographicCamera camera = BattleArena.I.getCamera();
 
         // Update logic
-        world.update(Gdx.graphics.getDeltaTime());
+        mode.getWorld().update(Gdx.graphics.getDeltaTime());
+
+        Vector2 pos = mode.getPlayer().find(DVector2.class, Entity.POSITION).Value;
+
+        System.out.println(pos);
 
         camera.zoom = 1.3f;
         // Center camera on player
@@ -164,7 +159,7 @@ public class StatePlay extends State
         sr.setProjectionMatrix(camera.projection);
         sr.setTransformMatrix(camera.view);
 
-        world.render(batch, camera);
+        mode.getWorld().render(batch, camera);
 
 //        Matrix4 mat = new Matrix4(camera.combined);
 //        mat.scale(World.PIXELS_PER_METER, World.PIXELS_PER_METER, 1);

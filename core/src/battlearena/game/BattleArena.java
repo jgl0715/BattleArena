@@ -172,7 +172,7 @@ public class BattleArena extends ApplicationAdapter
 		fsa.registerTransition(STATE_MAIN_MENU, STATE_PLAY, TRANSITION_PLAY);
 		fsa.registerTransition(STATE_MAIN_MENU, STATE_CHOOSE_MAP, TRANSITION_CHOOSE_MAP);
 		fsa.registerTransition(STATE_CHOOSE_MAP, STATE_SETUP_TEAMS, TRANSITION_SETUP_TEAMS);
-
+		fsa.registerTransition(STATE_SETUP_TEAMS, STATE_PLAY, TRANSITION_PLAY);
 	}
 
 	@Override

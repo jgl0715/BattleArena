@@ -4,7 +4,8 @@ public enum LayerType
 {
 
     TILES(""),
-    LIGHTS("Lights");
+    LIGHTS("Lights"),
+    MOBS("Mobs");
 
     private String name;
 

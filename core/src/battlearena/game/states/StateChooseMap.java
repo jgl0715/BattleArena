@@ -13,9 +13,12 @@ import java.util.List;
 
 import battlearena.common.file.TiledWorldImporter;
 import battlearena.common.states.State;
+import battlearena.common.world.EntityLayer;
 import battlearena.common.world.TiledWorld;
 import battlearena.game.BAEntityFactory;
 import battlearena.game.BattleArena;
+import battlearena.game.LayerType;
+import battlearena.game.modes.GameMode;
 import battlearena.game.ui.HUDChooseMap;
 
 public class StateChooseMap extends State
@@ -24,6 +27,7 @@ public class StateChooseMap extends State
     private int selectedMap;
     private List<Map> gameMaps;
     private HUDChooseMap hudChooseMap;
+    private GameMode mode;
 
     private class Map
     {
@@ -105,12 +109,13 @@ public class StateChooseMap extends State
 
                 String path = gameMaps.get(selectedMap).getPath();
                 TiledWorld world = new TiledWorldImporter(path, true, new BAEntityFactory()).imp();
+                world.addEntityLayer(new EntityLayer(LayerType.MOBS.getName()));
 
-                BattleArena.I.inputToFSA(BattleArena.TRANSITION_SETUP_TEAMS, world);
+                mode.setWorld(world);
+
+                BattleArena.I.inputToFSA(BattleArena.TRANSITION_SETUP_TEAMS, mode);
             }
         });
-
-
 
 
         selectedMap = 0;
@@ -158,6 +163,8 @@ public class StateChooseMap extends State
     public void show(Object transitionInput)
     {
         Gdx.input.setInputProcessor(hudChooseMap.getUI());
+
+        mode = (GameMode) transitionInput;
     }
 
     @Override

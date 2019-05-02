@@ -25,12 +25,16 @@ public class EntityLayer extends Layer
     private List<Entity> entities;
     private List<Entity> forAdd;
 
+    private List<EntityListener> listeners;
+
     public EntityLayer(String name)
     {
         super(name);
 
         entities = new ArrayList<Entity>();
         forAdd = new ArrayList<Entity>();
+
+        listeners = new ArrayList<EntityListener>();
     }
 
     public Iterator<Entity> iterator()
@@ -41,6 +45,16 @@ public class EntityLayer extends Layer
     public void addEntity(Entity e)
     {
         forAdd.add(e);
+    }
+
+    public void addEntityListener(EntityListener e)
+    {
+        listeners.add(e);
+    }
+
+    public void removeEntityListener(EntityListener e)
+    {
+        listeners.remove(e);
     }
 
     public int getEntityCount()
@@ -69,6 +83,14 @@ public class EntityLayer extends Layer
         int index = 0;
 
         // Add pending entities.
+        for(int i = 0; i < forAdd.size(); i++)
+        {
+            Entity e = forAdd.get(i);
+
+            for (EntityListener listener : listeners)
+                listener.onEntityAdd(e);
+        }
+
         entities.addAll(forAdd);
         forAdd.clear();
 
@@ -81,6 +103,9 @@ public class EntityLayer extends Layer
             {
                 e.onKill();
                 entities.remove(index);
+
+                for(EntityListener listener : listeners)
+                    listener.onEntityRemove(e);
 
                 DBody bod = e.find(DBody.class, Entity.BODY);
                 if(bod != null)

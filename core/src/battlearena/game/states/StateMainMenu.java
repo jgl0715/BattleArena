@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import battlearena.common.states.State;
 import battlearena.game.BattleArena;
+import battlearena.game.modes.GMTeamDeathmatch;
 import battlearena.game.ui.HUDMainMenu;
 
 public class StateMainMenu extends State
@@ -29,7 +30,7 @@ public class StateMainMenu extends State
                 super.clicked(event, x, y);
 
                 // Start StatePlay
-                BattleArena.I.inputToFSA(BattleArena.TRANSITION_CHOOSE_MAP);
+                BattleArena.I.inputToFSA(BattleArena.TRANSITION_CHOOSE_MAP, new GMTeamDeathmatch());
             }
         });
     }

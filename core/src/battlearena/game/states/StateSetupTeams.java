@@ -12,6 +12,7 @@ import battlearena.common.states.State;
 import battlearena.game.BattleArena;
 import battlearena.game.entity.BACharacter;
 import battlearena.game.modes.BATeam;
+import battlearena.game.modes.GameMode;
 import battlearena.game.ui.HUDSetupTeams;
 
 public class StateSetupTeams extends State
@@ -25,6 +26,8 @@ public class StateSetupTeams extends State
 
     private BACharacter[] blueTeam;
     private BACharacter[] redTeam;
+
+    private GameMode mode;
 
 
     public StateSetupTeams()
@@ -144,6 +147,19 @@ public class StateSetupTeams extends State
 
                 hudSetupTeams.updateCharacters(redTeam, blueTeam, gameSlots);
                 hudSetupTeams.updateStatsPane(enumValues[currentIndex]);
+            }
+        });
+
+        hudSetupTeams.buttonNext.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                super.clicked(event, x, y);
+
+                mode.setTeams(blueTeam, redTeam, gameSlots);
+
+                BattleArena.I.inputToFSA(BattleArena.TRANSITION_PLAY, mode);
             }
         });
 
@@ -294,6 +310,8 @@ public class StateSetupTeams extends State
         gameSlots = 4;
 
         hudSetupTeams.updateCharacters(redTeam, blueTeam, gameSlots);
+
+        mode = (GameMode) transitionInput;
     }
 
     @Override
