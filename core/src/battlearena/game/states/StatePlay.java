@@ -47,6 +47,9 @@ public class StatePlay extends State
 
     }
 
+    public InputMultiplexer getMuxer() {
+        return muxer;
+    }
 
     @Override
     public void dispose() {
@@ -54,14 +57,17 @@ public class StatePlay extends State
     }
 
     @Override
-    public void resized(int width, int height) {
-
+    public void resized(int width, int height)
+    {
+        uiViewport.update(width, height);
     }
 
     @Override
     public void show(Object transitionInput)
     {
         Gdx.input.setInputProcessor(muxer);
+
+        resized(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         mode = (GameMode) transitionInput;
         mode.startMatch(muxer);
@@ -70,7 +76,7 @@ public class StatePlay extends State
     @Override
     public void hide()
     {
-
+        muxer.clear();
     }
 
     @Override
@@ -79,11 +85,11 @@ public class StatePlay extends State
         OrthographicCamera camera = BattleArena.I.getCamera();
 
         // Update logic
-        mode.getWorld().update(Gdx.graphics.getDeltaTime());
+        mode.update(delta);
 
         Vector2 pos = mode.getPlayer().find(DVector2.class, Entity.POSITION).Value;
         Vector2 d = new Vector2(pos).sub(camera.position.x, camera.position.y);
-        Vector2 movement = d.scl(0.09f);
+        Vector2 movement = d.scl(0.05f);
 
         camera.zoom = 1.3f;
         // Center camera on player

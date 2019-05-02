@@ -6,6 +6,8 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.LocalFileHandleResolver;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -17,6 +19,7 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -33,7 +36,10 @@ import battlearena.game.entity.EPlayer;
 import battlearena.game.input.Button;
 import battlearena.game.input.Joystick;
 import battlearena.game.states.StateChooseMap;
+import battlearena.game.states.StateCredits;
+import battlearena.game.states.StateGameFinished;
 import battlearena.game.states.StateMainMenu;
+import battlearena.game.states.StateOptions;
 import battlearena.game.states.StatePlay;
 import battlearena.game.states.StateSetupTeams;
 
@@ -56,11 +62,18 @@ public class BattleArena extends ApplicationAdapter
 	public static final String TRANSITION_PLAY = "T_Play";
 	public static final String TRANSITION_CHOOSE_MAP = "T_Choose_Map";
 	public static final String TRANSITION_SETUP_TEAMS = "T_Setup_Teams";
+	public static final String TRANSITION_FINISH = "T_FINISH";
+	public static final String TRANSITION_MAIN_MENU = "T_Main_Menu";
+	public static final String TRANSITION_OPTIONS = "T_Options";
+	public static final String TRANSITION_CREDITS = "T_Credits";
 
 	public static final StateMainMenu STATE_MAIN_MENU = new StateMainMenu();
 	public static final StatePlay STATE_PLAY = new StatePlay();
 	public static final StateChooseMap STATE_CHOOSE_MAP = new StateChooseMap();
 	public static final StateSetupTeams STATE_SETUP_TEAMS = new StateSetupTeams();
+	public static final StateGameFinished STATE_GAME_FINISHED = new StateGameFinished();
+	public static final StateOptions STATE_OPTIONS = new StateOptions();
+	public static final StateCredits STATE_CREDITS = new StateCredits();
 
 	public static BattleArena I = null;
 
@@ -114,6 +127,41 @@ public class BattleArena extends ApplicationAdapter
 		return assetManager.get(name, Texture.class);
 	}
 
+	public void playSound(String name)
+	{
+		Sound s = getAudio(name);;
+
+		s.setVolume(s.play(), StateOptions.getSfx());
+	}
+
+	private Sound getAudio(String name)
+	{
+		return assetManager.get(name, Sound.class);
+	}
+	public Music getMusic(String name)
+	{
+		return assetManager.get(name, Music.class);
+	}
+
+	public Array<Sound> getAllSounds()
+	{
+		Array<Sound> res = new Array<Sound>();
+
+		assetManager.getAll(Sound.class, res);
+
+		return res;
+	}
+
+
+	public Array<Music> getAllMusic()
+	{
+		Array<Music> res = new Array<Music>();
+
+		assetManager.getAll(Music.class, res);
+
+		return res;
+	}
+
 	public Skin getSkin()
 	{
 		return assetManager.get(Assets.SKIN, Skin.class);
@@ -149,7 +197,19 @@ public class BattleArena extends ApplicationAdapter
 		assetManager.load(Assets.TEXTURE_PROJECTILES, Texture.class);
 		assetManager.load(Assets.TEXTURE_MAIN_MENU, Texture.class);
 		assetManager.load(Assets.TEXTURE_BUTTONS, Texture.class);
+		assetManager.load(Assets.TEXTURE_CREDITS, Texture.class);
 		assetManager.load(Assets.SKIN, Skin.class);
+		assetManager.load("audio/background_music.ogg", Music.class);
+		assetManager.load("audio/arrow.ogg", Sound.class);
+		assetManager.load("audio/click.ogg", Sound.class);
+		assetManager.load("audio/consume_item.ogg", Sound.class);
+		assetManager.load("audio/hit_wall.ogg", Sound.class);
+		assetManager.load("audio/maze_attack.ogg", Sound.class);
+		assetManager.load("audio/retro_beep.ogg", Sound.class);
+		assetManager.load("audio/sword.ogg", Sound.class);
+		assetManager.load(Assets.AUDIO_YOU_WIN, Sound.class);
+		assetManager.load(Assets.AUDIO_YOU_LOSE, Sound.class);
+		assetManager.load("audio/laser_shoot.wav", Sound.class);
 		assetManager.finishLoading();
 
 		// Setup character animations
@@ -167,12 +227,22 @@ public class BattleArena extends ApplicationAdapter
 		fsa.registerState(STATE_PLAY);
 		fsa.registerState(STATE_CHOOSE_MAP);
 		fsa.registerState(STATE_SETUP_TEAMS);
+		fsa.registerState(STATE_GAME_FINISHED);
+		fsa.registerState(STATE_OPTIONS);
+		fsa.registerState(STATE_CREDITS);
 
 		// Register transitions
 		fsa.registerTransition(STATE_MAIN_MENU, STATE_PLAY, TRANSITION_PLAY);
 		fsa.registerTransition(STATE_MAIN_MENU, STATE_CHOOSE_MAP, TRANSITION_CHOOSE_MAP);
 		fsa.registerTransition(STATE_CHOOSE_MAP, STATE_SETUP_TEAMS, TRANSITION_SETUP_TEAMS);
 		fsa.registerTransition(STATE_SETUP_TEAMS, STATE_PLAY, TRANSITION_PLAY);
+		fsa.registerTransition(STATE_PLAY, STATE_GAME_FINISHED, TRANSITION_FINISH);
+		fsa.registerTransition(STATE_GAME_FINISHED, STATE_MAIN_MENU, TRANSITION_MAIN_MENU);
+		fsa.registerTransition(STATE_MAIN_MENU, STATE_OPTIONS, TRANSITION_OPTIONS);
+		fsa.registerTransition(STATE_OPTIONS, STATE_MAIN_MENU, TRANSITION_MAIN_MENU);
+		fsa.registerTransition(STATE_MAIN_MENU, STATE_CREDITS, TRANSITION_CREDITS);
+		fsa.registerTransition(STATE_CREDITS, STATE_MAIN_MENU, TRANSITION_MAIN_MENU);
+
 	}
 
 	@Override

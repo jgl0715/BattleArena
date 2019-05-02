@@ -3,7 +3,9 @@ package battlearena.game.entity.behavior;
 import com.badlogic.gdx.math.Vector2;
 
 import battlearena.common.entity.Entity;
+import battlearena.game.Assets;
 import battlearena.game.BAEntityFactory;
+import battlearena.game.BattleArena;
 import battlearena.game.entity.EBullet;
 import battlearena.game.entity.EMob;
 import battlearena.game.states.StatePlay;
@@ -31,6 +33,8 @@ public class BAttackGunner extends BAttack
 
         if(canAttack())
         {
+
+            BattleArena.I.playSound(Assets.AUDIO_LASER_SHOOT);
             getCooldown().Value = 1.0f;
 
             EMob parent = (EMob) GetParent();

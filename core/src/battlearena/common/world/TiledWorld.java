@@ -1,7 +1,9 @@
 package battlearena.common.world;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -39,6 +41,8 @@ public class TiledWorld extends World
 
     private Set<Location> results;
     private Set<Location> visited;
+
+    private TextureRegion miniMap;
 
     public TiledWorld(String name, Tileset tileset, int width, int height)
     {
@@ -90,7 +94,6 @@ public class TiledWorld extends World
     {
         return pathNodes[y][x];
     }
-
 
     public boolean isLocInBounds(int tx, int ty)
     {
@@ -286,9 +289,6 @@ public class TiledWorld extends World
         Body prevBody = cell.getBody();
         Tile prev = layer.placeTile(t, x, y, meta);
 
-        if(layer.isCollisionEnabled())
-            pathNodes[x][y].isWall = true;
-
         // Remove previous tile body
         if(prevBody != null)
         {
@@ -297,6 +297,8 @@ public class TiledWorld extends World
 
         if(t != null && layer.isCollisionEnabled())
         {
+            pathNodes[y][x].isWall = true;
+
             CollisionMask mask = t.getMask();
             float tileOriginX = 0;//tileset.getTileWidth();
             float tileOriginY = 0;//tileset.getTileHeight();

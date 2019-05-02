@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import battlearena.common.states.State;
+import battlearena.game.Assets;
 import battlearena.game.BattleArena;
 import battlearena.game.entity.BACharacter;
 import battlearena.game.modes.BATeam;
@@ -52,6 +53,9 @@ public class StateSetupTeams extends State
                     gameSlots = 4;
 
                 hudSetupTeams.setAvailableSlots(gameSlots);
+
+
+                BattleArena.I.playSound(Assets.AUDIO_CLICK);
             }
         });
 
@@ -80,6 +84,8 @@ public class StateSetupTeams extends State
 
 
                 hudSetupTeams.setAvailableSlots(gameSlots);
+
+                BattleArena.I.playSound(Assets.AUDIO_CLICK);
             }
         });
 
@@ -116,6 +122,8 @@ public class StateSetupTeams extends State
 
                 hudSetupTeams.updateCharacters(redTeam, blueTeam, gameSlots);
                 hudSetupTeams.updateStatsPane(enumValues[currentIndex]);
+
+                BattleArena.I.playSound(Assets.AUDIO_CLICK);
             }
         });
 
@@ -147,6 +155,8 @@ public class StateSetupTeams extends State
 
                 hudSetupTeams.updateCharacters(redTeam, blueTeam, gameSlots);
                 hudSetupTeams.updateStatsPane(enumValues[currentIndex]);
+
+                BattleArena.I.playSound(Assets.AUDIO_CLICK);
             }
         });
 
@@ -160,6 +170,8 @@ public class StateSetupTeams extends State
                 mode.setTeams(blueTeam, redTeam, gameSlots);
 
                 BattleArena.I.inputToFSA(BattleArena.TRANSITION_PLAY, mode);
+
+                BattleArena.I.playSound(Assets.AUDIO_CLICK);
             }
         });
 
@@ -172,6 +184,8 @@ public class StateSetupTeams extends State
                 selectedSlot = 1;
                 hudSetupTeams.selectCharacter(redTeam[selectedSlot-1], selectedTeam, selectedSlot);
                 hudSetupTeams.labelInfo.setText("Player");
+
+                BattleArena.I.playSound(Assets.AUDIO_CLICK);
                 return true;
             }
         });
@@ -186,6 +200,8 @@ public class StateSetupTeams extends State
                 selectedSlot = 2;
                 hudSetupTeams.selectCharacter(redTeam[selectedSlot-1], selectedTeam, selectedSlot);
                 hudSetupTeams.labelInfo.setText("Bot");
+
+                BattleArena.I.playSound(Assets.AUDIO_CLICK);
                 return true;
             }
         });
@@ -200,6 +216,8 @@ public class StateSetupTeams extends State
                 selectedSlot = 3;
                 hudSetupTeams.selectCharacter(redTeam[selectedSlot-1], selectedTeam, selectedSlot);
                 hudSetupTeams.labelInfo.setText("Bot");
+
+                BattleArena.I.playSound(Assets.AUDIO_CLICK);
                 return true;
             }
         });
@@ -215,6 +233,8 @@ public class StateSetupTeams extends State
                 selectedSlot = 4;
                 hudSetupTeams.selectCharacter(redTeam[selectedSlot-1], selectedTeam, selectedSlot);
                 hudSetupTeams.labelInfo.setText("Bot");
+
+                BattleArena.I.playSound(Assets.AUDIO_CLICK);
                 return true;
             }
         });
@@ -230,6 +250,8 @@ public class StateSetupTeams extends State
                 selectedSlot = 1;
                 hudSetupTeams.selectCharacter(blueTeam[selectedSlot-1], selectedTeam, selectedSlot);
                 hudSetupTeams.labelInfo.setText("Bot");
+
+                BattleArena.I.playSound(Assets.AUDIO_CLICK);
                 return true;
             }
         });
@@ -245,6 +267,8 @@ public class StateSetupTeams extends State
                 selectedSlot = 2;
                 hudSetupTeams.selectCharacter(blueTeam[selectedSlot-1], selectedTeam, selectedSlot);
                 hudSetupTeams.labelInfo.setText("Bot");
+
+                BattleArena.I.playSound(Assets.AUDIO_CLICK);
                 return true;
             }
         });
@@ -260,6 +284,8 @@ public class StateSetupTeams extends State
                 selectedSlot = 3;
                 hudSetupTeams.selectCharacter(blueTeam[selectedSlot-1], selectedTeam, selectedSlot);
                 hudSetupTeams.labelInfo.setText("Bot");
+
+                BattleArena.I.playSound(Assets.AUDIO_CLICK);
                 return true;
             }
         });
@@ -275,6 +301,8 @@ public class StateSetupTeams extends State
                 selectedSlot = 4;
                 hudSetupTeams.selectCharacter(blueTeam[selectedSlot-1], selectedTeam, selectedSlot);
                 hudSetupTeams.labelInfo.setText("Bot");
+
+                BattleArena.I.playSound(Assets.AUDIO_CLICK);
                 return true;
             }
         });

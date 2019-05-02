@@ -21,6 +21,7 @@ import battlearena.common.entity.data.DString;
 import battlearena.common.world.Location;
 import battlearena.common.world.TiledWorld;
 import battlearena.common.world.World;
+import battlearena.common.world.path.Node;
 import battlearena.game.BAEntityFactory;
 import battlearena.game.CollisionGroup;
 import battlearena.game.LayerType;
@@ -148,7 +149,20 @@ public class EMob extends EBox
 
     public Location getTileLocation()
     {
-        return new Location((int)(getPos().x / TiledWorld.TILE_SIZE), (int)(getPos().y / TiledWorld.TILE_SIZE));
+        float worldX = getBody().getPosition().x * World.PIXELS_PER_METER;
+        float worldY = ((TiledWorld)getWorld()).getPixelHeight() - getBody().getPosition().y * World.PIXELS_PER_METER - 1;
+
+        int x = (int)Math.floor(worldX / TiledWorld.TILE_SIZE);
+        int y = (int)Math.floor(worldY / TiledWorld.TILE_SIZE);
+
+        return new Location(x, y);
+    }
+
+    public Node getNearestNode()
+    {
+        Location tl = getTileLocation();
+
+        return ((TiledWorld)getWorld()).getNodeAt(tl.getTileX(), tl.getTileY());
     }
 
     public void setSpeedMultiplier(float multiplier)

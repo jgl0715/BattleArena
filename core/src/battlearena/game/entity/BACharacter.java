@@ -7,7 +7,7 @@ public enum BACharacter
 
     WARRIOR("Warrior", 40, 57, 40, 10, 20.0f, 15.0f, 5.0f), ARCHER("Archer", 37, 59, 37, 10, 15.0f, 10.0f, 10.0f), GUNNER("Gunner", 34, 49, 34, 10, 15.0f, 5.0f, 16.0f);
 
-    public static final float MAX_HEALTH = 20.0f;
+    public static final float MAX_HEALTH = 60.0f;
     public static final float MAX_SPEED = 20.0f;
     public static final float MAX_KNOCKBACK = 20.0f;
     public static final float MAX_DEXTERITY = 20.0f;

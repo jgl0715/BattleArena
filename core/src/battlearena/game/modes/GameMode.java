@@ -1,5 +1,6 @@
 package battlearena.game.modes;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -263,10 +264,14 @@ public abstract class GameMode
 
     public void startMatch(InputMultiplexer muxer)
     {
+
+        BattleArena.I.getMusic(Assets.MUSIC_BACKGROUND_MUSIC).play();
+        BattleArena.I.getMusic(Assets.MUSIC_BACKGROUND_MUSIC).setLooping(true);
+
         OrthographicCamera uiCamera = hud.getCamera();
         stick = new Joystick(75, 75, muxer, uiCamera);
-        buttonB = new Button(500, 50, new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_BUTTONS), 50, 0, 50, 50), new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_BUTTONS), 0, 0, 50, 50), muxer, uiCamera);
-        buttonA = new Button(600, 100, new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_BUTTONS), 50, 50, 50, 50), new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_BUTTONS), 0, 50, 50, 50), muxer, uiCamera);
+        buttonB = new Button(600, 100, new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_BUTTONS), 50, 50, 50, 50), new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_BUTTONS), 0, 50, 50, 50), muxer, uiCamera);
+        buttonA = new Button(500, 50, new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_BUTTONS), 50, 0, 50, 50), new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_BUTTONS), 0, 0, 50, 50), muxer, uiCamera);
 
         hud.setStick(stick);
         hud.setAButton(buttonA);
@@ -284,7 +289,17 @@ public abstract class GameMode
         player.initInput(stick, buttonA, buttonB);
     }
 
-    public abstract void endMatch();
+    public void endMatch()
+    {
+        running = null;
+
+        BattleArena.I.getMusic(Assets.MUSIC_BACKGROUND_MUSIC).stop();
+    }
+
+    public void update(float delta)
+    {
+        world.update(Gdx.graphics.getDeltaTime());
+    }
 
     public void renderWorldHealthBar(EMob mob, BATeam team, ShapeRenderer sr)
     {
@@ -359,6 +374,39 @@ public abstract class GameMode
         sr.setTransformMatrix(uiCamera.view);
         batch.setProjectionMatrix(uiCamera.projection);
         batch.setTransformMatrix(uiCamera.view);
+
+        int wx = BattleArena.VIRTUAL_WIDTH - 120;
+        int wy = BattleArena.VIRTUAL_HEIGHT - 120;
+
+        batch.begin();
+        world.getLayer("Background").render(batch, uiCamera, 2.0f,wx,wy);
+        world.getLayer("Foreground").render(batch, uiCamera, 2.0f,wx,wy);
+        batch.end();
+
+        sr.begin(ShapeRenderer.ShapeType.Filled);
+
+        Iterator<Entity> mobs = world.getEntityLayer(LayerType.MOBS.getName()).iterator();
+
+        while(mobs.hasNext())
+        {
+            Entity e = mobs.next();
+            if(e instanceof EMob)
+            {
+                EMob mob = (EMob) e;
+                Vector2 pos = new Vector2(mob.getPos()).scl(2.0f / TiledWorld.TILE_SIZE);
+                if(mob.getTeam() == BATeam.BLUE)
+                {
+                    sr.setColor(Color.BLUE);
+                }
+                else
+                {
+                    sr.setColor(Color.RED);
+                }
+
+                sr.circle(wx + pos.x, wy + pos.y, 2.0f);
+            }
+        }
+        sr.end();
 
         hud.setHealthPercentage(player.getHealthPercentage());
         hud.render();

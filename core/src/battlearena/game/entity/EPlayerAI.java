@@ -14,6 +14,7 @@ public class EPlayerAI extends EMob implements Location<Vector2>
 {
 
     private int targetSlot;
+    public static final int WANDER_THRESHOLD = 500;
 
     public EPlayerAI(EntityConfig Config)
     {
@@ -30,7 +31,6 @@ public class EPlayerAI extends EMob implements Location<Vector2>
     {
         super.Update(delta);
 
-        int closeSlot = 5;
         EMob closeMob = null;
         float closeDist = Float.MAX_VALUE;
 
@@ -47,7 +47,16 @@ public class EPlayerAI extends EMob implements Location<Vector2>
             }
         }
 
-        targetSlot = GameMode.running.getPlayerSlot(closeMob);
+        if(closeDist >= WANDER_THRESHOLD)
+        {
+            targetSlot = -1;
+        }
+        else
+        {
+            targetSlot = GameMode.running.getPlayerSlot(closeMob);
+        }
+
+
 
     }
 

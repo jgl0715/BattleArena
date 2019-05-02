@@ -105,6 +105,10 @@ public class World
         });
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public void addHitListener(HitListener listener)
     {
         hitListeners.add(listener);

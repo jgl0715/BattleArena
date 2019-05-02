@@ -22,6 +22,7 @@ public class BController extends Behavior
     private DFloat speed;
     private Body bod;
     private boolean dash;
+    private boolean steady;
     private float dashLength;
     private Vector2 direction;
 
@@ -58,6 +59,10 @@ public class BController extends Behavior
         return dash;
     }
 
+    public boolean isSteady() {
+        return steady;
+    }
+
     public void setDirection(Vector2 vel)
     {
         this.direction = vel;
@@ -66,6 +71,10 @@ public class BController extends Behavior
     public Vector2 getDirection()
     {
         return direction;
+    }
+
+    public void setSteady(boolean steady) {
+        this.steady = steady;
     }
 
     @Override
@@ -84,7 +93,14 @@ public class BController extends Behavior
                 dash = false;
         }
 
-        bod.applyForceToCenter(new Vector2(direction).scl(speed.Value*30), true);
+        if(steady)
+        {
+            bod.applyForceToCenter(new Vector2(direction).scl(speed.Value*3), true);
+        }
+        else
+        {
+            bod.applyForceToCenter(new Vector2(direction).scl(speed.Value*15), true);
+        }
 
         if(bod.getLinearVelocity().x < 0.0f)
         {

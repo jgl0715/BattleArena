@@ -9,6 +9,8 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import battlearena.common.entity.ELight;
 import battlearena.common.entity.Entity;
 import battlearena.common.world.HitListener;
+import battlearena.game.Assets;
+import battlearena.game.BattleArena;
 import battlearena.game.CollisionGroup;
 import battlearena.game.entity.EMob;
 import battlearena.game.entity.EPlayer;
@@ -51,17 +53,21 @@ public class BAttackWarrior extends BAttack
                     if (other != null && other instanceof EMob)
                     {
                         EMob mob = (EMob) other;
-                        Vector2 vel = ((EMob)GetParent()).getBody().getLinearVelocity();
-                        Vector2 knockback = new Vector2(vel).scl(500);
 
-                        if (thisFixture == swordSensorLeft && GetParent().getRenderSettings().FlipX) {
+                        if(mob.getTeam() != ((EMob)GetParent()).getTeam())
+                        {
+                            Vector2 vel = ((EMob)GetParent()).getBody().getLinearVelocity();
+                            Vector2 knockback = new Vector2(vel).scl(500);
 
-                            // Do damage here
-                            mob.damage(3, knockback);
-                        } else if (thisFixture == swordSensorRight && !GetParent().getRenderSettings().FlipX) {
+                            if (thisFixture == swordSensorLeft && GetParent().getRenderSettings().FlipX) {
 
-                            // Do damage here
-                            mob.damage(3, knockback);
+                                // Do damage here
+                                mob.damage(3, knockback);
+                            } else if (thisFixture == swordSensorRight && !GetParent().getRenderSettings().FlipX) {
+
+                                // Do damage here
+                                mob.damage(3, knockback);
+                            }
                         }
                     }
                 }
@@ -81,6 +87,7 @@ public class BAttackWarrior extends BAttack
         super.charge();
         // Charging does nothing for warrior.
         attack();
+
     }
 
     private Fixture createSwordFixture(Vector2[] verts)
@@ -111,6 +118,9 @@ public class BAttackWarrior extends BAttack
 
         if(canAttack())
         {
+
+            BattleArena.I.playSound(Assets.AUDIO_SWORD);
+
             getCooldown().Value = 1.0f;
             getController().dash();
 

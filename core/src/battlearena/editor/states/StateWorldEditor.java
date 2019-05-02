@@ -383,6 +383,15 @@ public class StateWorldEditor extends battlearena.common.states.State
 
 		hudWorldEditor = new HUDWorldEditor(WorldEditor.I.getUiSkin());
 
+		hudWorldEditor.fieldWorldName.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+
+				editingWorld.setName(hudWorldEditor.fieldWorldName.getText());
+				exporter.setDestination("./worlds/" + editingWorld.getName() + ".world");
+			}
+		});
+
 		hudWorldEditor.fieldMeta.addListener(new ChangeListener()
 		{
 			@Override

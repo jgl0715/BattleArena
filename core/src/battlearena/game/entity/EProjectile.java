@@ -13,7 +13,9 @@ import battlearena.common.entity.data.DAnimation;
 import battlearena.common.entity.data.DFloat;
 import battlearena.common.entity.data.DString;
 import battlearena.common.world.HitListener;
+import battlearena.game.Assets;
 import battlearena.game.BAEntityFactory;
+import battlearena.game.BattleArena;
 import battlearena.game.states.StatePlay;
 
 public abstract class EProjectile extends EBox
@@ -79,14 +81,18 @@ public abstract class EProjectile extends EBox
                         {
                             // Inflict damage
                             EMob mob = (EMob) other;
-                            Vector2 knockback = new Vector2(getBody().getLinearVelocity()).scl(80);
 
-                            mob.damage(damage, knockback);
+                            if(mob.getTeam() != shooter.getTeam())
+                            {
+                                Vector2 knockback = new Vector2(getBody().getLinearVelocity()).scl(80);
 
-                            remove();
+                                mob.damage(damage, knockback);
+
+                                remove();
 
 
-                            // Emit entity damage particles here.
+                                // Emit entity damage particles here.
+                            }
                         }
                     }
                     else
@@ -97,6 +103,9 @@ public abstract class EProjectile extends EBox
 
                         hitWall = true;
                         contactPoint = point;
+
+
+                        BattleArena.I.playSound(Assets.AUDIO_HIT_WALL);
                     }
                 }
 

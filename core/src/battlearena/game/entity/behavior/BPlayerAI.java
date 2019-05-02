@@ -18,6 +18,7 @@ import battlearena.game.entity.behavior.ai.utils.Box2dSteeringUtils;
 public class BPlayerAI extends Behavior
 {
 
+
     private BotAI botAi;
 
     private Vector2 pos;

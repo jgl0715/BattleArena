@@ -2,6 +2,8 @@ package battlearena.common.file;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.DataInput;
 
 import java.io.IOException;
@@ -21,6 +23,7 @@ public class TiledWorldImporter
 
     private FileHandle importFile;
     private EntityFactory factory;
+    private TextureRegion minimap;
 
     public TiledWorldImporter(EntityFactory factory)
     {

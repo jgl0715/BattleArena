@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import battlearena.common.states.State;
+import battlearena.game.Assets;
 import battlearena.game.BattleArena;
 import battlearena.game.modes.GMTeamDeathmatch;
 import battlearena.game.ui.HUDMainMenu;
@@ -22,6 +23,7 @@ public class StateMainMenu extends State
     @Override
     public void create()
     {
+
         hudMainMenu = new HUDMainMenu(BattleArena.I.getSkin());
 
         hudMainMenu.tdmButton.addListener(new ClickListener(){
@@ -29,8 +31,31 @@ public class StateMainMenu extends State
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
 
+                BattleArena.I.playSound(Assets.AUDIO_CLICK);
                 // Start StatePlay
                 BattleArena.I.inputToFSA(BattleArena.TRANSITION_CHOOSE_MAP, new GMTeamDeathmatch());
+            }
+        });
+
+        hudMainMenu.creditsButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                BattleArena.I.playSound(Assets.AUDIO_CLICK);
+                BattleArena.I.inputToFSA(BattleArena.TRANSITION_CREDITS);
+
+            }
+        });
+
+        hudMainMenu.optionsButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+
+                BattleArena.I.playSound(Assets.AUDIO_CLICK);
+
+                // Start StatePlay
+                BattleArena.I.inputToFSA(BattleArena.TRANSITION_OPTIONS);
             }
         });
     }

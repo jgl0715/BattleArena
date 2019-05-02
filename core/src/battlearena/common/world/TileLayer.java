@@ -158,14 +158,19 @@ public class TileLayer extends Layer
 
     public void render(SpriteBatch batch, OrthographicCamera cam)
     {
+        render(batch, cam, TiledWorld.TILE_SIZE, 0, 0);
+    }
+
+    public void render(SpriteBatch batch, OrthographicCamera cam, float ts, int wx, int wy)
+    {
         if(visible)
         {
             delta += Gdx.graphics.getDeltaTime();
 
-            int sx = (int) ((cam.position.x - cam.viewportWidth*cam.zoom / 2) / TiledWorld.TILE_SIZE);
-            int sy = height - (int) ((cam.position.y + cam.viewportHeight*cam.zoom / 2) / TiledWorld.TILE_SIZE) - 1;
-            int ex = (int) ((cam.position.x + cam.viewportWidth*cam.zoom / 2) / TiledWorld.TILE_SIZE) + 1;
-            int ey = (height - (int) ((cam.position.y - cam.viewportHeight*cam.zoom / 2) / TiledWorld.TILE_SIZE) - 1) + 1;
+            int sx = (int) ((cam.position.x - cam.viewportWidth*cam.zoom / 2) / ts);
+            int sy = height - (int) ((cam.position.y + cam.viewportHeight*cam.zoom / 2) / ts) - 1;
+            int ex = (int) ((cam.position.x + cam.viewportWidth*cam.zoom / 2) / ts) + 1;
+            int ey = (height - (int) ((cam.position.y - cam.viewportHeight*cam.zoom / 2) / ts) - 1) + 1;
 
             for(int x = sx; x < ex; x++)
             {
@@ -178,7 +183,7 @@ public class TileLayer extends Layer
 
                         if(texture != null)
                         {
-                            batch.draw(texture, x * TiledWorld.TILE_SIZE, (height-y-1) * TiledWorld.TILE_SIZE, TiledWorld.TILE_SIZE, TiledWorld.TILE_SIZE);
+                            batch.draw(texture, wx + x * ts, wy+(height-y-1) * ts, ts, ts);
                         }
                     }
                 }

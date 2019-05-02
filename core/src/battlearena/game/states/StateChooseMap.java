@@ -15,6 +15,7 @@ import battlearena.common.file.TiledWorldImporter;
 import battlearena.common.states.State;
 import battlearena.common.world.EntityLayer;
 import battlearena.common.world.TiledWorld;
+import battlearena.game.Assets;
 import battlearena.game.BAEntityFactory;
 import battlearena.game.BattleArena;
 import battlearena.game.LayerType;
@@ -85,6 +86,9 @@ public class StateChooseMap extends State
                 if(selectedMap >= gameMaps.size())
                     selectedMap = 0;
 
+
+                BattleArena.I.playSound(Assets.AUDIO_CLICK);
+
                 updateMapInfo();
             }
         });
@@ -100,6 +104,8 @@ public class StateChooseMap extends State
                 if(selectedMap < 0)
                     selectedMap = gameMaps.size() - 1;
 
+
+                BattleArena.I.playSound(Assets.AUDIO_CLICK);
                 updateMapInfo();
             }
         });
@@ -117,6 +123,8 @@ public class StateChooseMap extends State
 
                 mode.setWorld(world);
 
+
+                BattleArena.I.playSound(Assets.AUDIO_CLICK);
                 BattleArena.I.inputToFSA(BattleArena.TRANSITION_SETUP_TEAMS, mode);
             }
         });
@@ -124,7 +132,7 @@ public class StateChooseMap extends State
 
         selectedMap = 0;
 
-        String[] mapNames = {"WorldOne", "WorldTwo"};
+        String[] mapNames = {"Team11", "Maze", "DrKhalili"};
 
         gameMaps = new ArrayList<Map>();
 

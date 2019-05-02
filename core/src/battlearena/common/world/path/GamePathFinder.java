@@ -38,8 +38,9 @@ public class GamePathFinder
             };
         }
 
-        public Node findNextNode(Vector2 source, Vector2 target)
+        public Node findNextNode(Node source, Node target)
         {
+
             int sourceX = MathUtils.floor(source.x);
             int sourceY = MathUtils.floor(source.y);
             int targetX = MathUtils.floor(target.x);
@@ -86,6 +87,7 @@ public class GamePathFinder
                     // Add a connection for each valid neighbor
                     for (int offset = 0; offset < NEIGHBORHOOD.length; offset++)
                     {
+
                         int neighborX = node.x + NEIGHBORHOOD[offset][0];
                         int neighborY = node.y + NEIGHBORHOOD[offset][1];
                         if (neighborX >= 0 && neighborX < width && neighborY >= 0 && neighborY < height)
@@ -93,6 +95,7 @@ public class GamePathFinder
                             Node neighbor = map.getNodeAt(neighborX, neighborY);
                             if (!neighbor.isWall)
                             {
+
                                 // Add connection to walkable neighbor
                                 node.getConnections().add(new DefaultConnection<Node>(node, neighbor));
                             }

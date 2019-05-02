@@ -17,7 +17,7 @@ public class HUDMainMenu extends HUD
     public TextButton tdmButton;
     public TextButton towersButton;
     public TextButton optionsButton;
-    public TextButton multiplayerButton;
+    public TextButton creditsButton;
 
     public HUDMainMenu(Skin skin)
     {
@@ -31,13 +31,13 @@ public class HUDMainMenu extends HUD
         {
             tdmButton = new TextButton("Deathmatch", skin);
             towersButton = new TextButton("Towers", skin);
-            multiplayerButton = new TextButton("MultiPlayer", skin);
+            creditsButton = new TextButton("Credits", skin);
             optionsButton = new TextButton("Options", skin);
 
             buttonGroup.defaults().width(214).height(42).padTop(6).expand();
             buttonGroup.add(tdmButton).row();
             buttonGroup.add(towersButton).row();
-            buttonGroup.add(multiplayerButton).row();
+            buttonGroup.add(creditsButton).row();
             buttonGroup.add(optionsButton).padBottom(23).row();
         }
 

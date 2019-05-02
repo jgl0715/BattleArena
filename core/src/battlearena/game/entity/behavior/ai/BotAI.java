@@ -7,17 +7,29 @@ import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
+import com.badlogic.gdx.ai.steer.behaviors.FollowPath;
 import com.badlogic.gdx.ai.steer.behaviors.Wander;
+import com.badlogic.gdx.ai.steer.utils.Path;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.RayCastCallback;
 
+import battlearena.common.world.TiledWorld;
+import battlearena.common.world.World;
+import battlearena.common.world.path.GamePathFinder;
+import battlearena.common.world.path.Node;
+import battlearena.game.entity.BACharacter;
 import battlearena.game.entity.EPlayerAI;
+import battlearena.common.entity.Entity;
 import battlearena.game.entity.behavior.BAttack;
 import battlearena.game.entity.behavior.BController;
 import battlearena.game.entity.behavior.ai.utils.Box2dLocation;
 import battlearena.game.entity.behavior.ai.utils.Box2dSteeringUtils;
+import battlearena.game.modes.GameMode;
 
 
 public class BotAI implements Steerable<Vector2>
@@ -39,17 +51,91 @@ public class BotAI implements Steerable<Vector2>
 
     private float zeroLinearSpeedThreshold;
 
+    private boolean ranged;
+    private boolean charged;
+
     private SteeringBehavior<Vector2> steeringBehavior;
     private final SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<>(new Vector2());
 
     private Wander<Vector2> wanderBehavior;
     private Arrive<Vector2> arriveBehavior;
+//    private FollowPath<Vector2, BAPath> pathFindBehavior;
 
+    private TiledWorld world;
     private EPlayerAI host;
+    private GamePathFinder pathFinder;
+    private Node nextNode;
+    private Node currentNode;
+    private Node wanderDst;
+    private boolean hasLineOfSight;
+    private boolean wandering;
+
+    private class PathArrival implements Location<Vector2>
+    {
+        @Override
+        public Vector2 getPosition()
+        {
+            if(hasLineOfSight && host.getTarget() != null)
+            {
+                return host.getTarget().getBody().getPosition();
+            }
+            else if(nextNode != null)
+            {
+                float x = (nextNode.x * TiledWorld.TILE_SIZE + TiledWorld.TILE_SIZE / 2) / World.PIXELS_PER_METER;
+                float y = ((world.getHeight() - nextNode.y - 1) * TiledWorld.TILE_SIZE + TiledWorld.TILE_SIZE / 2) / World.PIXELS_PER_METER;
+
+                return new Vector2(x, y);
+            }
+
+            return Vector2.Zero;
+        }
+
+        @Override
+        public float getOrientation()
+        {
+            return 0.0f;
+        }
+
+        @Override
+        public void setOrientation(float orientation)
+        {
+
+        }
+
+        @Override
+        public float vectorToAngle(Vector2 vector)
+        {
+            return Box2dSteeringUtils.vectorToAngle(vector);
+        }
+
+        @Override
+        public Vector2 angleToVector(Vector2 outVector, float angle)
+        {
+            return Box2dSteeringUtils.angleToVector(outVector, angle);
+        }
+
+        @Override
+        public Location<Vector2> newLocation()
+        {
+            return new Box2dLocation();
+        }
+    }
 
     public BotAI(EPlayerAI host, float boundingRadius)
     {
         this.host = host;
+        this.world = (TiledWorld) host.getWorld();
+        this.pathFinder = new GamePathFinder((TiledWorld) host.getWorld());
+
+        if(host.getCharacter() == BACharacter.GUNNER)
+        {
+            ranged = true;
+
+            if(host.getCharacter() == BACharacter.ARCHER )
+            {
+                charged = true;
+            }
+        }
 
         this.controller = host.getMovement();
         this.attack = host.getAttack();
@@ -81,10 +167,10 @@ public class BotAI implements Steerable<Vector2>
                     if (host != null)
                     {
                         //////////////
-                        arriveBehavior = new Arrive<>(this, host)
+                        arriveBehavior = new Arrive<>(this, new PathArrival())
                                 .setEnabled(true)
                                 .setTimeToTarget(0.1f)
-                                .setArrivalTolerance(1.0f)
+                                .setArrivalTolerance(0.1f)
                                 .setLimiter(new Limiter() {
                                     @Override
                                     public float getZeroLinearSpeedThreshold() {
@@ -153,24 +239,106 @@ public class BotAI implements Steerable<Vector2>
 
     public void update(float deltaTime)
     {
+        currentNode = host.getNearestNode();
+
+        boolean hold = false;
 
         if(host.getTarget() != null)
         {
+            wandering = false;
+            wanderDst = null;
+
             float dist = host.getPos().dst(host.getTarget().getPos());
 
+            RayCastCallback callback = new RayCastCallback()
+            {
+                @Override
+                public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction)
+                {
+                    Entity e1 = (Entity) fixture.getBody().getUserData();
+
+                    if(e1 == null)
+                    {
+                        hasLineOfSight = false;
+                        return 0;
+                    }
+
+                    return 1;
+                }
+            };
+
+            hasLineOfSight = true;
+            world.getPhysicsWorld().rayCast(callback, host.getBody().getPosition(), host.getTarget().getBody().getPosition());
+
+            if(hasLineOfSight && ranged)
+            {
+                float dy = Math.abs(host.getTarget().getPos().y - host.getPos().y);
+                float dx = Math.abs(host.getTarget().getPos().x - host.getPos().x);
+
+                if(dy <= 10)
+                {
+                    controller.setSteady(true);
+                    if(dx >= 400.0f && charged)
+                    {
+                        attack.charge();
+                    }
+                    else
+                    {
+                        attack.attack();
+                    }
+                }else
+                {
+                    controller.setSteady(false);
+                }
+            }
             if(dist <= 50)
             {
                 attack.attack();
             }
 
+            // Find host current tile position.
+            Node targetTile = host.getTarget().getNearestNode();
+            nextNode = pathFinder.findNextNode(currentNode, targetTile);
 
-            if (steeringBehavior != null)
+        }
+        else
+        {
+            wandering = true;
+
+
+            if(wanderDst == null)
             {
-                steeringBehavior.calculateSteering(steeringOutput);
-                applyingSteering(deltaTime);
+                Node spawn = null;
+                do
+                {
+                    int randX = (int)(Math.random() * world.getWidth());
+                    int randY = (int)(Math.random() * world.getHeight());
+                    spawn = world.getNodeAt(randX, randY);
 
-                System.out.println(steeringOutput.linear);
+                    if(pathFinder.findNextNode(currentNode, spawn) != null)
+                        wanderDst = spawn;
+
+                }while(wanderDst == null);
             }
+            else
+            {
+                if(currentNode.x == wanderDst.x && currentNode.y == wanderDst.y)
+                    wanderDst = null;
+                else
+                    nextNode= pathFinder.findNextNode(currentNode, wanderDst);
+            }
+        }
+
+
+        if (steeringBehavior != null)
+        {
+            steeringBehavior.calculateSteering(steeringOutput);
+
+            if(!hold)
+                applyingSteering(deltaTime);
+            else
+                controller.setDirection(new Vector2(0, 0));
+
         }
     }
 
