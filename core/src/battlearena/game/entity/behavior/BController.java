@@ -78,17 +78,20 @@ public class BController extends Behavior
 
             if(dash)
             {
-                bod.setLinearVelocity(new Vector2(direction).scl(speed.Value + DASH_BOOST));
-                dashLength -= delta;
+                bod.applyForceToCenter(new Vector2(direction).scl(DASH_BOOST), true);
 
+                dashLength -= delta;
 
                 if(dashLength < 0)
                     dash = false;
             }
             else
             {
-                bod.setLinearVelocity(direction.scl(speed.Value));
+//                bod.setLinearVelocity(direction.scl(speed.Value));
             }
+
+            bod.applyForceToCenter(new Vector2(direction).scl(speed.Value*30), true);
+
 
             if(direction.x < 0.0f)
             {
@@ -102,7 +105,6 @@ public class BController extends Behavior
         else
         {
             animTime.Value = 0.0f;
-            bod.setLinearVelocity(new Vector2(0, 0));
         }
     }
 }

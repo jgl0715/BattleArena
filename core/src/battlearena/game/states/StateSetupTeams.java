@@ -308,8 +308,13 @@ public class StateSetupTeams extends State
         Gdx.input.setInputProcessor(hudSetupTeams.getUI());
 
         gameSlots = 4;
+        selectedSlot = 1;
+        selectedTeam = BATeam.RED;
 
         hudSetupTeams.updateCharacters(redTeam, blueTeam, gameSlots);
+        hudSetupTeams.selectCharacter(redTeam[selectedSlot-1], BATeam.RED, selectedSlot);
+        hudSetupTeams.updateStatsPane(redTeam[selectedSlot-1]);
+        hudSetupTeams.labelInfo.setText("Player");
 
         mode = (GameMode) transitionInput;
     }

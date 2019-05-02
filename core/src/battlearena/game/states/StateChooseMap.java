@@ -84,6 +84,8 @@ public class StateChooseMap extends State
                 selectedMap++;
                 if(selectedMap >= gameMaps.size())
                     selectedMap = 0;
+
+                updateMapInfo();
             }
         });
 
@@ -97,6 +99,8 @@ public class StateChooseMap extends State
                 selectedMap--;
                 if(selectedMap < 0)
                     selectedMap = gameMaps.size() - 1;
+
+                updateMapInfo();
             }
         });
 
@@ -120,7 +124,7 @@ public class StateChooseMap extends State
 
         selectedMap = 0;
 
-        String[] mapNames = {"WorldOne"};
+        String[] mapNames = {"WorldOne", "WorldTwo"};
 
         gameMaps = new ArrayList<Map>();
 
@@ -142,6 +146,8 @@ public class StateChooseMap extends State
             }
 
             gameMaps.add(new Map(x, worldPath, preview));
+
+            System.out.println(x);
         }
 
         updateMapInfo();

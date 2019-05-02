@@ -4,33 +4,22 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 
 import battlearena.common.entity.EntityConfig;
+import battlearena.game.input.Button;
 import battlearena.game.input.ButtonListener;
+import battlearena.game.input.Joystick;
 import battlearena.game.states.StatePlay;
 
 public class EPlayer extends EMob
 {
 
 	private boolean kbCharging;
+	private Joystick stick;
 
 	public EPlayer(EntityConfig Config)
 	{
 		super(Config);
 
-		StatePlay.I.getButtonA().addListener(new ButtonListener()
-		{
-			@Override
-			public void buttonReleased()
-			{
-				attack.attack();
-			}
 
-			@Override
-			public void buttonPressed()
-			{
-				movement.setDirection(StatePlay.I.getStick().getJoystickInput());
-				attack.charge();
-			}
-		});
 	}
 
 	@Override
@@ -39,7 +28,7 @@ public class EPlayer extends EMob
 		super.Update(delta);
 
 		if(!movement.isDashing())
-			movement.setDirection(StatePlay.I.getStick().getJoystickInput());
+			movement.setDirection(stick.getJoystickInput());
 
 		if(Gdx.input.isKeyPressed(Input.Keys.E))
 		{
@@ -53,6 +42,27 @@ public class EPlayer extends EMob
 			kbCharging = false;
 		}
 
+	}
+
+	public void initInput(final Joystick stick, final Button aButton, final Button bButton)
+	{
+		this.stick = stick;
+
+		aButton.addListener(new ButtonListener()
+		{
+			@Override
+			public void buttonReleased()
+			{
+				attack.attack();
+			}
+
+			@Override
+			public void buttonPressed()
+			{
+				movement.setDirection(stick.getJoystickInput());
+				attack.charge();
+			}
+		});
 	}
 
 }

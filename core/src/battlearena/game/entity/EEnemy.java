@@ -11,6 +11,8 @@ public class EEnemy extends EMob
     public EEnemy(EntityConfig Config)
     {
         super(Config);
+
+        addBehavior(BEnemyAI.class, "AI");
     }
 
 }

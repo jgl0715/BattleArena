@@ -119,6 +119,7 @@ public class BAttackWarrior extends BAttack
 
             swordSensorLeft = createSwordFixture(vertsLeft);
             swordSensorRight = createSwordFixture(vertsRight);
+
         }
     }
 

@@ -30,6 +30,7 @@ public class HUDChooseMap extends HUD
         mapName.setAlignment(Align.top);
 
         Table midTable = new Table();
+        midTable.defaults().pad(5);
         {
             prevMapButton = new TextButton("<", skin);
             nextMapButton = new TextButton(">", skin);

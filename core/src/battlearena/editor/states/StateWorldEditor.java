@@ -487,7 +487,7 @@ public class StateWorldEditor extends battlearena.common.states.State
 					{
 						// Create new entity based on layer type.
 						if(type == LayerType.LIGHTS)
-							hoveredEnt = BAEntityFactory.createLight(editingWorld, mouseWorld.x, mouseWorld.y, 1, 0, 0, 10, 1.0f);
+							hoveredEnt = BAEntityFactory.createLight(editingWorld, mouseWorld.x, mouseWorld.y, 1, 0, 0, 10, 1.0f, true);
 
 						editingWorld.addEntity(type.getName(), hoveredEnt);
 					}

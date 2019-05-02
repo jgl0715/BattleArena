@@ -26,7 +26,7 @@ public class EBullet extends EProjectile
         if(Config.GetConfigNumber("VelX") < 0)
             getRenderSettings().FlipX = true;
 
-        light = BAEntityFactory.createLight(Config.getWorld(), Config.GetConfigNumber("X"), Config.GetConfigNumber("Y"), 0.0f, 0.2f, 0.0f, 10.0f, 1.0f);
+        light = BAEntityFactory.createLight(Config.getWorld(), Config.GetConfigNumber("X"), Config.GetConfigNumber("Y"), 0.0f, 0.2f, 0.0f, 10.0f, 1.0f, false);
         lightPos = light.getPos();
         Config.getWorld().addEntity(LayerType.LIGHTS.getName(), light);
     }

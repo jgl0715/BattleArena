@@ -34,11 +34,14 @@ public class ELight extends Entity
     private DFloat dataGreen;
     private DFloat dataBlue;
     private DFloat dataDist;
+    private float t;
 
     // Todo: make physics system independent.
     private PointLight box2dLight;
 
     private boolean hovered;
+
+    private boolean pulse;
 
     public ELight(EntityConfig config)
     {
@@ -93,6 +96,10 @@ public class ELight extends Entity
 
         addData(DPointLight.class, DATA_LIGHT).Value = (box2dLight = wor.createPointLight(new Color(red,green,blue,1),distance, x, y, CollisionGroup.LIGHTS));
 
+
+        pulse = config.GetConfigItem(Boolean.class, "Pulse");
+        t = (float)Math.random() * 100.0f;
+
         // Add behaviors
 
         if(WorldEditor.I.isRunning())
@@ -144,6 +151,8 @@ public class ELight extends Entity
     {
         super.Update(delta);
 
+        t += delta;
+
         float red = find(DFloat.class, DATA_RED).Value;
         float green = find(DFloat.class, DATA_GREEN).Value;
         float blue = find(DFloat.class, DATA_BLUE).Value;
@@ -152,12 +161,21 @@ public class ELight extends Entity
         float x = pos.x / World.PIXELS_PER_METER;
         float y = pos.y / World.PIXELS_PER_METER;
 
+        // Pulsate
+
         // Set light attributes based on data components.
         box2dLight.setSoftnessLength(shadowSoftness);
-        box2dLight.setDistance(distance);
+
+        if(pulse)
+        {
+            box2dLight.setDistance(distance + (float) Math.sin(t)*25.0f);
+        }
+        else
+        {
+            box2dLight.setDistance(distance);
+        }
         box2dLight.setColor(red, green, blue, 1);
         box2dLight.setPosition(x, y);
-
     }
 
     @Override

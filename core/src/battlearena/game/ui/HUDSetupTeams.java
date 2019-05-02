@@ -299,11 +299,11 @@ public class HUDSetupTeams extends HUD
                 Table block = new Table();
                 if(i < speedBlocks)
                 {
-                    block.setBackground(skin.getDrawable("round-white"));
+                    block.setBackground(skin.getDrawable("round-gray"));
                 }
                 else
                 {
-                    block.setBackground(skin.getDrawable("round-gray"));
+                    block.setBackground(skin.getDrawable("round-white"));
                 }
                 characterStatsTable.add(block).width(30).height(30);
             }
@@ -316,11 +316,11 @@ public class HUDSetupTeams extends HUD
                 Table block = new Table();
                 if(i < kbBlocks)
                 {
-                    block.setBackground(skin.getDrawable("round-white"));
+                    block.setBackground(skin.getDrawable("round-gray"));
                 }
                 else
                 {
-                    block.setBackground(skin.getDrawable("round-gray"));
+                    block.setBackground(skin.getDrawable("round-white"));
                 }
                 characterStatsTable.add(block).width(30).height(30);
             }
@@ -333,11 +333,11 @@ public class HUDSetupTeams extends HUD
                 Table block = new Table();
                 if(i < dexBlocks)
                 {
-                    block.setBackground(skin.getDrawable("round-white"));
+                    block.setBackground(skin.getDrawable("round-gray"));
                 }
                 else
                 {
-                    block.setBackground(skin.getDrawable("round-gray"));
+                    block.setBackground(skin.getDrawable("round-white"));
                 }
                 characterStatsTable.add(block).width(30).height(30);
             }

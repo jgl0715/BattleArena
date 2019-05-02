@@ -31,7 +31,7 @@ public class DBody extends Data
 		bDef.awake = true;
 		bDef.bullet = false;
 		bDef.gravityScale = 1.0f;
-		bDef.linearDamping = 0.0f;
+		bDef.linearDamping = 20.0f;
 		bDef.linearVelocity.set(0, 0);
 		bDef.position.set(EntityConf.GetConfigNumber("X") / TiledWorld.PIXELS_PER_METER, EntityConf.GetConfigNumber("Y") / TiledWorld.PIXELS_PER_METER);
 
@@ -72,7 +72,7 @@ public class DBody extends Data
 		polygon.setAsBox((w / 2) / World.PIXELS_PER_METER, (h / 2) / World.PIXELS_PER_METER);
 
 		fDef.density = 0.0f;
-		fDef.friction = 0.0f;
+		fDef.friction = 1.0f;
 		fDef.isSensor = false;
 		fDef.restitution = 0.0f;
 		fDef.shape = polygon;

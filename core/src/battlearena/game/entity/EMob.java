@@ -37,6 +37,8 @@ public class EMob extends EBox
     public static final String DATA_COOLDOWN = "Cooldown";
     public static final String DATA_HITBOX = "Hitbox";
     public static final String DATA_SPEED = "Speed";
+    public static final String DATA_HEALTH = "Health";
+    public static final String DATA_MAXHEALTH = "MaxHealth";
 
     protected BController movement;
     protected BACharacter character;
@@ -48,9 +50,14 @@ public class EMob extends EBox
     protected DFloat animTime;
     protected DFloat attackCooldown;
     protected DFloat speed;
+    protected DFloat health;
+    protected DFloat maxHealth;
+
     protected Body hitbox;
 
     protected ELight attackLight;
+
+    protected Vector2 hitboxSize;
 
     private float inflicting;
 
@@ -68,18 +75,25 @@ public class EMob extends EBox
         anim = addData(DString.class, Entity.ANIM, false);
         animTime = addData(DFloat.class, Entity.ANIM_TIME, false);
         speed = addData(DFloat.class, DATA_SPEED, false);
+        health = addData(DFloat.class, DATA_SPEED, false);
+        maxHealth = addData(DFloat.class, DATA_SPEED, false);
         hitbox = createHitbox(character.getHitboxWidth(), character.getHitboxHeight());
 
+        hitboxSize = new Vector2(character.getHitboxWidth(), character.getHitboxHeight());
+
+        // Default values
         anim.Value = DATA_WALK_ANIM;
         speed.Value = character.getSpeed();
+        maxHealth.Value = BACharacter.MAX_HEALTH;
+        health.Value = maxHealth.Value;
 
         renderSettings.mode = RenderSettings.RenderMode.TEXTURED;
 
         // Add behaviors
-        movement = addBehavior(BController.class, "PlayerMovement");
+        movement = addBehavior(BController.class, "Movement");
         addBehavior(BAnimator.class, "Animator");
 
-        attackLight = BAEntityFactory.createLight(Config.getWorld(), 0, 0, 1.0f, 0.0f, 1.0f, 20.0f, 0.0f);
+        attackLight = BAEntityFactory.createLight(Config.getWorld(), 0, 0, 1.0f, 0.0f, 1.0f, 20.0f, 0.0f, false);
         attackLight.getRenderSettings().visible = false;
         Config.getWorld().addEntity(LayerType.LIGHTS.getName(), attackLight);
 
@@ -98,6 +112,16 @@ public class EMob extends EBox
 
         attack.setType(character);
         attack.setLight(attackLight);
+    }
+
+    public Vector2 getHitboxSize()
+    {
+        return hitboxSize;
+    }
+
+    public float getHealthPercentage()
+    {
+        return health.Value / maxHealth.Value;
     }
 
     public DFloat getSpeed()
@@ -158,6 +182,11 @@ public class EMob extends EBox
         return bod;
     }
 
+    public BAttack getAttack()
+    {
+        return attack;
+    }
+
     public Body getHitbox()
     {
         return hitbox;
@@ -165,7 +194,7 @@ public class EMob extends EBox
 
     public void damage(float damage, Vector2 knockback)
     {
-        this.inflicting = damage;
+        this.inflicting += damage;
 
         getBody().applyForceToCenter(knockback, true);
 
@@ -189,11 +218,27 @@ public class EMob extends EBox
             attackCooldown.Value = 0.0f;
 
         // Lower health here
-        inflicting -= delta;
+        float thisFrameInfliction = Math.min(10 * delta, inflicting);
+        inflicting -= thisFrameInfliction;
 
         if(inflicting < 0.0f)
             inflicting = 0.0f;
+        else
+            health.Value -= thisFrameInfliction;
 
+        if(health.Value <= 0.0f)
+        {
+            remove();
+        }
+
+    }
+
+    @Override
+    public void remove()
+    {
+        super.remove();
+
+        getWorld().getPhysicsWorld().destroyBody(hitbox);
     }
 
     @Override

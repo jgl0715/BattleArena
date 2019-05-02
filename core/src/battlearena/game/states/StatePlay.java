@@ -44,14 +44,9 @@ public class StatePlay extends State
     private InputMultiplexer muxer;
     private Vector2 pos;
 
-    private Joystick stick;
-    private Button buttonA;
-    private Button buttonB;
-
     private OrthographicCamera uiCamera;
     private Viewport uiViewport;
 
-    private Box2DDebugRenderer dbgr;
 
     private GameMode mode;
 
@@ -60,21 +55,6 @@ public class StatePlay extends State
         super("Play");
 
         I = this;
-    }
-
-    public Joystick getStick()
-    {
-        return stick;
-    }
-
-    public Button getButtonA()
-    {
-        return buttonA;
-    }
-
-    public Button getButtonB()
-    {
-        return buttonB;
     }
 
     @Override
@@ -86,9 +66,6 @@ public class StatePlay extends State
 
         muxer = new InputMultiplexer();
 
-        stick = new Joystick(-BattleArena.VIRTUAL_WIDTH / 2 * 0.7f, -BattleArena.VIRTUAL_HEIGHT / 2 * 0.6f, muxer, uiCamera);
-        buttonA = new Button(250, -50, new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_BUTTONS), 32, 0, 32, 32), new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_BUTTONS), 0, 0, 32, 32), muxer, uiCamera);
-        buttonB = new Button(175, -125, new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_BUTTONS), 32, 32, 32, 32), new TextureRegion(BattleArena.I.getTexture(Assets.TEXTURE_BUTTONS), 0, 32, 32, 32), muxer, uiCamera);
     }
 
 
@@ -107,20 +84,8 @@ public class StatePlay extends State
     {
         Gdx.input.setInputProcessor(muxer);
 
-        dbgr = new Box2DDebugRenderer();
-
         mode = (GameMode) transitionInput;
-        mode.startMatch();
-
-//        player = BAEntityFactory.CreatePlayer(world, playerSpawn.x, playerSpawn.y, BACharacter.GUNNER);
-//        enemy = BAEntityFactory.CreateEnemy(world, enemySpawn.x, enemySpawn.y, BACharacter.WARRIOR);
-
-        // Add entities here.
-//        EntityLayer mobs = new EntityLayer(MOBS_LAYER);
-//        mobs.addEntity(player);
-//        mobs.addEntity(enemy);
-
-
+        mode.startMatch(muxer);
     }
 
     @Override
@@ -139,8 +104,6 @@ public class StatePlay extends State
 
         Vector2 pos = mode.getPlayer().find(DVector2.class, Entity.POSITION).Value;
 
-        System.out.println(pos);
-
         camera.zoom = 1.3f;
         // Center camera on player
         camera.position.set(pos.x, pos.y, 0);
@@ -152,31 +115,7 @@ public class StatePlay extends State
     public void render()
     {
 
-        ShapeRenderer sr = BattleArena.I.getShapeRenderer();
-        SpriteBatch batch = BattleArena.I.getBatch();
-        OrthographicCamera camera = BattleArena.I.getCamera();
-
-        sr.setProjectionMatrix(camera.projection);
-        sr.setTransformMatrix(camera.view);
-
-        mode.getWorld().render(batch, camera);
-
-//        Matrix4 mat = new Matrix4(camera.combined);
-//        mat.scale(World.PIXELS_PER_METER, World.PIXELS_PER_METER, 1);
-//        dbgr.render(world.getPhysicsWorld(), mat);
-
-        sr.setProjectionMatrix(uiCamera.projection);
-        sr.setTransformMatrix(uiCamera.view);
-        batch.setProjectionMatrix(uiCamera.projection);
-        batch.setTransformMatrix(uiCamera.view);
-
-        // Render input UI
-        stick.render(sr);
-        buttonA.render(batch);
-        buttonB.render(batch);
-
-        // Render HUD
-
+        mode.render(BattleArena.I.getBatch(), BattleArena.I.getShapeRenderer(), BattleArena.I.getCamera());
 
     }
 }

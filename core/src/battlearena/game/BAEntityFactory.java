@@ -27,12 +27,12 @@ public class BAEntityFactory extends EntityFactory
 	{
 
 		if(type == ENT_LIGHT)
-			return createLight(wor, 0, 0, 1, 1, 1, 10.0f, 0.1f);
+			return createLight(wor, 0, 0, 1, 1, 1, 10.0f, 0.1f, true);
 
 		return null;
 	}
 
-	public static ELight createLight(World world, float x, float y, float r, float g, float b, float d, float ss)
+	public static ELight createLight(World world, float x, float y, float r, float g, float b, float d, float ss, boolean pulse)
 	{
 		EntityConfig Config = new EntityConfig(world, ENT_LIGHT);
 
@@ -43,6 +43,7 @@ public class BAEntityFactory extends EntityFactory
 		Config.AddConfigItem(ELight.DATA_BLUE, b);
 		Config.AddConfigItem(ELight.DATA_DISTANCE, d);
 		Config.AddConfigItem(ELight.DATA_SHADOW_SOFTNESS, ss);
+		Config.AddConfigItem("Pulse", pulse);
 
 		return new ELight(Config);
 	}

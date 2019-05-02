@@ -38,7 +38,7 @@ public abstract class BAttack extends Behavior
         pos = GetParent().find(DVector2.class, Entity.POSITION).Value;
         anim = GetParent().find(DString.class, Entity.ANIM);
         cooldown = GetParent().find(DFloat.class, EPlayer.DATA_COOLDOWN);
-        controller = GetParent().find(BController.class, "PlayerMovement");
+        controller = GetParent().find(BController.class, "Movement");
     }
 
     public Body getBody()
@@ -111,6 +111,5 @@ public abstract class BAttack extends Behavior
     public void Update(float delta)
     {
         super.Update(delta);
-
     }
 }
