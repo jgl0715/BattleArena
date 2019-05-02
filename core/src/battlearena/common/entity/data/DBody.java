@@ -31,7 +31,6 @@ public class DBody extends Data
 		bDef.awake = true;
 		bDef.bullet = false;
 		bDef.gravityScale = 1.0f;
-		bDef.linearDamping = 20.0f;
 		bDef.linearVelocity.set(0, 0);
 		bDef.position.set(EntityConf.GetConfigNumber("X") / TiledWorld.PIXELS_PER_METER, EntityConf.GetConfigNumber("Y") / TiledWorld.PIXELS_PER_METER);
 
@@ -44,7 +43,7 @@ public class DBody extends Data
 		{
 			bDef.fixedRotation = true;
 		}
-		
+
 		// Check for type in configuration properties.
 		String Type = EntityConf.GetConfigString("Physics.BodyType");
 		short Category = EntityConf.GetConfigShort("Physics.Category");
@@ -57,14 +56,24 @@ public class DBody extends Data
 		else if (Type.equalsIgnoreCase("kinematic"))
 			bDef.type = BodyType.KinematicBody;
 
+		if(EntityConf.HasItem("Physics.LinearDamping"))
+			bDef.linearDamping = EntityConf.GetConfigFloat("Physics.LinearDamping");
+		else
+			bDef.linearDamping = 20.0f;
+
 		Value = Parent.getWorld().getPhysicsWorld().createBody(bDef);
 
 		Value.setUserData(GetParent());
 
-		CreateBoxFixture(EntityConf.GetConfigNumber("NavboxWidth"), EntityConf.GetConfigNumber("NavboxHeight"), Category, Accepted);
+		if(EntityConf.HasItem("Physics.Friction"))
+			CreateBoxFixture(EntityConf.GetConfigNumber("NavboxWidth"), EntityConf.GetConfigNumber("NavboxHeight"), Category, Accepted, EntityConf.GetConfigFloat("Physics.Friction"));
+		else
+			CreateBoxFixture(EntityConf.GetConfigNumber("NavboxWidth"), EntityConf.GetConfigNumber("NavboxHeight"), Category, Accepted, 1.0f);
+
+
 	}
 
-	public void CreateBoxFixture(float w, float h, short Cat, short Accepted)
+	public void CreateBoxFixture(float w, float h, short Cat, short Accepted, float friction)
 	{
 		FixtureDef fDef = new FixtureDef();
 		PolygonShape polygon = new PolygonShape();
@@ -72,7 +81,7 @@ public class DBody extends Data
 		polygon.setAsBox((w / 2) / World.PIXELS_PER_METER, (h / 2) / World.PIXELS_PER_METER);
 
 		fDef.density = 0.0f;
-		fDef.friction = 1.0f;
+		fDef.friction = friction;
 		fDef.isSensor = false;
 		fDef.restitution = 0.0f;
 		fDef.shape = polygon;

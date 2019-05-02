@@ -18,6 +18,8 @@ import battlearena.common.entity.behavior.BAnimator;
 import battlearena.common.entity.data.DAnimation;
 import battlearena.common.entity.data.DFloat;
 import battlearena.common.entity.data.DString;
+import battlearena.common.world.Location;
+import battlearena.common.world.TiledWorld;
 import battlearena.common.world.World;
 import battlearena.game.BAEntityFactory;
 import battlearena.game.CollisionGroup;
@@ -28,6 +30,7 @@ import battlearena.game.entity.behavior.BAttackWarrior;
 import battlearena.game.entity.behavior.BAttackGunner;
 import battlearena.game.entity.behavior.BController;
 import battlearena.common.entity.Entity;
+import battlearena.game.modes.BATeam;
 
 public class EMob extends EBox
 {
@@ -60,6 +63,8 @@ public class EMob extends EBox
     protected Vector2 hitboxSize;
 
     private float inflicting;
+
+    private BATeam team;
 
     public EMob(EntityConfig Config)
     {
@@ -114,6 +119,18 @@ public class EMob extends EBox
         attack.setLight(attackLight);
     }
 
+    public BATeam getTeam() {
+        return team;
+    }
+
+    public BController getMovement() {
+        return movement;
+    }
+
+    public void setTeam(BATeam team) {
+        this.team = team;
+    }
+
     public Vector2 getHitboxSize()
     {
         return hitboxSize;
@@ -127,6 +144,11 @@ public class EMob extends EBox
     public DFloat getSpeed()
     {
         return speed;
+    }
+
+    public Location getTileLocation()
+    {
+        return new Location((int)(getPos().x / TiledWorld.TILE_SIZE), (int)(getPos().y / TiledWorld.TILE_SIZE));
     }
 
     public void setSpeedMultiplier(float multiplier)

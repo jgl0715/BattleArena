@@ -53,7 +53,7 @@ public class World
 
         handler = new RayHandler(PhysicsWorld);
         handler.setShadows(true);
-        handler.setAmbientLight(0.1f);
+        handler.setAmbientLight(0.45f);
 
         layersLocked = false;
         entityLayers = new HashMap<String, EntityLayer>();

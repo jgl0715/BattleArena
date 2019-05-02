@@ -61,6 +61,44 @@ public abstract class GameMode
 
     }
 
+    public int getSlots() {
+        return slots;
+    }
+
+    public EMob[] getBlueTeam() {
+        return blueTeam;
+    }
+
+    public EMob[] getRedTeam() {
+        return redTeam;
+    }
+
+    public EMob[] getOtherTeam(EMob mob)
+    {
+        if(mob.getTeam() == BATeam.BLUE)
+            return redTeam;
+        else
+            return blueTeam;
+    }
+
+    public int getPlayerSlot(EMob mob)
+    {
+        if(mob.getTeam() == BATeam.BLUE)
+        {
+            for(int i = 0; i < slots; i++)
+                if(blueTeam[i] == mob)
+                    return i;
+        }
+        else
+        {
+            for(int i = 0; i < slots; i++)
+                if(redTeam[i] == mob)
+                    return i;
+        }
+
+        return -1;
+    }
+
     public void setHud(HUDGame hud)
     {
         this.hud = hud;
@@ -98,7 +136,6 @@ public abstract class GameMode
                     EMob blueChar = blueTeam[slot];
                     if(e == blueChar)
                     {
-                        System.out.println("blue slot " + slot);
                         respawn(BATeam.BLUE, slot);
                     }
                 }
@@ -109,13 +146,21 @@ public abstract class GameMode
                     EMob redChar = redTeam[slot];
                     if(e == redChar)
                     {
-                        System.out.println("red slot " + slot);
                         respawn(BATeam.RED, slot);
                     }
                 }
 
             }
         });
+    }
+
+    public EMob getPlayer(BATeam team, int slot)
+    {
+        if(team == BATeam.BLUE)
+            return blueTeam[slot];
+        else if(team == BATeam.RED)
+            return redTeam[slot];
+        return null;
     }
 
     public void setTeams(BACharacter[] blueTeam, BACharacter[] redTeam, int slots)
@@ -212,7 +257,7 @@ public abstract class GameMode
         }
 
         t[slot] = mob;
-
+        mob.setTeam(team);
         world.getEntityLayer(LayerType.MOBS.getName()).addEntity(mob);
     }
 
@@ -305,10 +350,10 @@ public abstract class GameMode
                 renderWorldHealthBar(mob, BATeam.RED, sr);
         }
 
-
-        Matrix4 mat = new Matrix4(camera.combined);
-        mat.scale(World.PIXELS_PER_METER, World.PIXELS_PER_METER, 1);
-        dbgr.render(world.getPhysicsWorld(), mat);
+//
+//        Matrix4 mat = new Matrix4(camera.combined);
+//        mat.scale(World.PIXELS_PER_METER, World.PIXELS_PER_METER, 1);
+//        dbgr.render(world.getPhysicsWorld(), mat);
 
         sr.setProjectionMatrix(uiCamera.projection);
         sr.setTransformMatrix(uiCamera.view);

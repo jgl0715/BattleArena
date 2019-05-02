@@ -18,8 +18,6 @@ public class EPlayer extends EMob
 	public EPlayer(EntityConfig Config)
 	{
 		super(Config);
-
-
 	}
 
 	@Override

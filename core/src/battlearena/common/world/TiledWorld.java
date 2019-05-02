@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import battlearena.common.world.path.Node;
 import battlearena.game.CollisionGroup;
 import battlearena.common.tile.CollisionMask;
 import battlearena.common.tile.Tile;
@@ -30,6 +31,7 @@ public class TiledWorld extends World
     private Map<String, TileLayer> layers;
     private List<TileLayer> layersOrdered;
 
+    private Node[][] pathNodes;
     private int width;
     private int height;
 
@@ -50,6 +52,15 @@ public class TiledWorld extends World
 
         results = new HashSet<Location>();
         visited = new HashSet<Location>();
+
+        pathNodes = new Node[height][width];
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                pathNodes[y][x] = new Node(this, x, y);
+            }
+        }
     }
 
     public void changeWidth(int amount)
@@ -74,6 +85,12 @@ public class TiledWorld extends World
         for(TileLayer layer : layersOrdered)
             layer.changeHeight(amount);
     }
+
+    public Node getNodeAt(int x, int y)
+    {
+        return pathNodes[y][x];
+    }
+
 
     public boolean isLocInBounds(int tx, int ty)
     {
@@ -218,6 +235,8 @@ public class TiledWorld extends World
         Body prevBody = cell.getBody();
         Tile prev = layer.placeTile(null, x, y);
 
+        // TODO: if world is not static, check path nodes here. May need to remove wall.
+
         // Remove previous tile body
         if(prevBody != null)
         {
@@ -266,6 +285,9 @@ public class TiledWorld extends World
         Cell cell = layer.getCell(x, y);
         Body prevBody = cell.getBody();
         Tile prev = layer.placeTile(t, x, y, meta);
+
+        if(layer.isCollisionEnabled())
+            pathNodes[x][y].isWall = true;
 
         // Remove previous tile body
         if(prevBody != null)
@@ -370,4 +392,18 @@ public class TiledWorld extends World
         // Render entities and lights on top of tiles.
         super.render(spriteBatch, cam);
     }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                stringBuilder.append(pathNodes[y][x].isWall ? "#" : " ");
+            }
+            stringBuilder.append("\n");
+        }
+        return stringBuilder.toString();
+    }
+
 }

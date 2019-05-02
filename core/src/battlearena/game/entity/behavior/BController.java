@@ -16,7 +16,7 @@ import battlearena.game.entity.EMob;
 public class BController extends Behavior
 {
 
-    public static final float DASH_BOOST = 30.0f;
+    public static final float DASH_BOOST = 300.0f;
 
     private DFloat animTime;
     private DFloat speed;
@@ -73,36 +73,29 @@ public class BController extends Behavior
     {
         super.Update(delta);
 
-        if(direction.len() > 0.0f)
+
+        if(dash)
         {
+            bod.applyForceToCenter(new Vector2(direction).scl(DASH_BOOST), true);
 
-            if(dash)
-            {
-                bod.applyForceToCenter(new Vector2(direction).scl(DASH_BOOST), true);
+            dashLength -= delta;
 
-                dashLength -= delta;
+            if(dashLength < 0)
+                dash = false;
+        }
 
-                if(dashLength < 0)
-                    dash = false;
-            }
-            else
-            {
-//                bod.setLinearVelocity(direction.scl(speed.Value));
-            }
+        bod.applyForceToCenter(new Vector2(direction).scl(speed.Value*30), true);
 
-            bod.applyForceToCenter(new Vector2(direction).scl(speed.Value*30), true);
-
-
-            if(direction.x < 0.0f)
-            {
-                GetParent().getRenderSettings().FlipX = true;
-            }
-            else
-            {
-                GetParent().getRenderSettings().FlipX = false;
-            }
+        if(bod.getLinearVelocity().x < 0.0f)
+        {
+            GetParent().getRenderSettings().FlipX = true;
         }
         else
+        {
+            GetParent().getRenderSettings().FlipX = false;
+        }
+
+        if(direction.len() <= 0.01f)
         {
             animTime.Value = 0.0f;
         }

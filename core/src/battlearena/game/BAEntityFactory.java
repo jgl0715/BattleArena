@@ -10,11 +10,10 @@ import battlearena.common.world.World;
 import battlearena.game.entity.BACharacter;
 import battlearena.game.entity.EArrow;
 import battlearena.game.entity.EBullet;
-import battlearena.game.entity.EEnemy;
+import battlearena.game.entity.EPlayerAI;
 import battlearena.game.entity.EMob;
 import battlearena.game.entity.EParticle;
 import battlearena.game.entity.EPlayer;
-import battlearena.game.entity.EProjectile;
 
 public class BAEntityFactory extends EntityFactory
 {
@@ -48,7 +47,7 @@ public class BAEntityFactory extends EntityFactory
 		return new ELight(Config);
 	}
 
-	public static EEnemy CreateEnemy(World world, float X, float Y, BACharacter type)
+	public static EPlayerAI CreateEnemy(World world, float X, float Y, BACharacter type)
 	{
 		EntityConfig Config = new EntityConfig(world, ENT_PLAYER);
 
@@ -82,7 +81,7 @@ public class BAEntityFactory extends EntityFactory
 
 
 
-		return new EEnemy(Config);
+		return new EPlayerAI(Config);
 	}
 
 
@@ -174,6 +173,8 @@ public class BAEntityFactory extends EntityFactory
 		Config.AddConfigItem("Physics.BodyType", "dynamic");
 		Config.AddConfigItem("Physics.Category", CollisionGroup.WEAPON.getChannel());
 		Config.AddConfigItem("Physics.Accepted", CollisionGroup.WEAPON.getAccepted());
+		Config.AddConfigItem("Physics.Friction", 0.0f);
+		Config.AddConfigItem("Physics.LinearDamping", 0.0f);
 
 		// Define position.
 		Config.AddConfigItem("X", X);
@@ -201,14 +202,16 @@ public class BAEntityFactory extends EntityFactory
 		Config.AddConfigItem("Physics.BodyType", "dynamic");
 		Config.AddConfigItem("Physics.Category", CollisionGroup.WEAPON.getChannel());
 		Config.AddConfigItem("Physics.Accepted", CollisionGroup.WEAPON.getAccepted());
+		Config.AddConfigItem("Physics.Friction", 0.0f);
+		Config.AddConfigItem("Physics.LinearDamping", 0.0f);
 
 		// Define position.
 		Config.AddConfigItem("X", X);
 		Config.AddConfigItem("Y", Y);
 
 		// Define size.
-		Config.AddConfigItem("NavboxWidth", 43);
-		Config.AddConfigItem("NavboxHeight", 20);
+		Config.AddConfigItem("NavboxWidth", 8);
+		Config.AddConfigItem("NavboxHeight", 8);
 
 		Config.AddConfigItem("VelX", velX);
 		Config.AddConfigItem("VelY", velY);
